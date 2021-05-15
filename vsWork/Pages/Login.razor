@@ -1,0 +1,28 @@
+﻿@page "/"
+
+<EditForm Model="authUser" OnValidSubmit="onValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="id">UserID</label>
+        <input type="text" @bind-value="authUser.UserID" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="pass">Password</label>
+        <input type="text" @bind-value="authUser.Password" class="form-control" />
+    </div>
+    <button class="btn btn-primary" type="submit">ログイン</button>
+</EditForm>
+
+
+
+@code{
+    [Inject]
+    protected NavigationManager NavManager { get; set; }
+    private User authUser = new User();
+
+    private void onValidSubmit()
+    {
+        NavManager.NavigateTo("Not Found");
+    }
+}
