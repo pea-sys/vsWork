@@ -10,6 +10,6 @@
 
 ## 予定
 * Blazor Server APL(.NET Core 5.0)
-* PostgreSQL 13.2
+* PostgreSQL 13.2(Extention:PGCRYPTO)
 * Dapper
 

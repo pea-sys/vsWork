@@ -79,12 +79,11 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (id, password) VALUES ('{item.id}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'));", tran);
+                        db.Execute($"INSERT INTO {tableName} (id, password) VALUES ('{item.Id}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'));", tran);
                         tran.Commit();
                     }
-                    catch(Exception ex)
+                    catch
                     {
-                        Debug.Print(ex.Message);
                         tran.Rollback();
                     }
                 }
@@ -96,7 +95,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<User>($"SELECT * FROM {tableName}");
+                return db.Query<User>($"SELECT id, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, name , activedate FROM {tableName}");
             }
         }
 
@@ -147,7 +146,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET password = '{item.Password}' WHERE id = '{item.id}'",tran);
+                        var count = db.Execute($"UPDATE {tableName} SET password = '{item.Password}' WHERE id = '{item.Id}'",tran);
                         tran.Commit();
                         return count > 0;
                     }
