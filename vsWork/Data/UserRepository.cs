@@ -12,16 +12,12 @@ namespace vsWork.Data
 {
     public class UserRepository : IRepository<User, string>
     {
-
-        private readonly IDbConnection _dbConnection;
         private readonly string connectionString;
         private const string tableName = "user_tbl";
 
-        public UserRepository(IDbConnection dbConnection)
+        public UserRepository(string connectionString)
         {
-            // 後で引数変更(コネクション文字列だけ受け取れば良い)
-            _dbConnection = dbConnection;
-            connectionString = _dbConnection.ConnectionString;
+            this.connectionString = connectionString;
         }
 
         internal IDbConnection Connection
@@ -41,7 +37,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        _dbConnection.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (id varchar(100) CONSTRAINT firstkey PRIMARY KEY, password varchar(100) NOT NULL, name varchar(100),activedate timestamp default CURRENT_TIMESTAMP);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (id varchar(100) CONSTRAINT firstkey PRIMARY KEY, password varchar(100) NOT NULL, name varchar(100),activedate timestamp default CURRENT_TIMESTAMP);");
                         tran.Commit();
                     }
                     catch
@@ -62,7 +58,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        _dbConnection.Execute($"DROP TABLE  IF EXISTS {tableName};");
+                        db.Execute($"DROP TABLE  IF EXISTS {tableName};");
                         tran.Commit();
                     }
                     catch
@@ -96,7 +92,7 @@ namespace vsWork.Data
 
         public IEnumerable<User> FindAll()
         {
-            using (var db = Connection)
+            using (IDbConnection db = Connection)
             {
                 db.Open();
                 return db.Query<User>($"SELECT * FROM {tableName}");

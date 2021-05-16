@@ -32,11 +32,7 @@ namespace vsWork
             services.AddServerSideBlazor();
 
             // [éQçl]https://stackoverflow.com/questions/9218847/how-do-i-handle-database-connections-with-dapper-in-net
-            // Read the connection string from appsettings.
-            string dbConnectionString = this.Configuration.GetConnectionString("DefaultConnection");
-            // Inject IDbConnection, with implementation from SqlConnection class.
-            services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(dbConnectionString));
-            // Register your regular repositories
+            services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User,string>, UserRepository>();
         }
 
