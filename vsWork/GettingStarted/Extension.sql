@@ -1,0 +1,1 @@
+psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"

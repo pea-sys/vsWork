@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Dapper;
 using System.Text;
+using System.Diagnostics;
 
 namespace vsWork.Data
 {
@@ -37,7 +38,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (id varchar(100) CONSTRAINT firstkey PRIMARY KEY, password varchar(100) NOT NULL, name varchar(100),activedate timestamp default CURRENT_TIMESTAMP);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (id varchar(100) CONSTRAINT firstkey PRIMARY KEY, password bytea NOT NULL, name varchar(100),activedate timestamp default CURRENT_TIMESTAMP);");
                         tran.Commit();
                     }
                     catch
@@ -78,12 +79,12 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (id, password) VALUES ('{item.id}', '{item.Password}');",
-                            tran);
+                        db.Execute($"INSERT INTO {tableName} (id, password) VALUES ('{item.id}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'));", tran);
                         tran.Commit();
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Debug.Print(ex.Message);
                         tran.Rollback();
                     }
                 }
@@ -108,7 +109,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<User>($"SELECT * FROM {tableName} WHERE id = '{id}' LIMIT 1").FirstOrDefault();
+                return db.Query<User>($"SELECT id, convert_from(decrypt(password, 'pass'::bytea, 'aes'),'UTF8') as password FROM {tableName} WHERE id = '{id}' LIMIT 1").FirstOrDefault();
             }
         }
 
