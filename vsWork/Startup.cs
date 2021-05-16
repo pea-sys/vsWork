@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-
+using vsWork.Data;
+using Npgsql;
 
 namespace vsWork
 {
@@ -28,6 +30,14 @@ namespace vsWork
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+            // [éQçl]https://stackoverflow.com/questions/9218847/how-do-i-handle-database-connections-with-dapper-in-net
+            // Read the connection string from appsettings.
+            string dbConnectionString = this.Configuration.GetConnectionString("DefaultConnection");
+            // Inject IDbConnection, with implementation from SqlConnection class.
+            services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(dbConnectionString));
+            // Register your regular repositories
+            services.AddScoped<IRepository<User,string>, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

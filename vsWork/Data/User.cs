@@ -7,16 +7,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace vsWork.Data
 {
-    public class User
+    public class User : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [StringLength(100, MinimumLength = 3)]
-        [Required(ErrorMessage ="Please Input UserID")]
-        public string UserID { get; set; }
+        [Required]
+        public string id { get; set; }
 
         [StringLength(100, MinimumLength = 8)]
-        [Required(ErrorMessage = "Please Input Password")]
+        [Required]
         public string Password { get; set; }
 
         [DataType(DataType.Date)]

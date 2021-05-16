@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>a1d97fdd-58bf-4e9a-a236-bdf1d8e1b163</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="Npgsql" Version="5.0.5" />
+  </ItemGroup>
 
 </Project>

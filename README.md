@@ -6,10 +6,10 @@
 ## 動機
 * .NETFrameworkの知識が4.0で止まっているため、.NET周辺の最新技術のキャッチアップ
 * Webサービスの開発経験がないため、ノウハウの習得
-* PostgreSQLも9.2で止まっているため、最新の構文やチューニング等のキャッチアップ
+* PostgreSQLも知識が9.2で止まっているため、最新の構文やチューニング等のキャッチアップ
 
 ## 予定
-* Blazer Server APL(.NET Core 5.0)
+* Blazor Server APL(.NET Core 5.0)
 * PostgreSQL 13.2
 * Dapper
 

@@ -5,7 +5,7 @@
     <ValidationSummary />
     <div class="form-group">
         <label for="id">UserID</label>
-        <input type="text" @bind-value="authUser.UserID" class="form-control" />
+        <input type="text" @bind-value="authUser.id" class="form-control" />
     </div>
     <div class="form-group">
         <label for="pass">Password</label>
@@ -14,15 +14,38 @@
     <button class="btn btn-primary" type="submit">ログイン</button>
 </EditForm>
 
-
-
 @code{
     [Inject]
     protected NavigationManager NavManager { get; set; }
+    [Inject]
+    protected IRepository<User, string> UserRepo { get; set; }
+
+
     private User authUser = new User();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+#if DEBUG
+        UserRepo.DropTable();
+        UserRepo.CreateTable();
+        UserRepo.Add(new User { id = "helloworld", Password = "helloworld" });
+#endif
+    }
 
     private void onValidSubmit()
     {
-        NavManager.NavigateTo("Not Found");
+        User validUser = UserRepo.FindById(authUser.id);
+        if (validUser == null)
+        {
+            // 該当IDなし(何かメッセージ出す)
+            return;
+        }
+        if (authUser.Password != validUser.Password)
+        {
+            //パスワード間違い(何かメッセージ出す)
+            return;
+        }
+        NavManager.NavigateTo("main");
     }
 }
