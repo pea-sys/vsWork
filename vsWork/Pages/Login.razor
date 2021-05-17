@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-<EditForm Model="@authUser" OnSubmit="@OnSubmit">
+<EditForm Model="@authUser"  OnValidSubmit="onValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group">
@@ -29,11 +29,11 @@
 #if DEBUG
         UserRepo.DropTable();
         UserRepo.CreateTable();
-        UserRepo.Add(new User { Id = "helloworld;", Password = "helloworld" });
+        UserRepo.Add(new User { Id = "helloworld", Password = "helloworld" });
 #endif
     }
 
-    private void OnSubmit()
+    private void onValidSubmit()
     {
         //TODO:EditFormでパスワード不一致バリデーションやりたい
         // https://blog.beaglesoft.net/entry/2019/02/16/133250
