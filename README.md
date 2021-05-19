@@ -8,8 +8,17 @@
 * Webサービスの開発経験がないため、ノウハウの習得
 * PostgreSQLも知識が9.2で止まっているため、最新の構文やチューニング等のキャッチアップ
 
-## 予定
+## 構成
 * Blazor Server APL(.NET Core 5.0)
-* PostgreSQL 13.2(Extention:PGCRYPTO)
 * Dapper
+* FluentValidation
 
+* PostgreSQL 13.2(Extention:PGCRYPTO)
+
+```psql
+psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
+```
+
+
+
+psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
