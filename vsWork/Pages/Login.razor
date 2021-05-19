@@ -1,6 +1,7 @@
 ﻿@page "/"
 
-<EditForm Model="@authUser"  OnValidSubmit="onValidSubmit">
+<EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
+    <FluentValidationValidator  @ref="fluentValidationValidator "/>
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group">
@@ -20,6 +21,7 @@
     [Inject]
     protected IRepository<User, string> UserRepo { get; set; }
 
+    private FluentValidationValidator fluentValidationValidator;
 
     private User authUser = new User();
 
@@ -30,10 +32,11 @@
         UserRepo.DropTable();
         UserRepo.CreateTable();
         UserRepo.Add(new User { Id = "helloworld", Password = "helloworld" });
+        UserRepo.Update(new User { Id = "helloworld", Password = "helloworld" });
 #endif
     }
 
-    private void onValidSubmit()
+    private void OnValidSubmit()
     {
         //TODO:EditFormでパスワード不一致バリデーションやりたい
         // https://blog.beaglesoft.net/entry/2019/02/16/133250
@@ -43,12 +46,6 @@
         if (validUser == null)
         {
             // 該当IDなし(何かメッセージ出す)
-            return;
-        }
-        validUser.ConfirmPassword = authUser.Password;
-        if (authUser.Password != validUser.Password)
-        {
-            //パスワード間違い(何かメッセージ出す)
             return;
         }
         NavManager.NavigateTo("main");

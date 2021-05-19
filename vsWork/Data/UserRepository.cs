@@ -146,7 +146,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET password = '{item.Password}' WHERE id = '{item.Id}'",tran);
+                        var count = db.Execute($"UPDATE {tableName} SET password = encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes') WHERE id = '{item.Id}'",tran);
                         tran.Commit();
                         return count > 0;
                     }
