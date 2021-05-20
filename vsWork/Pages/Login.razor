@@ -1,16 +1,20 @@
 ﻿@page "/"
 
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
-    <FluentValidationValidator  @ref="fluentValidationValidator "/>
+    <FluentValidationValidator @ref="fluentValidationValidator " />
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group">
         <label for="id">UserID</label>
-        <input type="text" @bind-value="authUser.Id" maxlength="100" class="form-control" />
+        <input type="text" name="id" @bind-value="authUser.Id" maxlength="100" class="form-control" />
     </div>
     <div class="form-group">
         <label for="pass">Password</label>
-        <input type="password" @bind-value="authUser.Password" maxlength="100" class="form-control" />
+        <input type="password" name="pass" @bind-value="authUser.Password" maxlength="100" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="checkbox" name="isChache" @bind-value="isCache">
+        <label for="isChache">ログイン状態を維持</label>
     </div>
     <button class="btn btn-primary" type="submit">ログイン</button>
 </EditForm>
@@ -24,6 +28,7 @@
     private FluentValidationValidator fluentValidationValidator;
 
     private User authUser = new User();
+    private bool isCache = false;
 
     protected override void OnInitialized()
     {
