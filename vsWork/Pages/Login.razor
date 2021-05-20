@@ -10,7 +10,7 @@
     </div>
     <div class="form-group">
         <label for="pass">Password</label>
-        <input type="text" @bind-value="authUser.Password" maxlength="100" class="form-control" />
+        <input type="password" @bind-value="authUser.Password" maxlength="100" class="form-control" />
     </div>
     <button class="btn btn-primary" type="submit">ログイン</button>
 </EditForm>
@@ -35,19 +35,11 @@
         UserRepo.Update(new User { Id = "helloworld", Password = "helloworld" });
 #endif
     }
-
+    /// <summary>
+    /// サブミット押下処理
+    /// </summary>
     private void OnValidSubmit()
     {
-        //TODO:EditFormでパスワード不一致バリデーションやりたい
-        // https://blog.beaglesoft.net/entry/2019/02/16/133250
-
-
-        User validUser = UserRepo.FindById(authUser.Id);
-        if (validUser == null)
-        {
-            // 該当IDなし(何かメッセージ出す)
-            return;
-        }
         NavManager.NavigateTo("main");
     }
 }
