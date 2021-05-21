@@ -1,0 +1,39 @@
+﻿@using System.Timers
+@implements IDisposable
+
+<font size=@fontSize color="#0000ff">@dateTimeString</font>
+
+@code {
+    private Timer clockTimer = new Timer(1000);
+    private string dateTimeString = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+    public int FontSize { get; set; } = 20;
+    private string fontSize = "";
+
+    /// <summary>
+    /// イニシャライズ完了イベント
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        fontSize = FontSize.ToString() + "px";
+        clockTimer.Elapsed += new System.Timers.ElapsedEventHandler(ElapsedEvent);
+        clockTimer.Enabled = true;
+    }
+    /// <summary>
+    /// 解放処理
+    /// </summary>
+    public void Dispose()
+    {
+        clockTimer.Enabled = false;
+        clockTimer.Elapsed -= new ElapsedEventHandler(ElapsedEvent);
+    }
+    /// <summary>
+    /// タイマーーイベント
+    /// </summary>
+    private void ElapsedEvent(Object source, EventArgs e)
+    {
+        dateTimeString = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+        InvokeAsync(StateHasChanged);
+    }
+}

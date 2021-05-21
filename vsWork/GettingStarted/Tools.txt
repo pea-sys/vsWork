@@ -1,3 +1,0 @@
-■DB管理ツール
-pgAdmin4はpgAdmin3に劣るので、以下からpgAdmin3を入手
-https://vvs.ru/pg/?fbclid=IwAR24RXlm2NGcyBrIipgjZo-j6JZkhOKqLsYaa8YfsbcazQYMiUxQ-d0yHQ0

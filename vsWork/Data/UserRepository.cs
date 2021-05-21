@@ -38,7 +38,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (id varchar(100) CONSTRAINT firstkey PRIMARY KEY, password bytea NOT NULL, name varchar(100),activedate timestamp default CURRENT_TIMESTAMP);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (id varchar(100) CONSTRAINT firstkey PRIMARY KEY, password bytea NOT NULL, name varchar(100));");
                         tran.Commit();
                     }
                     catch
