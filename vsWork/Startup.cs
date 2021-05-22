@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using vsWork.Data;
 using Npgsql;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 
 namespace vsWork
 {
@@ -34,6 +36,8 @@ namespace vsWork
             // [éQçl]https://stackoverflow.com/questions/9218847/how-do-i-handle-database-connections-with-dapper-in-net
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User,string>, UserRepository>();
+
+            services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp => (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +58,9 @@ namespace vsWork
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
