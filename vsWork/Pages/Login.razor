@@ -30,9 +30,9 @@
     private User authUser = new User();
     private bool isCache = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
 #if DEBUG
         UserRepo.DropTable();
         UserRepo.CreateTable();
@@ -43,7 +43,7 @@
     /// <summary>
     /// サブミット押下処理
     /// </summary>
-    private void OnValidSubmit()
+    private async Task OnValidSubmit()
     {
         NavManager.NavigateTo("top");
     }

@@ -14,6 +14,8 @@ using vsWork.Data;
 using Npgsql;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
+using vsWork.Services;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 
 namespace vsWork
 {
@@ -37,7 +39,11 @@ namespace vsWork
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User,string>, UserRepository>();
 
-            services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp => (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
+            // SiganlRの接続監視(https://www.fixes.pub/program/464677.html)
+            // この仕組みでユーザのログイン状況とか見ていきたい
+            services.AddSingleton<UsersStateContainer>(new UsersStateContainer());
+            services.AddScoped<CircuitHandler, TrackingCircuitHandler>();
+            //services.AddScoped<CircuitHandler>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,8 +65,6 @@ namespace vsWork
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
