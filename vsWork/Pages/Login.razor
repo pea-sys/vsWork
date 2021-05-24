@@ -1,5 +1,5 @@
 ﻿@page "/"
-
+@using Microsoft.AspNetCore.Components.Server.Circuits;
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
     <FluentValidationValidator @ref="fluentValidationValidator " />
     <DataAnnotationsValidator />
@@ -24,6 +24,10 @@
     protected NavigationManager NavManager { get; set; }
     [Inject]
     protected IRepository<User, string> UserRepo { get; set; }
+    [Inject]
+    protected CircuitHandler CHService { get; set; }
+    [Inject]
+    protected IUserOnlineService UserOnlineService { get; set; }
 
     private FluentValidationValidator fluentValidationValidator;
 
@@ -38,6 +42,7 @@
         UserRepo.CreateTable();
         UserRepo.Add(new User { Id = "helloworld", Password = "helloworld" });
         UserRepo.Update(new User { Id = "helloworld", Password = "helloworld" });
+        UserRepo.Add(new User { Id = "apple", Password = "apple" });
 #endif
     }
     /// <summary>
@@ -45,6 +50,7 @@
     /// </summary>
     private async Task OnValidSubmit()
     {
+        UserOnlineService.Connect(((CircuitHandlerService)CHService).CircuitId, authUser);
         NavManager.NavigateTo("top");
     }
 }

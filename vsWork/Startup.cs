@@ -39,11 +39,11 @@ namespace vsWork
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User,string>, UserRepository>();
 
-            // SiganlRの接続監視(https://www.fixes.pub/program/464677.html)
-            // この仕組みでユーザのログイン状況とか見ていきたい
-            services.AddSingleton<UsersStateContainer>(new UsersStateContainer());
-            services.AddScoped<CircuitHandler, TrackingCircuitHandler>();
-            //services.AddScoped<CircuitHandler>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
+            // [参考]https://www.fixes.pub/program/464677.html
+            // ユーザーのオンライン状況を一元管理するサービス
+            services.AddSingleton<IUserOnlineService>(new UserOnlineService());
+            // SignalRクライアントの一意の回線ID状況を監視(Scopedにすることでクライアント毎に一意の回線IDを取得可能)
+            services.AddScoped<CircuitHandler>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
