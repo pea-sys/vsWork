@@ -5,20 +5,15 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace vsWork.Data
 {
-    /// <summary>
-    /// ユーザーモデル
-    /// </summary>
-    public class User : BaseEntity
+    public class Session : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string SessionId { get; set; }
+
         public string UserId { get; set; }
-
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public DateTime CreateTimeStamp{ get; set; }
     }
-
 }

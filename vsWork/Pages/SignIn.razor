@@ -6,7 +6,7 @@
     <ValidationSummary />
     <div class="form-group">
         <label for="id">UserID</label>
-        <input type="text" name="id" @bind-value="authUser.Id" maxlength="100" class="form-control" />
+        <input type="text" name="id" @bind-value="authUser.UserId" maxlength="100" class="form-control" />
     </div>
     <div class="form-group">
         <label for="pass">Password</label>
@@ -25,6 +25,8 @@
     [Inject]
     protected IRepository<User, string> UserRepo { get; set; }
     [Inject]
+    protected IRepository<Session, string> SessionRepo { get; set; }
+    [Inject]
     protected CircuitHandler CHService { get; set; }
     [Inject]
     protected IUserOnlineService UserOnlineService { get; set; }
@@ -38,19 +40,22 @@
     {
         await base.OnInitializedAsync();
 #if DEBUG
-        UserRepo.DropTable();
         UserRepo.CreateTable();
-        UserRepo.Add(new User { Id = "helloworld", Password = "helloworld" });
-        UserRepo.Update(new User { Id = "helloworld", Password = "helloworld" });
-        UserRepo.Add(new User { Id = "apple", Password = "apple" });
+        UserRepo.Add(new User { UserId = "helloworld", Password = "helloworld" });
+        UserRepo.Update(new User { UserId = "helloworld", Password = "helloworld" });
+        UserRepo.Add(new User { UserId = "apple", Password = "apple" });
+
+
+        SessionRepo.CreateTable();
 #endif
+        // 現在のセッションにおけるユーザ情報をクリアする
     }
     /// <summary>
     /// サブミット押下処理
     /// </summary>
     private async Task OnValidSubmit()
     {
-        UserOnlineService.Connect(((CircuitHandlerService)CHService).CircuitId, authUser);
+        UserOnlineService.Connect(((CircuitHandlerService)CHService).CircuitId, authUser, (SessionRepository)SessionRepo);
         NavManager.NavigateTo("top");
     }
 }

@@ -27,7 +27,7 @@ namespace vsWork.Validators
         {
             _userRepository = userRepository;
 
-            RuleFor(x => x.Id).Cascade(CascadeMode.Stop)
+            RuleFor(x => x.UserId).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("ユーザIDを入力してください。")
                 .Length(3, 100).WithMessage("ユーザIDは3文字以上100文字以下にしてください。");
 
@@ -36,7 +36,7 @@ namespace vsWork.Validators
                 .Length(3, 100).WithMessage("パスワードは3文字以上100文字以下にしてください。")
                 .DependentRules(() =>
                 {
-                    RuleFor(x => new { x.Id, x.Password }).Must(x => MatchPassword(x.Id, x.Password)).WithMessage("ユーザID,またはパスワードが間違っています。");
+                    RuleFor(x => new { Id=x.UserId, x.Password }).Must(x => MatchPassword(x.Id, x.Password)).WithMessage("ユーザID,またはパスワードが間違っています。");
                 });
         }
         /// <summary>

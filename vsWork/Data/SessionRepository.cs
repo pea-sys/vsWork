@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+using System.Data;
 using Npgsql;
 using Dapper;
-using System.Text;
-using System.Diagnostics;
 
 namespace vsWork.Data
 {
-    public class UserRepository : IRepository<User, string>
+    public class SessionRepository: IRepository<Session, string>
     {
         private readonly string connectionString;
-        private const string tableName = "user_tbl";
+        private const string tableName = "session_tbl";
 
-
-        public UserRepository(string connectionString)
+        public SessionRepository(string connectionString)
         {
             this.connectionString = connectionString;
         }
@@ -30,6 +26,9 @@ namespace vsWork.Data
             }
         }
 
+        /// <summary>
+        /// 一時テーブルの方が良いかもしれないが未検証
+        /// </summary>
         public void CreateTable()
         {
             using (IDbConnection db = Connection)
@@ -39,7 +38,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (user_id varchar(100) PRIMARY KEY, password bytea NOT NULL, name varchar(100));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (session_id text PRIMARY KEY, user_id varchar(100) NOT NULL, create_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
                         tran.Commit();
                     }
                     catch
@@ -52,7 +51,7 @@ namespace vsWork.Data
 
         public void DropTable()
         {
-            
+
             using (IDbConnection db = Connection)
             {
                 db.Open();
@@ -70,8 +69,7 @@ namespace vsWork.Data
                 }
             }
         }
-
-        public void Add(User item)
+        public void Add(Session item)
         {
             using (IDbConnection db = Connection)
             {
@@ -80,10 +78,10 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (user_id, password) VALUES ('{item.UserId}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'));", tran);
+                        db.Execute($"INSERT INTO {tableName} (session_id, user_id) VALUES ('{item.SessionId}', '{item.UserId}');", tran);
                         tran.Commit();
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         tran.Rollback();
                     }
@@ -91,16 +89,16 @@ namespace vsWork.Data
             }
         }
 
-        public IEnumerable<User> FindAll()
+        public IEnumerable<Session> FindAll()
         {
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<User>($"SELECT user_id, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, name FROM {tableName}");
+                return db.Query<Session>($"SELECTsession_id,  user_id  FROM {tableName}");
             }
         }
 
-        public User FindById(string id)
+        public Session FindById(string id)
         {
             if (id == null)
             {
@@ -109,7 +107,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<User>($"SELECT user_id, convert_from(decrypt(password, 'pass'::bytea, 'aes'),'UTF8') as password FROM {tableName} WHERE user_id = '{id}' LIMIT 1").FirstOrDefault();
+                return db.Query<Session>($"SELECT session_id, user_id FROM {tableName} WHERE session_id = '{id}' LIMIT 1").FirstOrDefault();
             }
         }
 
@@ -126,7 +124,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"DELETE FROM {tableName} WHERE user_id = '{id}'",tran);
+                        db.Execute($"DELETE FROM {tableName} WHERE session_id = '{id}'", tran);
                         tran.Commit();
                     }
                     catch
@@ -138,7 +136,7 @@ namespace vsWork.Data
             }
         }
 
-        public bool Update(User item)
+        public bool Update(Session item)
         {
             using (IDbConnection db = Connection)
             {
@@ -147,7 +145,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET password = encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes') WHERE user_id = '{item.UserId}'",tran);
+                        var count = db.Execute($"UPDATE {tableName} SET user_id = {item.UserId} WHERE session_id = '{item.SessionId}'", tran);
                         tran.Commit();
                         return count > 0;
                     }
