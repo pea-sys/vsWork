@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Server.Circuits;
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">勤怠システム</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -8,18 +10,31 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> ログアウト
-            </NavLink>
+            <button class="nav-link" @onclick="LogOut">
+                ログアウト
+            </button>
         </li>
     </ul>
 </div>
 
 @code {
+    [Inject]
+    protected IRepository<Session, string> sessionRepository { get; set; }
+    [Inject]
+    protected CircuitHandler circuitHandlerService { get; set; }
+    [Inject]
+    protected  NavigationManager navigationManager{ get; set; }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    private void LogOut()
+    {
+        sessionRepository.Remove(((CircuitHandlerService)circuitHandlerService).CircuitId);
+        navigationManager.NavigateTo("");
+
+    }
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;

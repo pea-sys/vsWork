@@ -23,13 +23,15 @@
     [Inject]
     protected NavigationManager NavManager { get; set; }
     [Inject]
-    protected IRepository<User, string> UserRepo { get; set; }
+    protected IRepository<User, string> userRepository { get; set; }
     [Inject]
-    protected IRepository<Session, string> SessionRepo { get; set; }
+    protected IRepository<Session, string> sessionRepository { get; set; }
     [Inject]
-    protected CircuitHandler CHService { get; set; }
+    protected CircuitHandler circuitHandlerServive { get; set; }
     [Inject]
     protected IUserOnlineService UserOnlineService { get; set; }
+    [Inject]
+    protected CurrentUserService currentUserService { get; set; }
 
     private FluentValidationValidator fluentValidationValidator;
 
@@ -40,22 +42,25 @@
     {
         await base.OnInitializedAsync();
 #if DEBUG
-        UserRepo.CreateTable();
-        UserRepo.Add(new User { UserId = "helloworld", Password = "helloworld" });
-        UserRepo.Update(new User { UserId = "helloworld", Password = "helloworld" });
-        UserRepo.Add(new User { UserId = "apple", Password = "apple" });
+        userRepository.CreateTable();
+        userRepository.Add(new User { UserId = "helloworld", Password = "helloworld",UserName="UserName" });
+        userRepository.Update(new User { UserId = "helloworld", Password = "helloworld" });
+        userRepository.Add(new User { UserId = "apple", Password = "apple" });
 
 
-        SessionRepo.CreateTable();
+        sessionRepository.CreateTable();
 #endif
-        // 現在のセッションにおけるユーザ情報をクリアする
     }
     /// <summary>
     /// サブミット押下処理
     /// </summary>
     private async Task OnValidSubmit()
     {
-        UserOnlineService.Connect(((CircuitHandlerService)CHService).CircuitId, authUser, (SessionRepository)SessionRepo);
+        currentUserService.CircuitId = ((CircuitHandlerService)circuitHandlerServive).CircuitId;
+        currentUserService.UserId = authUser.UserId;
+        currentUserService.UserName = authUser.UserName;
+
+        UserOnlineService.Connect(currentUserService, (SessionRepository)sessionRepository);
         NavManager.NavigateTo("top");
     }
 }

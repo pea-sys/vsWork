@@ -8,7 +8,7 @@ namespace vsWork.Services
 {
     public interface IUserOnlineService
     {
-        void Connect(string circuitId, User user, SessionRepository sessionRepository);
+        void Connect(CurrentUserService currentUserService, SessionRepository sessionRepository);
         void DisConnect(string circuitId);
     }
 }

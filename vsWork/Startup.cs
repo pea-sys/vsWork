@@ -44,7 +44,9 @@ namespace vsWork
             // ユーザーのオンライン状況を一元管理するサービス
             services.AddSingleton<IUserOnlineService>(new UserOnlineService());
             // SignalRクライアントの一意の回線ID状況を監視(Scopedにすることでクライアント毎に一意の回線IDを取得可能)
-            services.AddScoped<CircuitHandler>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
+            services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
+            
+            services.AddScoped<CurrentUserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

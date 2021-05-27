@@ -9,10 +9,10 @@ namespace vsWork.Services
     public class UserOnlineService : IUserOnlineService
     {
         private SessionRepository sessionRepo;
-        public void Connect(string circuitId, User user, SessionRepository sessionRepository)
+        public void Connect(CurrentUserService currentUserService, SessionRepository sessionRepository)
         {
             sessionRepo = sessionRepository;
-            sessionRepository.Add(new Session() { SessionId = circuitId, UserId = user.UserId });
+            sessionRepository.Add(new Session() { SessionId = currentUserService.CircuitId, UserId = currentUserService.UserId });
         }
 
         public void DisConnect(string circuitId)

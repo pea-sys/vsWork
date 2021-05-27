@@ -51,7 +51,6 @@ namespace vsWork.Data
 
         public void DropTable()
         {
-
             using (IDbConnection db = Connection)
             {
                 db.Open();
@@ -94,7 +93,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<Session>($"SELECTsession_id,  user_id  FROM {tableName}");
+                return db.Query<Session>($"SELECT session_id,  user_id  FROM {tableName}");
             }
         }
 
@@ -138,6 +137,10 @@ namespace vsWork.Data
 
         public bool Update(Session item)
         {
+            if (item.SessionId == null)
+            {
+                return false;
+            }
             using (IDbConnection db = Connection)
             {
                 db.Open();
@@ -145,7 +148,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET user_id = {item.UserId} WHERE session_id = '{item.SessionId}'", tran);
+                        var count = db.Execute($"UPDATE {tableName} SET user_id = '{item.UserId}' WHERE session_id = '{item.SessionId}'", tran);
                         tran.Commit();
                         return count > 0;
                     }
