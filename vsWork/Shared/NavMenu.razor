@@ -24,6 +24,8 @@
     protected CircuitHandler circuitHandlerService { get; set; }
     [Inject]
     protected  NavigationManager navigationManager{ get; set; }
+    [Inject]
+    protected CurrentUserService currentUserService { get; set; }
 
     private bool collapseNavMenu = true;
 
@@ -32,6 +34,7 @@
     private void LogOut()
     {
         sessionRepository.Remove(((CircuitHandlerService)circuitHandlerService).CircuitId);
+        currentUserService.LogOut();
         navigationManager.NavigateTo("");
 
     }

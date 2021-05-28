@@ -48,7 +48,7 @@ namespace vsWork.Validators
         private bool MatchPassword(string id, string password)
         {
             // ユーザID未入力時は検証しない
-            if (id.Length == 0)
+            if (string.IsNullOrEmpty(id))
             {
                 return true;
             }

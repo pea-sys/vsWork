@@ -1,0 +1,19 @@
+﻿
+@code {
+    [Inject]
+    public NavigationManager? Navigation { get; init; }
+    [Inject]
+    protected CurrentUserService currentUserService { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrEmpty(currentUserService.UserId))
+        {
+            var returnUrl = Navigation!.ToBaseRelativePath(Navigation.Uri);
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                Navigation.NavigateTo("", true);
+            }
+        }
+    }
+}

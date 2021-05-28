@@ -1,5 +1,5 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Components.Server.Circuits;
+@using Microsoft.AspNetCore.Components.Server.Circuits
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
     <FluentValidationValidator @ref="fluentValidationValidator " />
     <DataAnnotationsValidator />
@@ -34,7 +34,6 @@
     protected CurrentUserService currentUserService { get; set; }
 
     private FluentValidationValidator fluentValidationValidator;
-
     private User authUser = new User();
     private bool isCache = false;
 
@@ -56,11 +55,8 @@
     /// </summary>
     private async Task OnValidSubmit()
     {
-        currentUserService.CircuitId = ((CircuitHandlerService)circuitHandlerServive).CircuitId;
-        currentUserService.UserId = authUser.UserId;
-        currentUserService.UserName = authUser.UserName;
-
         UserOnlineService.Connect(currentUserService, (SessionRepository)sessionRepository);
+        currentUserService.LogIn((CircuitHandlerService)circuitHandlerServive, authUser);
         NavManager.NavigateTo("top");
     }
 }
