@@ -1,26 +1,19 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager MyNavigationManager
-@inject CurrentUserService CurrentUserService
 
-@if (MyNavigationManager.BaseUri != MyNavigationManager.Uri)
-{
-    <header class="navbar navbar-dark bg-primary">
-        <h1>@CurrentUserService.UserName</h1>
-    </header>
-}
-    <div class="page">
-        @* トップページはサイドバーを表示しない *@
-        @if (MyNavigationManager.BaseUri != MyNavigationManager.Uri)
-        {
 
-            <div class="sidebar">
-                <NavMenu />
-            </div>
-        }
+<div class="page">
+    @* トップページはサイドバーを表示しない *@
+    @if (MyNavigationManager.BaseUri != MyNavigationManager.Uri)
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
 
-        <div class="main">
-            <div class="content px-4">
-                @Body
-            </div>
+    <div class="main">
+        <div class="content px-4">
+            @Body
         </div>
     </div>
+</div>

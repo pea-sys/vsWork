@@ -8,13 +8,13 @@ namespace vsWork.Services
 {
     public class CurrentUserService
     {
-    public void LogIn(CircuitHandlerService circuitHandlerServive, User user)
+    public void SignIn(CircuitHandlerService circuitHandlerServive, User user)
     {
             UserId = user.UserId;
             UserName = user.UserName;
             CircuitId = circuitHandlerServive.CircuitId;
     }
-    public void LogOut()
+    public void SignOut()
     {
             UserId = "";
             UserName = "";

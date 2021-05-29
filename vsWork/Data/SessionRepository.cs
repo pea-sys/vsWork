@@ -8,26 +8,36 @@ using Dapper;
 
 namespace vsWork.Data
 {
+    /// <summary>
+    /// セッションデータのリポジトリサービス
+    /// </summary>
     public class SessionRepository: IRepository<Session, string>
     {
+        /// <summary>DB接続文字列</summary>
         private readonly string connectionString;
-        private const string tableName = "session_tbl";
+        /// <summary>DBテーブル名</summary>
+        private readonly string tableName = "session_tbl";
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="connectionString">DB接続文字列</param>
         public SessionRepository(string connectionString)
         {
             this.connectionString = connectionString;
         }
-
-        internal IDbConnection Connection
+        /// <summary>
+        /// DBコネクションプロパティ[R]
+        /// </summary>
+        private IDbConnection Connection
         {
             get
             {
                 return new NpgsqlConnection(connectionString);
             }
         }
-
         /// <summary>
-        /// 一時テーブルの方が良いかもしれないが未検証
+        /// テーブルを作成します
         /// </summary>
         public void CreateTable()
         {
@@ -38,7 +48,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (session_id text PRIMARY KEY, user_id varchar(100) NOT NULL, create_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (SessionId text PRIMARY KEY, UserId varchar(100) NOT NULL, CreateTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
                         tran.Commit();
                     }
                     catch
@@ -48,7 +58,9 @@ namespace vsWork.Data
                 }
             }
         }
-
+        /// <summary>
+        /// テーブルを削除します
+        /// </summary>
         public void DropTable()
         {
             using (IDbConnection db = Connection)
@@ -68,6 +80,9 @@ namespace vsWork.Data
                 }
             }
         }
+        /// <summary>
+        /// レコードを追加します
+        /// </summary>
         public void Add(Session item)
         {
             using (IDbConnection db = Connection)
@@ -77,7 +92,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (session_id, user_id) VALUES ('{item.SessionId}', '{item.UserId}');", tran);
+                        db.Execute($"INSERT INTO {tableName} (SessionId, UserId) VALUES ('{item.SessionId}', '{item.UserId}');", tran);
                         tran.Commit();
                     }
                     catch
@@ -87,29 +102,10 @@ namespace vsWork.Data
                 }
             }
         }
-
-        public IEnumerable<Session> FindAll()
-        {
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                return db.Query<Session>($"SELECT session_id,  user_id  FROM {tableName}");
-            }
-        }
-
-        public Session FindById(string id)
-        {
-            if (id == null)
-            {
-                return null;
-            }
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                return db.Query<Session>($"SELECT session_id, user_id FROM {tableName} WHERE session_id = '{id}' LIMIT 1").FirstOrDefault();
-            }
-        }
-
+       
+        /// <summary>
+        /// レコードを削除します
+        /// </summary>
         public void Remove(string id)
         {
             if (id == null)
@@ -123,7 +119,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"DELETE FROM {tableName} WHERE session_id = '{id}'", tran);
+                        db.Execute($"DELETE FROM {tableName} WHERE SessionId = '{id}'", tran);
                         tran.Commit();
                     }
                     catch
@@ -134,7 +130,9 @@ namespace vsWork.Data
                 }
             }
         }
-
+        /// <summary>
+        /// レコードを更新します
+        /// </summary>
         public bool Update(Session item)
         {
             if (item.SessionId == null)
@@ -148,7 +146,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET user_id = '{item.UserId}' WHERE session_id = '{item.SessionId}'", tran);
+                        var count = db.Execute($"UPDATE {tableName} SET UserId = '{item.UserId}' WHERE SessionId = '{item.SessionId}'", tran);
                         tran.Commit();
                         return count > 0;
                     }
@@ -158,6 +156,34 @@ namespace vsWork.Data
                         throw;
                     }
                 }
+            }
+        }
+        /// <summary>
+        /// 任意のレコードを取得します
+        /// </summary>
+        /// <param name="id">セッションID</param>
+        public Session FindById(string id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<Session>($"SELECT SessionId, UserId FROM {tableName} WHERE SessionId = '{id}' LIMIT 1").FirstOrDefault();
+            }
+        }
+        /// <summary>
+        /// 有効なレコードを全取得します
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Session> FindAll()
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<Session>($"SELECT SessionId,  UserId  FROM {tableName}");
             }
         }
     }

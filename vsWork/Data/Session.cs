@@ -7,6 +7,6 @@ namespace vsWork.Data
     {
         public string SessionId { get; set; }
         public string UserId { get; set; }
-        public DateTime CreateTimeStamp{ get; set; }
+        public DateTime CreateTimeStamp { get; set; }
     }
 }

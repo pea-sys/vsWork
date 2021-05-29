@@ -42,9 +42,9 @@
         await base.OnInitializedAsync();
 #if DEBUG
         userRepository.CreateTable();
-        userRepository.Add(new User { UserId = "helloworld", Password = "helloworld",UserName="UserName" });
+        userRepository.Add(new User { UserId = "helloworld", Password = "helloworld", UserName="UserName" });
         userRepository.Update(new User { UserId = "helloworld", Password = "helloworld" });
-        userRepository.Add(new User { UserId = "apple", Password = "apple" });
+        userRepository.Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
 
 
         sessionRepository.CreateTable();
@@ -55,8 +55,9 @@
     /// </summary>
     private async Task OnValidSubmit()
     {
+
+        currentUserService.SignIn((CircuitHandlerService)circuitHandlerServive, userRepository.FindById(authUser.UserId));
         UserOnlineService.Connect(currentUserService, (SessionRepository)sessionRepository);
-        currentUserService.LogIn((CircuitHandlerService)circuitHandlerServive, authUser);
         NavManager.NavigateTo("top");
     }
 }

@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.Circuits;
-
+@inject CurrentUserService CurrentUserService
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">勤怠システム</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -10,6 +10,7 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
+            <a class="navbar-brand">@CurrentUserService.UserName</a>
             <button class="nav-link" @onclick="LogOut">
                 ログアウト
             </button>
@@ -23,7 +24,7 @@
     [Inject]
     protected CircuitHandler circuitHandlerService { get; set; }
     [Inject]
-    protected  NavigationManager navigationManager{ get; set; }
+    protected NavigationManager navigationManager { get; set; }
     [Inject]
     protected CurrentUserService currentUserService { get; set; }
 
@@ -34,7 +35,7 @@
     private void LogOut()
     {
         sessionRepository.Remove(((CircuitHandlerService)circuitHandlerService).CircuitId);
-        currentUserService.LogOut();
+        currentUserService.SignOut();
         navigationManager.NavigateTo("");
 
     }

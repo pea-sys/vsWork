@@ -11,17 +11,27 @@ using System.Diagnostics;
 
 namespace vsWork.Data
 {
+    /// <summary>
+    /// ユーザデータのリポジトリサービス
+    /// </summary>
     public class UserRepository : IRepository<User, string>
     {
+        /// <summary>DB接続文字列</summary>
         private readonly string connectionString;
+        /// <summary>DBテーブル名</summary>
         private const string tableName = "user_tbl";
 
-
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="connectionString">DB接続文字列</param>
         public UserRepository(string connectionString)
         {
             this.connectionString = connectionString;
         }
-
+        /// <summary>
+        /// DBコネクションプロパティ[R]
+        /// </summary>
         internal IDbConnection Connection
         {
             get
@@ -29,7 +39,9 @@ namespace vsWork.Data
                 return new NpgsqlConnection(connectionString);
             }
         }
-
+        /// <summary>
+        /// テーブルを作成します
+        /// </summary>
         public void CreateTable()
         {
             using (IDbConnection db = Connection)
@@ -39,7 +51,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (user_id varchar(100) PRIMARY KEY, password bytea NOT NULL, name varchar(100));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) PRIMARY KEY, password bytea NOT NULL, UserName varchar(100));");
                         tran.Commit();
                     }
                     catch
@@ -49,7 +61,9 @@ namespace vsWork.Data
                 }
             }
         }
-
+        /// <summary>
+        /// テーブルを削除します
+        /// </summary>
         public void DropTable()
         {
             
@@ -70,7 +84,9 @@ namespace vsWork.Data
                 }
             }
         }
-
+        /// <summary>
+        /// レコードを追加します
+        /// </summary>
         public void Add(User item)
         {
             using (IDbConnection db = Connection)
@@ -80,7 +96,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (user_id, password) VALUES ('{item.UserId}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'));", tran);
+                        db.Execute($"INSERT INTO {tableName} (UserId, password, UserName) VALUES ('{item.UserId}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'),'{item.UserName}');", tran);
                         tran.Commit();
                     }
                     catch(Exception ex)
@@ -90,29 +106,9 @@ namespace vsWork.Data
                 }
             }
         }
-
-        public IEnumerable<User> FindAll()
-        {
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                return db.Query<User>($"SELECT user_id, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, name FROM {tableName}");
-            }
-        }
-
-        public User FindById(string id)
-        {
-            if (id == null)
-            {
-                return null;
-            }
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                return db.Query<User>($"SELECT user_id, convert_from(decrypt(password, 'pass'::bytea, 'aes'),'UTF8') as password FROM {tableName} WHERE user_id = '{id}' LIMIT 1").FirstOrDefault();
-            }
-        }
-
+        /// <summary>
+        /// レコードを削除します
+        /// </summary>
         public void Remove(string id)
         {
             if (id == null)
@@ -126,7 +122,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"DELETE FROM {tableName} WHERE user_id = '{id}'",tran);
+                        db.Execute($"DELETE FROM {tableName} WHERE UserId = '{id}'",tran);
                         tran.Commit();
                     }
                     catch
@@ -137,7 +133,10 @@ namespace vsWork.Data
                 }
             }
         }
-
+        /// <summary>
+        /// レコードを更新します
+        /// </summary>
+        /// <param name="item">ユーザ情報</param>
         public bool Update(User item)
         {
             using (IDbConnection db = Connection)
@@ -147,7 +146,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET password = encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes') WHERE user_id = '{item.UserId}'",tran);
+                        var count = db.Execute($"UPDATE {tableName} SET password = encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes') WHERE Userid = '{item.UserId}'",tran);
                         tran.Commit();
                         return count > 0;
                     }
@@ -157,6 +156,34 @@ namespace vsWork.Data
                         throw;
                     }
                 }
+            }
+        }
+        /// <summary>
+        /// 任意のレコードを取得します
+        /// </summary>
+        /// <param name="id">ユーザID</param>
+        public User FindById(string id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes'),'UTF8') as password, UserName FROM {tableName} WHERE UserId = '{id}' LIMIT 1").FirstOrDefault();
+            }
+        }
+        /// <summary>
+        /// 有効なレコードを全取得します
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<User> FindAll()
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, UserName FROM {tableName}");
             }
         }
     }
