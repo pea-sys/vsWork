@@ -9,20 +9,20 @@ using Dapper;
 namespace vsWork.Data
 {
     /// <summary>
-    /// セッションデータのリポジトリサービス
+    /// 勤怠データのリポジトリサービス
     /// </summary>
-    public class SessionRepository: IRepository<Session, string>
+    public class AttendanceRepository : IRepository<Attendance, string>
     {
         /// <summary>DB接続文字列</summary>
         private readonly string connectionString;
         /// <summary>DBテーブル名</summary>
-        private readonly string tableName = "session_tbl";
+        private readonly string tableName = "attendance_tbl";
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="connectionString">DB接続文字列</param>
-        public SessionRepository(string connectionString)
+        public AttendanceRepository(string connectionString)
         {
             this.connectionString = connectionString;
         }
@@ -47,8 +47,8 @@ namespace vsWork.Data
                 using (var tran = db.BeginTransaction())
                 {
                     try
-                    {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (SessionId text PRIMARY KEY, UserId varchar(100) NOT NULL, CreateTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
+                    { 
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} ( UserId varchar(100) NOT NULL, AttendanceCount serial NOT NULL, PunchInTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PunchOutTimeStamp TIMESTAMP, PRIMARY KEY (UserId, AttendanceCount));");
                         tran.Commit();
                     }
                     catch
@@ -83,7 +83,7 @@ namespace vsWork.Data
         /// <summary>
         /// レコードを追加します
         /// </summary>
-        public void Add(Session item)
+        public void Add(Attendance item)
         {
             using (IDbConnection db = Connection)
             {
@@ -92,8 +92,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        //INSERT INTO attendance_tbl (UserId, AttendanceCount) VALUES ('helloworld', (select count(*) UserId from attendance_tbl where UserId = 'helloworld')+1);
-                        db.Execute($"INSERT INTO {tableName} (UserId, AttendanceCount) VALUES ('{item.UserId}', (select count(*) UserId from attendance_tbl where UserId = 'helloworld') + 1);", tran);
+                        db.Execute($"INSERT INTO {tableName} (UserId, AttendanceCount) VALUES ('{item.UserId}', (SELECT COUNT(*) from {tableName} where UserId = '{item.UserId}') + 1);", tran);
                         tran.Commit();
                     }
                     catch
@@ -103,89 +102,53 @@ namespace vsWork.Data
                 }
             }
         }
-       
+
         /// <summary>
         /// レコードを削除します
         /// </summary>
         public void Remove(string id)
         {
+            // Not Supported
             if (id == null)
             {
                 return;
             }
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                using (var tran = db.BeginTransaction())
-                {
-                    try
-                    {
-                        db.Execute($"DELETE FROM {tableName} WHERE SessionId = '{id}'", tran);
-                        tran.Commit();
-                    }
-                    catch
-                    {
-                        tran.Rollback();
-                        throw;
-                    }
-                }
-            }
         }
         /// <summary>
         /// レコードを更新します
+        /// ※多分、システム不具合による打刻時刻の訂正とかも必要(サーバのマザボ電池がなくなったら時刻初期化される等)
         /// </summary>
-        public bool Update(Session item)
+        public bool Update(Attendance item)
         {
-            if (item.SessionId == null)
+            // Not Supported
+            if (item.UserId == null)
             {
                 return false;
             }
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                using (var tran = db.BeginTransaction())
-                {
-                    try
-                    {
-                        var count = db.Execute($"UPDATE {tableName} SET UserId = '{item.UserId}' WHERE SessionId = '{item.SessionId}'", tran);
-                        tran.Commit();
-                        return count > 0;
-                    }
-                    catch
-                    {
-                        tran.Rollback();
-                        throw;
-                    }
-                }
-            }
+            return true;
         }
         /// <summary>
         /// 任意のレコードを取得します
         /// </summary>
         /// <param name="id">セッションID</param>
-        public Session FindById(string id)
+        public Attendance FindById(string id)
         {
+            // Not Supported
             if (id == null)
             {
                 return null;
             }
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                return db.Query<Session>($"SELECT SessionId, UserId FROM {tableName} WHERE SessionId = '{id}' LIMIT 1").FirstOrDefault();
-            }
+            return new Attendance();
+            
         }
         /// <summary>
         /// 有効なレコードを全取得します
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Session> FindAll()
+        public IEnumerable<Attendance> FindAll()
         {
-            using (IDbConnection db = Connection)
-            {
-                db.Open();
-                return db.Query<Session>($"SELECT SessionId,  UserId  FROM {tableName}");
-            }
+            // Not Supported
+            return new List<Attendance>();
         }
     }
 }

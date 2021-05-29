@@ -39,6 +39,7 @@ namespace vsWork
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User,string>, UserRepository>();
             services.AddScoped<IRepository<Session, string>, SessionRepository>();
+            services.AddScoped<IRepository<Attendance, string>, AttendanceRepository>();
 
             // [参考]https://www.fixes.pub/program/464677.html
             // ユーザーのオンライン状況を一元管理するサービス
