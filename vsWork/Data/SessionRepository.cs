@@ -92,8 +92,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        //INSERT INTO attendance_tbl (UserId, AttendanceCount) VALUES ('helloworld', (select count(*) UserId from attendance_tbl where UserId = 'helloworld')+1);
-                        db.Execute($"INSERT INTO {tableName} (UserId, AttendanceCount) VALUES ('{item.UserId}', (select count(*) UserId from attendance_tbl where UserId = 'helloworld') + 1);", tran);
+                        db.Execute($"INSERT INTO {tableName} (SessionId, UserId) VALUES ('{item.SessionId}', '{item.UserId}');", tran);
                         tran.Commit();
                     }
                     catch
