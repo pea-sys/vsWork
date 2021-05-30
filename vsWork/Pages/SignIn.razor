@@ -27,6 +27,10 @@
     [Inject]
     protected IRepository<Session, string> sessionRepository { get; set; }
     [Inject]
+    protected IRepository<UserState, string> userStateRepository { get; set; }
+    [Inject]
+    protected IRepository<Attendance,string> attendanceRepository { get; set; }
+    [Inject]
     protected CircuitHandler circuitHandlerServive { get; set; }
     [Inject]
     protected IUserOnlineService UserOnlineService { get; set; }
@@ -46,8 +50,9 @@
         userRepository.Update(new User { UserId = "helloworld", Password = "helloworld" });
         userRepository.Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
 
-
+        attendanceRepository.CreateTable();
         sessionRepository.CreateTable();
+        userStateRepository.CreateTable();
 #endif
     }
     /// <summary>
@@ -55,8 +60,10 @@
     /// </summary>
     private async Task OnValidSubmit()
     {
+        currentUserService.SignIn((CircuitHandlerService)circuitHandlerServive, 
+        userRepository.FindById(authUser.UserId),
+        userStateRepository.FindById(authUser.UserId));
 
-        currentUserService.SignIn((CircuitHandlerService)circuitHandlerServive, userRepository.FindById(authUser.UserId));
         UserOnlineService.Connect(currentUserService, (SessionRepository)sessionRepository);
         NavManager.NavigateTo("top");
     }

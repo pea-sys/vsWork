@@ -29,9 +29,12 @@ psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
 ■　テーブル構成  
 
 
-|テーブル名|説明|
-|----|----|
-|attendance_tbl|勤怠打刻テーブル(履歴の記録)|
-|session_tbl|セッションテーブル(認証状況の監視)|
-|user_tbl|ユーザー情報テーブル(SignUp情報管理)|
+|テーブル名|説明|備考|
+|----|----|----|
+|attendance_tbl|勤怠打刻テーブル(履歴の記録)|----|
+|session_tbl|セッションテーブル(認証状況の監視)|----|
+|user_tbl|ユーザ情報テーブル(SignUp情報管理)|----|
+|user_state|ユーザ状態管理テーブル(勤怠状態管理)|更新はトリガーで行う|
+
+
 

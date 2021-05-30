@@ -60,5 +60,13 @@
         public string ContentLine1 { get; set; }
         public string ContentLine2 { get; set; }
         public bool IsShow { get; set; }
+
+        public void Initialize()
+        {
+            Title = "";
+            ContentLine1 = "";
+            ContentLine2 = "";
+            IsShow = false;
+        }
     }
 }

@@ -50,6 +50,7 @@ namespace vsWork
             services.AddScoped<IRepository<User, string>, UserRepository>();
             services.AddScoped<IRepository<Session, string>, SessionRepository>();
             services.AddScoped<IRepository<Attendance, string>, AttendanceRepository>();
+            services.AddScoped<IRepository<UserState, string>, UserStateRepository>();
 
             // [参考]https://www.fixes.pub/program/464677.html
             // ユーザーのオンライン状況を一元管理するサービス

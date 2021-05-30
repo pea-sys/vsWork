@@ -19,25 +19,37 @@
     [Inject]
     protected IRepository<Attendance, string> attendanceRepository { get; set; }
     [Inject]
+    protected IRepository<UserState, string> userStateRepository { get; set; }
+    [Inject]
     protected CurrentUserService currentUserService { get; set; }
 
-    //private string dialogContentLine1;
-    //private string dialogContentLine2;
-    //private string dialogTitle;
     private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
     /// <summary>
     /// 出勤打刻
     /// </summary>
     private async Task PunchIn()
     {
-        // 後々、ユーザーの状態管理テーブルを作りたい。打刻に応じてトリガーで更新すれば良いと思う。
-        // 打刻済みなら打刻させないようにする必要あり
-        if (!string.IsNullOrEmpty(currentUserService.UserId))
+        if (string.IsNullOrEmpty(currentUserService.UserId))
+        {
+            return;
+        }
+
+        // 備考:サービスの役割をきちんと決めずに作ってきたが、UserOnlineServiceにユーザアクションは詰めるべきな気がした
+        if (currentUserService.State != UserState.StateType.PunchIn)
         {
             attendanceRepository.Add(new Attendance() { UserId = currentUserService.UserId });
+            currentUserService.PunchIn();
+            dialogContent.Initialize();
             dialogContent.Title = "打刻確認";
             dialogContent.ContentLine1 = "打刻しました";
             dialogContent.ContentLine2 = DateTime.Now.ToLongTimeString(); //実際にDBから引っ張るべき。今のところ利用国は日本のみに対応
+            dialogContent.IsShow = true;
+        }
+        else
+        {
+            dialogContent.Initialize();
+            dialogContent.Title = "エラー";
+            dialogContent.ContentLine1 = "出勤打刻済みです";
             dialogContent.IsShow = true;
         }
     }

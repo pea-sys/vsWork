@@ -51,7 +51,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) PRIMARY KEY, password bytea NOT NULL, UserName varchar(100));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) NOT NULL PRIMARY KEY, password bytea NOT NULL, UserName varchar(100));");
                         tran.Commit();
                     }
                     catch

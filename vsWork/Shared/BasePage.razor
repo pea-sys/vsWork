@@ -1,9 +1,9 @@
 ﻿
 @code {
     [Inject]
-    public NavigationManager? Navigation { get; init; }
+    private NavigationManager? Navigation { get; init; }
     [Inject]
-    protected CurrentUserService currentUserService { get; set; }
+    private CurrentUserService currentUserService { get; set; }
 
     protected override void OnParametersSet()
     {
