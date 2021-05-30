@@ -3,7 +3,7 @@
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
     <FluentValidationValidator @ref="fluentValidationValidator " />
     <DataAnnotationsValidator />
-    <ValidationSummary />
+    <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
     <div class="form-group">
         <label for="id">UserID</label>
         <input type="text" name="id" @bind-value="authUser.UserId" maxlength="100" class="form-control" />

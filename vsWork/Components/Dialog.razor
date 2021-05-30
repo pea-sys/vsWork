@@ -1,0 +1,64 @@
+﻿@using Blazorise
+
+<Modal @ref="modalRef">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@Title</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@ContentLine1</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@ContentLine2</FieldLabel>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Primary" Clicked="@HideModal">@ButtonText</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code
+{
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string ContentLine1 { get; set; }
+    [Parameter]
+    public string ContentLine2 { get; set; }
+    [Parameter]
+    public bool IsShow
+    {
+        get => _isShow;
+        set
+        {
+            _isShow = value;
+            if (value)
+            {
+
+                modalRef.Show();
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<bool> IsShowChanged { get; set; }
+
+    private Modal modalRef;
+    private bool _isShow = false;
+    private string ButtonText = "確認";
+
+    private void HideModal()
+    {
+        modalRef.Hide();
+    }
+
+    public class DialogContent
+    {
+        public string Title{ get; set; }
+        public string ContentLine1 { get; set; }
+        public string ContentLine2 { get; set; }
+        public bool IsShow { get; set; }
+    }
+}

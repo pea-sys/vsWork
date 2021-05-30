@@ -1,6 +1,10 @@
 ﻿@page "/top"
 @inherits BasePage
 
+    <vsWork.Components.Dialog Title=@dialogContent.Title
+                               ContentLine1=@dialogContent.ContentLine1
+                               ContentLine2=@dialogContent.ContentLine2
+                               @bind-IsShow=@dialogContent.IsShow />
 
 <div class="col-md-12 text-center">
     <div>
@@ -17,6 +21,10 @@
     [Inject]
     protected CurrentUserService currentUserService { get; set; }
 
+    //private string dialogContentLine1;
+    //private string dialogContentLine2;
+    //private string dialogTitle;
+    private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
     /// <summary>
     /// 出勤打刻
     /// </summary>
@@ -27,7 +35,10 @@
         if (!string.IsNullOrEmpty(currentUserService.UserId))
         {
             attendanceRepository.Add(new Attendance() { UserId = currentUserService.UserId });
-            //今いちボタンが反応しているか分からないのでダイアログ表示予定
+            dialogContent.Title = "打刻確認";
+            dialogContent.ContentLine1 = "打刻しました";
+            dialogContent.ContentLine2 = DateTime.Now.ToLongTimeString(); //実際にDBから引っ張るべき。今のところ利用国は日本のみに対応
+            dialogContent.IsShow = true;
         }
     }
     /// <summary>
@@ -37,4 +48,6 @@
     {
 
     }
+
+
 }

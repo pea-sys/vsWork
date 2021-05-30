@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using vsWork.Services;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace vsWork
 {
@@ -35,9 +38,16 @@ namespace vsWork
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true;
+            })
+            .AddBootstrapProviders()
+            .AddFontAwesomeIcons();
+
             // [参考]https://stackoverflow.com/questions/9218847/how-do-i-handle-database-connections-with-dapper-in-net
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
-            services.AddScoped<IRepository<User,string>, UserRepository>();
+            services.AddScoped<IRepository<User, string>, UserRepository>();
             services.AddScoped<IRepository<Session, string>, SessionRepository>();
             services.AddScoped<IRepository<Attendance, string>, AttendanceRepository>();
 
@@ -46,8 +56,10 @@ namespace vsWork
             services.AddSingleton<IUserOnlineService>(new UserOnlineService());
             // SignalRクライアントの一意の回線ID状況を監視(Scopedにすることでクライアント毎に一意の回線IDを取得可能)
             services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
-            
+
             services.AddScoped<CurrentUserService>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
