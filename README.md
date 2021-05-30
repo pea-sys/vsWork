@@ -1,6 +1,6 @@
 # vsWork
 勤怠システム開発に使用するリポジトリです  
-ノウハウがないため長期で取り組む予定です 
+ノウハウがないため長期で取り組む予定です  
 Blazorの前提知識となりそうなASP.NETも経験がないため、  
 事前設計は行わずにハンズオンで開発を進めて継続改善する方針    
 どこまで開発モチベーションが持つかは不明  
@@ -16,7 +16,7 @@ Blazorの前提知識となりそうなASP.NETも経験がないため、
 * Dapper
 * NpgSQL
 * FluentValidation
-* Blazorize
+* Blazorize  
 ※ Postgresのコネクションはユーザーシークレットで管理
 
 ### データベース
@@ -25,4 +25,13 @@ Blazorの前提知識となりそうなASP.NETも経験がないため、
 ```psql
 psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
 ```
+
+■　テーブル構成  
+
+
+|テーブル名|説明|
+|----|----|
+|attendance_tbl|勤怠打刻テーブル(履歴の記録)|
+|session_tbl|セッションテーブル(認証状況の監視)|
+|user_tbl|ユーザー情報テーブル(SignUp情報管理)|
 
