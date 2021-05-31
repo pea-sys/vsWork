@@ -9,6 +9,9 @@ using vsWork.Utils;
 
 namespace vsWork.Data
 {
+    /// <summary>
+    /// ユーザ状態のリポジトリサービス
+    /// </summary>
     public class UserStateRepository : IRepository<UserState, string>
     {
         /// <summary>DB接続文字列</summary>
@@ -124,10 +127,13 @@ namespace vsWork.Data
         /// 有効なレコードを全取得します
         /// </summary>
         /// <returns></returns>
-        [Obsolete]
         public IEnumerable<UserState> FindAll()
         {
-            throw new NotSupportedException();
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<UserState>($"SELECT UserId, State, Timestamp  FROM {tableName}");
+            }
         }
     }
 }

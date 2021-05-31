@@ -114,12 +114,39 @@ namespace vsWork.Data
         }
         /// <summary>
         /// レコードを更新します
-        /// ※多分、システム不具合による打刻時刻の訂正とかも必要(サーバのマザボ電池がなくなったら時刻初期化される等)
         /// </summary>
         [Obsolete]
         public bool Update(Attendance item)
         {
             throw new NotSupportedException();
+        }
+        /// <summary>
+        /// PunchOutTimestampを更新します
+        /// </summary>
+        public bool UpdateAtPunchOutTimestamp(Attendance item)
+        {
+            if (item.UserId == null)
+            {
+                return false;
+            }
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                using (var tran = db.BeginTransaction())
+                {
+                    try
+                    {
+                        var count = db.Execute($"UPDATE {tableName} SET PunchOutTimestamp = CURRENT_TIMESTAMP WHERE UserId = '{item.UserId}' and attendancecount = (SELECT COUNT(*) FROM attendance_tbl where userid = '{item.UserId}')", tran);
+                        tran.Commit();
+                        return count > 0;
+                    }
+                    catch
+                    {
+                        tran.Rollback();
+                        throw;
+                    }
+                }
+            }
         }
         /// <summary>
         /// 任意のレコードを取得します

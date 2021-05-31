@@ -34,22 +34,24 @@
             return;
         }
 
-        // 備考:サービスの役割をきちんと決めずに作ってきたが、UserOnlineServiceにユーザアクションは詰めるべきな気がした
+        dialogContent.Initialize();
+
         if (currentUserService.State != UserState.StateType.PunchIn)
         {
             attendanceRepository.Add(new Attendance() { UserId = currentUserService.UserId });
-            currentUserService.PunchIn();
-            dialogContent.Initialize();
-            dialogContent.Title = "打刻確認";
+            UserState us = userStateRepository.FindById(currentUserService.UserId);
+            currentUserService.ChangeState(us);
+
+            dialogContent.Title = "出勤打刻確認";
             dialogContent.ContentLine1 = "打刻しました";
-            dialogContent.ContentLine2 = DateTime.Now.ToLongTimeString(); //実際にDBから引っ張るべき。今のところ利用国は日本のみに対応
+            dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
             dialogContent.IsShow = true;
         }
         else
         {
-            dialogContent.Initialize();
             dialogContent.Title = "エラー";
-            dialogContent.ContentLine1 = "出勤打刻済みです";
+            dialogContent.ContentLine1 = "出勤していません";
+            dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
             dialogContent.IsShow = true;
         }
     }
@@ -58,8 +60,21 @@
     /// </summary>
     private async Task PunchOut()
     {
+        dialogContent.Initialize();
+        if (currentUserService.State == UserState.StateType.PunchIn)
+        {
+            ((AttendanceRepository)attendanceRepository).UpdateAtPunchOutTimestamp(new Attendance() { UserId = currentUserService.UserId});
+            currentUserService.ChangeState(userStateRepository.FindById(currentUserService.UserId));
+            dialogContent.Title = "退勤打刻確認";
+            dialogContent.ContentLine1 = "退勤しました";
+            dialogContent.IsShow = true;
+        }
+        else
+        {
+            dialogContent.Title = "エラー";
+            dialogContent.ContentLine1 = "退勤打刻済みです";
+            dialogContent.IsShow = true;
+        }
 
     }
-
-
 }
