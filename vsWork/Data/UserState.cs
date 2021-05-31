@@ -13,7 +13,7 @@ namespace vsWork.Data
 
         public enum StateType
         {
-            [EnumText("")]
+            [EnumText("なし")]
             None = 0,
             [EnumText("勤務中")]
             PunchIn = 1,

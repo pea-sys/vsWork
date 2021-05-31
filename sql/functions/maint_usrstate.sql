@@ -34,7 +34,8 @@ AS $maint_userstate$
         <<insert_update>>
         LOOP
             UPDATE userstate_tbl
-            SET state = delta_state 
+            SET state = delta_state , 
+                timestamp =CURRENT_TIMESTAMP
             WHERE userid = delta_userid;
 
             EXIT insert_update WHEN found;
