@@ -25,6 +25,9 @@ namespace vsWork.Data
         public SessionRepository(string connectionString)
         {
             this.connectionString = connectionString;
+#if DEBUG
+            CreateTable();
+#endif
         }
         /// <summary>
         /// DBコネクションプロパティ[R]

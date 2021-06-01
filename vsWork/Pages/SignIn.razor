@@ -1,5 +1,5 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Components.Server.Circuits
+
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
     <FluentValidationValidator @ref="fluentValidationValidator " />
     <DataAnnotationsValidator />
@@ -21,50 +21,20 @@
 
 @code{
     [Inject]
-    protected NavigationManager NavManager { get; set; }
+    private NavigationManager NavManager { get; set; }
     [Inject]
-    protected IRepository<User, string> userRepository { get; set; }
-    [Inject]
-    protected IRepository<Session, string> sessionRepository { get; set; }
-    [Inject]
-    protected IRepository<UserState, string> userStateRepository { get; set; }
-    [Inject]
-    protected IRepository<Attendance,string> attendanceRepository { get; set; }
-    [Inject]
-    protected CircuitHandler circuitHandlerServive { get; set; }
-    [Inject]
-    protected IUserOnlineService UserOnlineService { get; set; }
-    [Inject]
-    protected CurrentUserService currentUserService { get; set; }
+    private UserActionService userActionService { get; set; }
 
     private FluentValidationValidator fluentValidationValidator;
     private User authUser = new User();
     private bool isCache = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-#if DEBUG
-        userRepository.CreateTable();
-        userRepository.Add(new User { UserId = "helloworld", Password = "helloworld", UserName="UserName" });
-        userRepository.Update(new User { UserId = "helloworld", Password = "helloworld" });
-        userRepository.Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
-
-        attendanceRepository.CreateTable();
-        sessionRepository.CreateTable();
-        userStateRepository.CreateTable();
-#endif
-    }
     /// <summary>
     /// サブミット押下処理
     /// </summary>
     private async Task OnValidSubmit()
     {
-        currentUserService.SignIn((CircuitHandlerService)circuitHandlerServive, 
-        userRepository.FindById(authUser.UserId),
-        userStateRepository.FindById(authUser.UserId));
-
-        UserOnlineService.Connect(currentUserService, (SessionRepository)sessionRepository);
+        userActionService.SignIn(authUser.UserId);
         NavManager.NavigateTo("top");
     }
 }

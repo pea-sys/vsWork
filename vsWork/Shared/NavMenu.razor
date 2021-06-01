@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.Circuits;
-@inject CurrentUserService CurrentUserService
+@implements IDisposable
+@inject UserActionService CurrentUserService
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">勤怠システム</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -26,15 +27,20 @@
     [Inject]
     protected NavigationManager navigationManager { get; set; }
     [Inject]
-    protected CurrentUserService currentUserService { get; set; }
+    protected UserActionService currentUserService { get; set; }
 
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    protected override void OnInitialized()
+    {
+        // 初回時にイベントハンドラに、イベントの紐づけ
+        currentUserService.StateChanged += OnUserStateChanged;
+    }
+
     private void LogOut()
     {
-        sessionRepository.Remove(((CircuitHandlerService)circuitHandlerService).CircuitId);
         currentUserService.SignOut();
         navigationManager.NavigateTo("");
 
@@ -42,5 +48,16 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    void OnUserStateChanged(
+        object sender, EventArgs e)
+    {
+        this.InvokeAsync(StateHasChanged);
+    }
+
+    void IDisposable.Dispose()
+    {
+        // 閉じられるとき、イベントのリリース
+        currentUserService.StateChanged -= OnUserStateChanged;
     }
 }

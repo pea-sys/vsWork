@@ -45,6 +45,9 @@ namespace vsWork
             .AddBootstrapProviders()
             .AddFontAwesomeIcons();
 
+            //サービスのライフタイムについて
+            //https://entityframeworkcore.com/knowledge-base/57495333/asp-net-core---repository-dependency-injection-fails-on-singleton-injection
+
             // [参考]https://stackoverflow.com/questions/9218847/how-do-i-handle-database-connections-with-dapper-in-net
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User, string>, UserRepository>();
@@ -52,15 +55,15 @@ namespace vsWork
             services.AddScoped<IRepository<Attendance, string>, AttendanceRepository>();
             services.AddScoped<IRepository<UserState, string>, UserStateRepository>();
 
-            // [参考]https://www.fixes.pub/program/464677.html
-            // ユーザーのオンライン状況を一元管理するサービス
-            services.AddSingleton<IUserOnlineService>(new UserOnlineService());
             // SignalRクライアントの一意の回線ID状況を監視(Scopedにすることでクライアント毎に一意の回線IDを取得可能)
-            services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IUserOnlineService>()));
-
-            services.AddScoped<CurrentUserService>();
-
-
+            // [参考]https://www.fixes.pub/program/464677.html
+            services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<UserActionService>()));
+            // 各クライアントのアクションを提供するサービス
+            services.AddScoped<UserActionService>((sp) => new UserActionService(
+            sp.GetRequiredService<IRepository<User, string>>(),
+            sp.GetRequiredService<IRepository<Session, string>>(),
+            sp.GetRequiredService<IRepository<UserState, string>>(),
+            sp.GetRequiredService<IRepository<Attendance,string>>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

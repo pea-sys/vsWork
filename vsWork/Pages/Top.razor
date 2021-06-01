@@ -17,11 +17,7 @@
 
 @code {
     [Inject]
-    protected IRepository<Attendance, string> attendanceRepository { get; set; }
-    [Inject]
-    protected IRepository<UserState, string> userStateRepository { get; set; }
-    [Inject]
-    protected CurrentUserService currentUserService { get; set; }
+    private UserActionService currentUserService { get; set; }
 
     private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
     /// <summary>
@@ -34,14 +30,11 @@
             return;
         }
 
-        dialogContent.Initialize();
-
         if (currentUserService.State != UserState.StateType.PunchIn)
         {
-            attendanceRepository.Add(new Attendance() { UserId = currentUserService.UserId });
-            UserState us = userStateRepository.FindById(currentUserService.UserId);
-            currentUserService.ChangeState(us);
+            currentUserService.PunchIn();
 
+            dialogContent.Initialize();
             dialogContent.Title = "確認";
             dialogContent.ContentLine1 = "出勤打刻しました";
             dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
@@ -49,6 +42,7 @@
         }
         else
         {
+            dialogContent.Initialize();
             dialogContent.Title = "エラー";
             dialogContent.ContentLine1 =  "出勤打刻済みです";
             dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
@@ -63,8 +57,7 @@
         dialogContent.Initialize();
         if (currentUserService.State == UserState.StateType.PunchIn)
         {
-            ((AttendanceRepository)attendanceRepository).UpdateAtPunchOutTimestamp(new Attendance() { UserId = currentUserService.UserId});
-            currentUserService.ChangeState(userStateRepository.FindById(currentUserService.UserId));
+            currentUserService.PunchOut();
             dialogContent.Title = "確認";
             dialogContent.ContentLine1 = "退勤打刻しました";
             dialogContent.IsShow = true;

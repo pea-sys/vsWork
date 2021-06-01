@@ -28,6 +28,11 @@ namespace vsWork.Data
         public UserRepository(string connectionString)
         {
             this.connectionString = connectionString;
+#if DEBUG
+            CreateTable();
+            Add(new User { UserId = "helloworld", Password = "helloworld", UserName = "UserName" });
+            Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
+#endif
         }
         /// <summary>
         /// DBコネクションプロパティ[R]

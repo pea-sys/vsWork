@@ -9,23 +9,33 @@ namespace vsWork.Services
 {
     public class CircuitHandlerService : CircuitHandler
     {
-        public string CircuitId { get; set; }
+        private readonly UserActionService userActionService;
 
-        IUserOnlineService useronlineservice;
-        public CircuitHandlerService(IUserOnlineService useronlineservice)
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public CircuitHandlerService(UserActionService userActionService)
         {
-            this.useronlineservice = useronlineservice;
+            this.userActionService = userActionService;
         }
-
+        /// <summary>
+        /// セッション開始イベント
+        /// </summary>
+        /// <param name="circuit"></param>
+        /// <param name="cancellationToken"></param>
         public override Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
         {
-            CircuitId = circuit.Id;
+            userActionService.Connect(circuit.Id);
             return base.OnCircuitOpenedAsync(circuit, cancellationToken);
         }
-
+        /// <summary>
+        /// セッション終了イベント
+        /// </summary>
+        /// <param name="circuit"></param>
+        /// <param name="cancellationToken"></param>
         public override Task OnCircuitClosedAsync(Circuit circuit, CancellationToken cancellationToken)
         {
-            useronlineservice.DisConnect(circuit.Id);
+            userActionService.DisConnect(circuit.Id);
             return base.OnCircuitClosedAsync(circuit, cancellationToken);
         }
     }

@@ -26,6 +26,9 @@ namespace vsWork.Data
         public UserStateRepository(string connectionString)
         {
             this.connectionString = connectionString;
+#if DEBUG
+            CreateTable();
+#endif
         }
         /// <summary>
         /// DBコネクションプロパティ[R]
