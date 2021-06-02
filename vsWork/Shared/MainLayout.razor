@@ -1,10 +1,10 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager MyNavigationManager
+@inject UserActionService userActionService
 
 
 <div class="page">
-    @* トップページはサイドバーを表示しない *@
-    @if (MyNavigationManager.BaseUri != MyNavigationManager.Uri)
+    @* 認証していない場合はサイドバーを表示しない *@
+    @if (!string.IsNullOrEmpty(userActionService.UserId))
     {
         <div class="sidebar">
             <NavMenu />

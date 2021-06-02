@@ -71,6 +71,14 @@ namespace vsWork.Services
             }
         }
         /// <summary>
+        /// サインアップ
+        /// </summary>
+        /// <param name="user">登録情報</param>
+        public void SignUp(SignUpUser user)
+        {
+            userRepository.Add(new User { UserId = user.UserId, Password = user.Password , UserName = user.UserName});
+        }
+        /// <summary>
         /// サインイン
         /// </summary>
         /// <param name="user">認証情報</param>
@@ -112,8 +120,8 @@ namespace vsWork.Services
         {
             attendanceRepository.Add(new Attendance() { UserId = UserId });
             UserState us = userStateRepository.FindById(UserId);
-            State = us.State;
             PunchInTimeStamp = us.TimeStamp;
+            State = us.State;
         }
         /// <summary>
         /// 退勤打刻
@@ -122,8 +130,8 @@ namespace vsWork.Services
         {
             attendanceRepository.UpdateAtPunchOutTimestamp(new Attendance() { UserId = UserId });
             UserState us = userStateRepository.FindById(UserId);
-            State = us.State;
             PunchInTimeStamp = us.TimeStamp;
+            State = us.State;
         }
         /// <summary>
         /// イベントを実行する
