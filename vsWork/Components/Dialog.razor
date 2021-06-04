@@ -15,7 +15,15 @@
             </Field>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Primary" Clicked="@HideModal">@ButtonText</Button>
+            @if (DispType == EnumDispType.Confirm)
+            {
+                <Button Color="Color.Primary" Clicked="@(e => HideModal("確認"))">確認</Button>
+            }
+            @if (DispType == EnumDispType.YesOrNo)
+            {
+                <Button Color="Color.Secondary" Clicked="@(e => HideModal("はい"))">はい</Button>
+                <Button Color="Color.Primary" Clicked="@(e => HideModal("いいえ"))">いいえ</Button>
+            }
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -23,7 +31,7 @@
 @code
 {
 
-    public enum DialogType
+    public enum EnumDispType
     {
         Confirm = 0,
         YesOrNo = 1
@@ -50,20 +58,24 @@
     }
     [Parameter]
     public EventCallback<bool> IsShowChanged { get; set; }
+    [Parameter]
+    public EventCallback<string> OnHide{ get; set; }
+    [Parameter]
+    public EnumDispType DispType { get; set; }
 
     private Modal modalRef;
     private bool _isShow = false;
-    private string ButtonText = "確認";
 
-    private void HideModal()
+    private async void HideModal(string ButtonText)
     {
         modalRef.Hide();
         _isShow = false;
+        await OnHide.InvokeAsync(ButtonText);
     }
 
     public class DialogContent
     {
-        public string Title{ get; set; }
+        public string Title { get; set; }
         public string ContentLine1 { get; set; }
         public string ContentLine2 { get; set; }
         public bool IsShow { get; set; }

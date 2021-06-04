@@ -5,8 +5,9 @@
 <vsWork.Components.Dialog Title=@dialogContent.Title
                           ContentLine1=@dialogContent.ContentLine1
                           ContentLine2=@dialogContent.ContentLine2
-                          @bind-IsShow=@dialogContent.IsShow />
-@*@ / OnHideModal=@OnHideDialog / *@
+                          @bind-IsShow=@dialogContent.IsShow
+                          OnHide="@OnHideDialog"
+                          DispType="@vsWork.Components.Dialog.EnumDispType.YesOrNo" />
 <DataGrid TItem="Organization"
           Data="@organizationList"
           @bind-SelectedRow="@selectedOrganization">
@@ -15,14 +16,15 @@
 </DataGrid>
 <Button Color="Color.Primary" @onclick="OnClickAdd">新規登録</Button>
 <Button Color="Color.Secondary" @onclick="OnClickUpdate">更新</Button>
-<Button Color="Color.Danger" @onclick="OnClickDelete">削除</Button>
+<Button Color="Color.Danger" Disabled="@(selectedOrganization==null)" @onclick="OnClickDelete">削除</Button>
 
 @code {
     [Inject]
     private IRepository<Organization, string> organizationRepository { get; set; }
 
     private List<Organization> organizationList = new List<Organization>();
-    private Organization selectedOrganization = new Organization();
+    private Organization selectedOrganization;
+    private Task dialogTask;
 
     private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
 
@@ -37,13 +39,26 @@
     { }
     private void OnClickDelete()
     {
+        dialogTask = new Task(() =>
+        {
+            organizationRepository.Remove(selectedOrganization.OrganizationId);
+            organizationList = new List<Organization>(organizationRepository.FindAll());
+            selectedOrganization = null;
+            InvokeAsync(StateHasChanged);
+        });
+
         dialogContent.Initialize();
-        dialogContent.Title = "確認";
-        dialogContent.ContentLine1 = "〇〇を削除しますか？";
+        dialogContent.Title = "削除確認";
+        dialogContent.ContentLine1 = selectedOrganization.OrganizationId + "を削除しますか？";
         dialogContent.IsShow = true;
     }
-    private void OnHideDialog()
+    private void OnHideDialog(string ButtonText)
     {
+        if (ButtonText == "はい")
+        {
+            dialogTask.Start();
+        }
+        dialogTask = null;
         dialogContent.Initialize();
     }
 }

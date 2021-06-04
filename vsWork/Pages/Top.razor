@@ -4,7 +4,9 @@
     <vsWork.Components.Dialog Title=@dialogContent.Title
                                ContentLine1=@dialogContent.ContentLine1
                                ContentLine2=@dialogContent.ContentLine2
-                               @bind-IsShow=@dialogContent.IsShow />
+                               @bind-IsShow=@dialogContent.IsShow
+                               OnHide ="@OnHideDialog"
+                               DispType="@vsWork.Components.Dialog.EnumDispType.Confirm"/>
 
 <div class="col-md-12 text-center">
     <div>
@@ -34,7 +36,6 @@
         {
             currentUserService.PunchIn();
 
-            dialogContent.Initialize();
             dialogContent.Title = "確認";
             dialogContent.ContentLine1 = "出勤打刻しました";
             dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
@@ -42,7 +43,6 @@
         }
         else
         {
-            dialogContent.Initialize();
             dialogContent.Title = "エラー";
             dialogContent.ContentLine1 =  "出勤打刻済みです";
             dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
@@ -54,7 +54,6 @@
     /// </summary>
     private async Task PunchOut()
     {
-        dialogContent.Initialize();
         if (currentUserService.State == UserState.StateType.PunchIn)
         {
             currentUserService.PunchOut();
@@ -68,5 +67,9 @@
             dialogContent.ContentLine1 = "退勤打刻済みです";
             dialogContent.IsShow = true;
         }
+    }
+    private void OnHideDialog()
+    {
+        dialogContent.Initialize();
     }
 }
