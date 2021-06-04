@@ -17,6 +17,7 @@ Blazorの前提知識となりそうなASP.NETも経験がないため、
 * NpgSQL
 * FluentValidation
 * Blazorize  
+* Blazorise.DataGrid  
 ※ Postgresのコネクションはユーザーシークレットで管理
 
 ### データベース
@@ -35,6 +36,16 @@ psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
 |session_tbl|セッションテーブル(認証状況の監視)|----|
 |user_tbl|ユーザ情報テーブル(SignUp情報管理)|----|
 |user_state|ユーザ状態管理テーブル(勤怠状態管理)|更新はトリガーで行う|
+
+
+■ ToDo
+* 組織情報の追加。複数社で使用する場合、他社の勤務状況は見れないようにするべき。  
+  組織IDをそのままurlとして、ユーザには組織を意識させないようにする？
+* 所定の勤務時間の登録
+* ユーザランクの登録。管理者と一般位は設ける
+* 勤務統計情報。月毎の残業時間や勤務時間。有休取得日数などの管理
+* 休日登録。会社独自の記念日とか登録可能にする
+
 
 
 

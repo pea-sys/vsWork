@@ -1,0 +1,49 @@
+﻿@page "/organization"
+
+@inherits vsWork.Shared.BasePage
+
+<vsWork.Components.Dialog Title=@dialogContent.Title
+                          ContentLine1=@dialogContent.ContentLine1
+                          ContentLine2=@dialogContent.ContentLine2
+                          @bind-IsShow=@dialogContent.IsShow />
+@*@ / OnHideModal=@OnHideDialog / *@
+<DataGrid TItem="Organization"
+          Data="@organizationList"
+          @bind-SelectedRow="@selectedOrganization">
+    <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationId)" Caption="組織ID" Sortable="false" />
+    <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationName)" Caption="組織名称" Editable="true" />
+</DataGrid>
+<Button Color="Color.Primary" @onclick="OnClickAdd">新規登録</Button>
+<Button Color="Color.Secondary" @onclick="OnClickUpdate">更新</Button>
+<Button Color="Color.Danger" @onclick="OnClickDelete">削除</Button>
+
+@code {
+    [Inject]
+    private IRepository<Organization, string> organizationRepository { get; set; }
+
+    private List<Organization> organizationList = new List<Organization>();
+    private Organization selectedOrganization = new Organization();
+
+    private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
+
+    protected override Task OnInitializedAsync()
+    {
+        organizationList = new List<Organization>(organizationRepository.FindAll());
+        return base.OnInitializedAsync();
+    }
+    private void OnClickAdd()
+    { }
+    private void OnClickUpdate()
+    { }
+    private void OnClickDelete()
+    {
+        dialogContent.Initialize();
+        dialogContent.Title = "確認";
+        dialogContent.ContentLine1 = "〇〇を削除しますか？";
+        dialogContent.IsShow = true;
+    }
+    private void OnHideDialog()
+    {
+        dialogContent.Initialize();
+    }
+}

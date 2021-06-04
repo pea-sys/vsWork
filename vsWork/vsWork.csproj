@@ -7,9 +7,10 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.FluentValidation" Version="2.0.0" />
-    <PackageReference Include="Blazorise" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise" Version="0.9.3.7" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.7" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.3.7" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.7" />
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Npgsql" Version="5.0.5" />
   </ItemGroup>

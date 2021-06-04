@@ -32,6 +32,10 @@ namespace vsWork.Services
         /// </summary>
         private readonly AttendanceRepository attendanceRepository;
         /// <summary>
+        /// 組織リポジトリ
+        /// </summary>
+        private readonly OrganizationRepository organizationRepository;
+        /// <summary>
         /// 任意のイベントを実行するイベントハンドラ
         /// </summary>
         public event EventHandler StateChanged;
@@ -42,12 +46,14 @@ namespace vsWork.Services
         IRepository<User, string> userRepository,
         IRepository<Session, string> sessionRepository,
         IRepository<UserState, string> userStateRepository,
-        IRepository<Attendance, string> attendanceRepository)
+        IRepository<Attendance, string> attendanceRepository,
+        IRepository<Organization, string> organizationRepository)
         {
             this.userRepository = (UserRepository)userRepository;
             this.sessionRepository = (SessionRepository)sessionRepository;
             this.userStateRepository = (UserStateRepository)userStateRepository;
             this.attendanceRepository = (AttendanceRepository)attendanceRepository;
+            this.organizationRepository = (OrganizationRepository)organizationRepository;
         }
         /// <summary>
         /// セッション開始

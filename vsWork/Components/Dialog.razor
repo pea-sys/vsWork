@@ -22,6 +22,12 @@
 
 @code
 {
+
+    public enum DialogType
+    {
+        Confirm = 0,
+        YesOrNo = 1
+    }
     [Parameter]
     public string Title { get; set; }
     [Parameter]
@@ -52,7 +58,7 @@
     private void HideModal()
     {
         modalRef.Hide();
-        IsShow = false;
+        _isShow = false;
     }
 
     public class DialogContent
