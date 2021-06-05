@@ -1,13 +1,15 @@
 ﻿
 @code {
     [Inject]
-    private NavigationManager Navigation { get; init; }
+    public NavigationManager Navigation { get; init; }
     [Inject]
-    private UserActionService currentUserService { get; set; }
+    public UserActionService userActionService { get; set; }
+
+    public FluentValidationValidator fluentValidationValidator;
 
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrEmpty(currentUserService.UserId))
+        if (string.IsNullOrEmpty(userActionService.UserId))
         {
             var returnUrl = Navigation!.ToBaseRelativePath(Navigation.Uri);
             if (!string.IsNullOrWhiteSpace(returnUrl))

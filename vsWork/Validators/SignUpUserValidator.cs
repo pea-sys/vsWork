@@ -27,7 +27,7 @@ namespace vsWork.Validators
                 .Length(3, 100).WithMessage("ユーザIDは3文字以上100文字以下にしてください。")
                 .DependentRules(() =>
                 {
-                    RuleFor(x => x.UserId).Must(x => IsExistUser(x)).WithMessage("登録済みのユーザIDです");
+                    RuleFor(x => x.UserId).Must(x => IsExistId(x)).WithMessage("登録済みのIDです");
                 });
 
             RuleFor(x => x.UserName).Cascade(CascadeMode.Stop)
@@ -48,7 +48,7 @@ namespace vsWork.Validators
         /// </summary>
         /// <param name="id"></param>
         /// <returns>false:正常 true:異常</returns>
-        private bool IsExistUser(string id)
+        private bool IsExistId(string id)
         {
             User validUser = _userRepository.FindById(id);
             return (validUser == null);

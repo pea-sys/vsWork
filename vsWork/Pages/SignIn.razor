@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inherits vsWork.Shared.BasePage
 
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
     <FluentValidationValidator @ref="fluentValidationValidator " />
@@ -17,16 +18,11 @@
         <label for="isChache">ログイン状態を維持</label>
     </div>
     <button class="btn btn-primary" type="submit">ログイン</button>
-    <div>アカウントをお持ちでない方は<a href="/SignUp">こちらから</a>登録お願いします</div>
+    <div>[テストユーザー]id:helloworld password:helloworld</div>
 </EditForm>
 
 @code{
-    [Inject]
-    private NavigationManager NavManager { get; set; }
-    [Inject]
-    private UserActionService userActionService { get; set; }
 
-    private FluentValidationValidator fluentValidationValidator;
     private User authUser = new User();
     private bool isCache = false;
 
@@ -36,6 +32,6 @@
     private async Task OnValidSubmit()
     {
         userActionService.SignIn(authUser.UserId);
-        NavManager.NavigateTo("top");
+        Navigation.NavigateTo("top");
     }
 }

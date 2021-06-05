@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace vsWork.Data
 {
-    public interface IRepository<T1, T2> where T1 : BaseEntity
+    public interface IRepository<T1, T2> where T1 : IEntity
     {
 
         /// <summary>

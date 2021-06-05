@@ -104,7 +104,7 @@ namespace vsWork.Data
                         db.Execute($"INSERT INTO {tableName} (UserId, password, UserName) VALUES ('{item.UserId}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'),'{item.UserName}');", tran);
                         tran.Commit();
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         tran.Rollback();
                     }

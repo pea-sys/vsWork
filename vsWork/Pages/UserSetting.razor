@@ -1,4 +1,6 @@
-﻿@page "/SignUp"
+﻿@page "/userSetting"
+@inherits vsWork.Shared.BasePage
+
 <Container Fluid="true">
     <EditForm Model="@regUser" OnValidSubmit="OnValidRegist">
         <FluentValidationValidator @ref="fluentValidationValidator " />
@@ -26,12 +28,6 @@
 </Container>
 
 @code {
-    [Inject]
-    private NavigationManager NavManager { get; set; }
-    [Inject]
-    private UserActionService userActionService { get; set; }
-
-    private FluentValidationValidator fluentValidationValidator;
     private SignUpUser regUser = new SignUpUser();
 
     /// <summary>
@@ -40,6 +36,6 @@
     private async Task OnValidRegist()
     {
         userActionService.SignUp(regUser);
-        NavManager.NavigateTo("");
+        Navigation.NavigateTo("top");
     }
 }

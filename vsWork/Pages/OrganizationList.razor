@@ -1,5 +1,4 @@
 ﻿@page "/organization"
-
 @inherits vsWork.Shared.BasePage
 
 <vsWork.Components.Dialog Title=@dialogContent.Title
@@ -15,12 +14,13 @@
     <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationName)" Caption="組織名称" Editable="true" />
 </DataGrid>
 <Button Color="Color.Primary" @onclick="OnClickAdd">新規登録</Button>
-<Button Color="Color.Secondary" @onclick="OnClickUpdate">更新</Button>
+<Button Color="Color.Secondary" Disabled="@(selectedOrganization==null)" @onclick="OnClickUpdate">更新</Button>
 <Button Color="Color.Danger" Disabled="@(selectedOrganization==null)" @onclick="OnClickDelete">削除</Button>
 
 @code {
     [Inject]
     private IRepository<Organization, string> organizationRepository { get; set; }
+
 
     private List<Organization> organizationList = new List<Organization>();
     private Organization selectedOrganization;
@@ -34,9 +34,13 @@
         return base.OnInitializedAsync();
     }
     private void OnClickAdd()
-    { }
+    {
+        Navigation.NavigateTo("organizationSetting/");
+    }
     private void OnClickUpdate()
-    { }
+    {
+        Navigation.NavigateTo("organizationSetting/" + selectedOrganization.OrganizationId + "/" + selectedOrganization.OrganizationName);
+    }
     private void OnClickDelete()
     {
         dialogTask = new Task(() =>

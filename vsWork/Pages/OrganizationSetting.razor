@@ -1,0 +1,62 @@
+﻿@page "/organizationSetting/{OrganizationId}/{OrganizationName}"
+@page "/organizationSetting" 
+@inherits vsWork.Shared.BasePage
+@using vsWork.Utils
+<EditForm Model="@settingOrganization" OnValidSubmit="OnValidSetting">
+    <FluentValidationValidator @ref="fluentValidationValidator " />
+    <DataAnnotationsValidator />
+    <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+    <div class="form-group">
+        <label for="id">OrganizationID</label>
+        <input type="text" name="id" disabled="@(settingOrganization.DataOperation != EnumDataOperation.Create)" @bind-value="settingOrganization.OrganizationId" maxlength="100" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="name">OrganizationName</label>
+        <input type="text" name="name" @bind-value="settingOrganization.OrganizationName" maxlength="100" class="form-control" />
+    </div>
+    <button class="btn btn-primary" type="submit">設定</button>
+
+</EditForm>
+@code {
+    [Parameter]
+    public string OrganizationId { get; set; }
+    [Parameter]
+    public string OrganizationName { get; set; }
+
+    [Inject]
+    private IRepository<Organization, string> organizationRepository { get; set; }
+
+    private Organization settingOrganization = new Organization();
+
+    protected override void OnInitialized()
+    {
+        settingOrganization.OrganizationId = OrganizationId;
+        settingOrganization.OrganizationName = OrganizationName;
+        if (string.IsNullOrEmpty(OrganizationId))
+        {
+
+            settingOrganization.DataOperation = EnumDataOperation.Create;
+        }
+        else
+        {
+            settingOrganization.DataOperation = EnumDataOperation.Update;
+        }
+        base.OnInitialized();
+    }
+
+    /// <summary>
+    /// 設定押下処理
+    /// </summary>
+    private async Task OnValidSetting()
+    {
+        if (settingOrganization.DataOperation == EnumDataOperation.Create)
+        {
+            organizationRepository.Add(settingOrganization);
+        }
+        else if (settingOrganization.DataOperation == EnumDataOperation.Update)
+        {
+            organizationRepository.Update(settingOrganization);
+        }
+        Navigation.NavigateTo("organization");
+    }
+}
