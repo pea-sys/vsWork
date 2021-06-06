@@ -1,0 +1,21 @@
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@using Blazored.Toast.Services
+@using vsWork.Store.SettingUserUseCase
+
+
+@inject IToastService toastService
+
+@code {
+    protected override void OnInitialized()
+    {
+        SubscribeToAction<UserUpdateSuccessAction>(ShowUserUpdateSuccessToast);
+
+
+        base.OnInitialized();
+    }
+
+    private void ShowUserUpdateSuccessToast(UserUpdateSuccessAction action)
+    {
+        toastService.ShowSuccess("UserUpdate Success!");
+    }
+}

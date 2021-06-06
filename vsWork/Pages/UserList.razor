@@ -1,6 +1,6 @@
 ﻿@page "/user"
 @inherits vsWork.Shared.BasePage
-
+@using Fluxor
 <vsWork.Components.Dialog Title=@dialogContent.Title
                           ContentLine1=@dialogContent.ContentLine1
                           ContentLine2=@dialogContent.ContentLine2
@@ -20,6 +20,8 @@
 @code {
     [Inject]
     private IRepository<User, string> userRepository { get; set; }
+    [Inject]
+    private IDispatcher Dispatcher { get; set; }
 
 
     private List<User> userList = new List<User>();
@@ -35,10 +37,14 @@
     }
     private void OnClickAdd()
     {
-        Navigation.NavigateTo("userSetting");
+        var action = new vsWork.Store.SettingUserUseCase.UserSelectAction(selectedUser);
+        Dispatcher.Dispatch(action);
+        Navigation.NavigateTo("addUser");
     }
     private void OnClickUpdate()
     {
+        var action = new vsWork.Store.SettingUserUseCase.UserSelectAction(selectedUser);
+        Dispatcher.Dispatch(action);
         Navigation.NavigateTo("userSetting");
     }
     private void OnClickDelete()

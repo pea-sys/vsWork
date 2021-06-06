@@ -1,7 +1,8 @@
 ﻿@inherits LayoutComponentBase
+
 @inject UserActionService userActionService
-
-
+@inject IDispatcher Dispatcher
+@using Blazored.Toast
 <div class="page">
     @* 認証していない場合はサイドバーを表示しない *@
     @if (!string.IsNullOrEmpty(userActionService.UserId))
@@ -17,3 +18,7 @@
         </div>
     </div>
 </div>
+
+<BlazoredToasts Position="ToastPosition.TopRight" Timeout="15" />
+
+<Toaster />

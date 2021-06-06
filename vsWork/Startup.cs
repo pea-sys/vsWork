@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Components.Server.Circuits;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using Fluxor;
+using Blazored.Toast;
 
 namespace vsWork
 {
@@ -66,6 +68,10 @@ namespace vsWork
             sp.GetRequiredService<IRepository<UserState, string>>(),
             sp.GetRequiredService<IRepository<Attendance,string>>(),
             sp.GetRequiredService<IRepository<Organization, string>>()));
+
+            // Add the following
+            services.AddFluxor(options => options.ScanAssemblies(typeof(Startup).Assembly));
+            services.AddBlazoredToast();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

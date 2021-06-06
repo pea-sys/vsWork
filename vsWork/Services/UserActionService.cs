@@ -82,7 +82,7 @@ namespace vsWork.Services
         /// <param name="user">登録情報</param>
         public void SignUp(SignUpUser user)
         {
-            userRepository.Add(new User { UserId = user.UserId, Password = user.Password , UserName = user.UserName});
+            
         }
         /// <summary>
         /// サインイン

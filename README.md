@@ -32,10 +32,11 @@ psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
 
 |テーブル名|説明|備考|
 |----|----|----|
-|attendance_tbl|勤怠打刻テーブル(履歴の記録)|----|
-|session_tbl|セッションテーブル(認証状況の監視)|----|
-|user_tbl|ユーザ情報テーブル(SignUp情報管理)|----|
-|user_state|ユーザ状態管理テーブル(勤怠状態管理)|更新はトリガーで行う|
+|attendance_tbl|勤怠打刻テーブル|ユーザ毎の打刻履歴の記録|
+|session_tbl|セッションテーブル|認証状況の監視|
+|user_tbl|ユーザ情報テーブル|ユーザ登録情報の管理|
+|user_state_tbl|ユーザ状態管理テーブル|勤務状況の管理.トリガー更新|
+|organization_tbl|組織テーブル|組織登録情報の管理|
 
 
 ■ ToDo
@@ -45,6 +46,13 @@ psql --username=postgres --command="CREATE EXTENSION PGCRYPTO;"
 * ユーザランクの登録。管理者と一般位は設ける
 * 勤務統計情報。月毎の残業時間や勤務時間。有休取得日数などの管理
 * 休日登録。会社独自の記念日とか登録可能にする
+
+■ メモ  
+### 現状の構想  
+1. 顧客の組織を登録する
+2. 顧客の組織に所属する管理者を登録する
+3. 管理者は所属するユーザ情報を任意に登録・更新・削除ができる
+
 
 
 

@@ -1,5 +1,54 @@
-﻿<h3>UserSetting</h3>
+﻿@page "/userSetting"
+@using vsWork.Data;
+@using vsWork.Store.SettingUserUseCase;
+@using Blazored.FluentValidation;
+@using Fluxor;
+@using Microsoft.AspNetCore.Components;
 
+@inherits vsWork.Shared.BasePage
+
+<Container Fluid="true">
+    <EditForm Model="@settingUser" OnValidSubmit="OnValidRegist">
+        <FluentValidationValidator @ref="fluentValidationValidator " />
+        <DataAnnotationsValidator />
+        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+        <div class="form-group">
+            <label for="id">UserID(3文字以上100文字以下)</label>
+            <input type="text" name="id" @bind-value="settingUser.UserId" maxlength="100" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="id">UserName(3文字以上100文字以下)</label>
+            <input type="text" name="id" @bind-value="settingUser.UserName" maxlength="100" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="pass">Password(3文字以上100文字以下)</label>
+            <input type="password" name="pass" @bind-value="settingUser.Password" maxlength="100" class="form-control" />
+        </div>
+        <button class="btn btn-primary" type="submit">登録</button>
+
+    </EditForm>
+</Container>
 @code {
 
+    [Inject]
+    private IState<vsWork.Store.SettingUserUseCase.UserState> SettingUserState { get; set; }
+    [Inject]
+    private IDispatcher Dispatcher { get; set; }
+
+    private User settingUser = new User();
+    protected override void OnInitialized()
+    {
+        settingUser = SettingUserState.Value.SettingUser;
+        base.OnInitialized();
+    }
+
+    /// <summary>
+    /// 登録押下処理
+    /// </summary>
+    private async Task OnValidRegist()
+    {
+        var action = new vsWork.Store.SettingUserUseCase.UserUpdateAction(settingUser);
+        Dispatcher.Dispatch(action);
+        Navigation.NavigateTo("top");
+    }
 }
