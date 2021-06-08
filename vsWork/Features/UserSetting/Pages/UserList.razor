@@ -30,12 +30,11 @@ else
     public IModalService Modal { get; set; }
 
     private const int maxRow = 10;
-    private int pageCount = 1;
+    private int pageCount = 1; // TODO:pagination
 
     private User[] _users => UserSettingState.Value.Users;
     private User _selectedUser;
     private bool _loading => UserSettingState.Value.Loading;
-    private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
 
     protected override void OnInitialized()
     {
