@@ -5,6 +5,8 @@
     public NavigationManager Navigation { get; init; }
     [Inject]
     public UserActionService userActionService { get; set; }
+    [Inject]
+    public IDispatcher Dispatcher{ get; set; }
 
     public FluentValidationValidator fluentValidationValidator;
 

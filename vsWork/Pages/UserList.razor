@@ -20,9 +20,13 @@
 @code {
     [Inject]
     private IRepository<User, string> userRepository { get; set; }
-    [Inject]
-    private IDispatcher Dispatcher { get; set; }
 
+
+    private void AddUserAct()
+    {
+        var action = new vsWork.Store.SettingUserUseCase.UserSelectAction(selectedUser);
+        Dispatcher.Dispatch(action);
+    }
 
     private List<User> userList = new List<User>();
     private User selectedUser;
@@ -37,15 +41,13 @@
     }
     private void OnClickAdd()
     {
-        var action = new vsWork.Store.SettingUserUseCase.UserSelectAction(selectedUser);
-        Dispatcher.Dispatch(action);
-        Navigation.NavigateTo("addUser");
+        AddUserAct();
+        Navigation.NavigateTo("userSetting_old");
     }
     private void OnClickUpdate()
     {
-        var action = new vsWork.Store.SettingUserUseCase.UserSelectAction(selectedUser);
-        Dispatcher.Dispatch(action);
-        Navigation.NavigateTo("userSetting");
+        AddUserAct();
+        Navigation.NavigateTo("userSetting_old");
     }
     private void OnClickDelete()
     {

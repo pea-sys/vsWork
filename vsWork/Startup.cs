@@ -21,6 +21,8 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Fluxor;
 using Blazored.Toast;
+using Blazored.LocalStorage;
+using Blazored.Modal;
 
 namespace vsWork
 {
@@ -69,9 +71,15 @@ namespace vsWork
             sp.GetRequiredService<IRepository<Attendance,string>>(),
             sp.GetRequiredService<IRepository<Organization, string>>()));
 
-            // Add the following
             services.AddFluxor(options => options.ScanAssemblies(typeof(Startup).Assembly));
             services.AddBlazoredToast();
+
+            services.AddBlazoredLocalStorage(config =>
+            {
+                config.JsonSerializerOptions.WriteIndented = true;
+            });
+
+            services.AddBlazoredModal();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,20 +1,17 @@
-﻿@page "/userSetting_old"
-@using vsWork.Data;
-@using vsWork.Store.SettingUserUseCase;
-@using Blazored.FluentValidation;
-@using Fluxor;
-@using Microsoft.AspNetCore.Components;
-
+﻿@page "/userSetting"
 @inherits vsWork.Shared.BasePage
+@using Fluxor
+@using vsWork.Features.UserSetting.Store
+@using vsWork.Shared
 
 <Container Fluid="true">
-    <EditForm Model="@settingUser" OnValidSubmit="OnValidRegist">
+    <EditForm Model="@settingUser" OnValidSubmit="OnClickRegist">
         <FluentValidationValidator @ref="fluentValidationValidator " />
         <DataAnnotationsValidator />
         <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
         <div class="form-group">
             <label for="id">UserID(3文字以上100文字以下)</label>
-            <input type="text" name="id" @bind-value="settingUser.UserId" maxlength="100" class="form-control" />
+            <input type="text" name="id" @bind-value="settingUser.UserId" disabled=@(UserSettingState.Value.Mode==UserSettingMode.Update) maxlength="100" class="form-control" />
         </div>
         <div class="form-group">
             <label for="id">UserName(3文字以上100文字以下)</label>
@@ -28,25 +25,20 @@
 
     </EditForm>
 </Container>
-@code {
 
+@code {
     [Inject]
-    private IState<vsWork.Store.SettingUserUseCase.UserState> SettingUserState { get; set; }
+    private IState<UserSettingState> UserSettingState { get; set; }
 
     private User settingUser = new User();
     protected override void OnInitialized()
     {
-        settingUser = SettingUserState.Value.SettingUser;
+        settingUser = Utility.DeepCopy(UserSettingState.Value.SelectedUser);
         base.OnInitialized();
     }
 
-    /// <summary>
-    /// 登録押下処理
-    /// </summary>
-    private async Task OnValidRegist()
+    private async Task OnClickRegist()
     {
-        var action = new vsWork.Store.SettingUserUseCase.UserUpdateAction(settingUser);
-        Dispatcher.Dispatch(action);
-        Navigation.NavigateTo("top");
+        Dispatcher.Dispatch(new UserSettingSettingUserAction(settingUser));
     }
 }

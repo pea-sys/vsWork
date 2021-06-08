@@ -1,5 +1,6 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using Blazored.Toast.Services
+@using vsWork.Features.UserSetting.Store
 @using vsWork.Store.SettingUserUseCase
 
 
@@ -8,14 +9,23 @@
 @code {
     protected override void OnInitialized()
     {
-        SubscribeToAction<UserUpdateSuccessAction>(ShowUserUpdateSuccessToast);
 
-
+        SubscribeToAction<UserSettingLoadUsersSuccessAction>(ShowUserSettingLoadUsersSuccessToast);
+        SubscribeToAction<UserSettingSettingUserSuccessAction>(ShowUserSettingSettingUserSuccessToast);
+        SubscribeToAction<UserSettingSettingUserFailureAction>(ShowUserSettingSettingUserFailureToast);
         base.OnInitialized();
     }
 
-    private void ShowUserUpdateSuccessToast(UserUpdateSuccessAction action)
+    private void ShowUserSettingLoadUsersSuccessToast(UserSettingLoadUsersSuccessAction action)
     {
-        toastService.ShowSuccess("UserUpdate Success!");
+        toastService.ShowSuccess("LoadUsers Success!");
+    }
+    private void ShowUserSettingSettingUserSuccessToast(UserSettingSettingUserSuccessAction action)
+    {
+        toastService.ShowSuccess("SettingUser Success!");
+    }
+    private void ShowUserSettingSettingUserFailureToast(UserSettingSettingUserFailureAction action)
+    {
+        toastService.ShowError("SettingUser Failure!");
     }
 }

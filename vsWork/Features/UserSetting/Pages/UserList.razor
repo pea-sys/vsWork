@@ -1,0 +1,70 @@
+﻿@page "/userList"
+@inherits vsWork.Shared.BasePage
+@using Fluxor
+@using vsWork.Features.UserSetting.Store
+@using vsWork.Shared
+
+
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <DataGrid TItem="User"
+              Data=@(_users)
+              @bind-SelectedRow="@_selectedUser" PageSize=@maxRow>
+        <DataGridColumn TItem="User" Field="@nameof(User.UserId)" Caption="ユーザーID" Sortable="false" />
+        <DataGridColumn TItem="User" Field="@nameof(User.UserName)" Caption="ユーザー名称" Editable="true" />
+    </DataGrid>
+    <Button Color="Color.Primary" @onclick="@(OnClickAddButton)">新規登録</Button>
+    <Button Color="Color.Secondary" Disabled="@(_selectedUser == null)" @onclick="@(OnClickUpdateButton)">更新</Button>
+    <Button Color="Color.Danger" Disabled="@(_selectedUser == null)" @onclick="@(OnClickDeleteButton)">削除</Button>
+}
+@code {
+    [Inject]
+    private IState<UserSettingState> UserSettingState{ get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    private const int maxRow = 10;
+    private int pageCount = 1;
+
+    private User[] _users => UserSettingState.Value.Users;
+    private User _selectedUser;
+    private bool _loading => UserSettingState.Value.Loading;
+    private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
+
+    protected override void OnInitialized()
+    {
+        if (UserSettingState.Value.Initialized == false)
+        {
+            Dispatcher.Dispatch(new UserSettingLoadUsersAction());
+        }
+        base.OnInitialized();
+    }
+
+    private async Task OnClickAddButton()
+    {
+        Dispatcher.Dispatch(new UserSettingSettingUserBeginAction(new User(),UserSettingMode.Add));
+    }
+    private async Task OnClickUpdateButton()
+    {
+        Dispatcher.Dispatch(new UserSettingSettingUserBeginAction(_selectedUser, UserSettingMode.Update));
+    }
+    private async Task OnClickDeleteButton()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(DisplayMessage.Message), _selectedUser.UserName + "を削除しますか？");
+        var options = new ModalOptions { HideCloseButton = true };
+        var messageForm = Modal.Show<DisplayMessage>("確認", parameters, options);
+        var result = await messageForm.Result;
+        if (!result.Cancelled)
+        {
+            Dispatcher.Dispatch(new UserSettingSettingUserBeginAction(_selectedUser, UserSettingMode.Delete));
+            Dispatcher.Dispatch(new UserSettingSettingUserAction(_selectedUser));
+        }
+    }
+}
