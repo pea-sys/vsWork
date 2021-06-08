@@ -62,7 +62,8 @@ namespace vsWork.Features.UserSetting.Store
             {
                 return state with
                 {
-                    Loading = true
+                    Loading = true,
+                    Mode = UserSettingMode.None
                 };
             }
 
@@ -94,7 +95,6 @@ namespace vsWork.Features.UserSetting.Store
                 return state with
                 {
                     SelectedUser = null,
-                    Mode = UserSettingMode.None
                 };
             }
             [ReducerMethod]
@@ -139,7 +139,16 @@ namespace vsWork.Features.UserSetting.Store
         [EffectMethod(typeof(UserSettingSettingUserBeginAction))]
         public async Task SettingUserBegin(IDispatcher dispatcher)
         {
-            _navigationManager.NavigateTo("userSetting");
+            if (UserSettingState.Value.Mode == UserSettingMode.Add |
+                UserSettingState.Value.Mode == UserSettingMode.Update)
+            {
+                _navigationManager.NavigateTo("userSetting");
+            }
+            else
+            {
+                dispatcher.Dispatch(new UserSettingSettingUserAction(UserSettingState.Value.SelectedUser));
+            }
+            
         }
         [EffectMethod(typeof(UserSettingSettingUserAction))]
         public async Task SettingUser(IDispatcher dispatcher)
@@ -170,8 +179,12 @@ namespace vsWork.Features.UserSetting.Store
         [EffectMethod(typeof(UserSettingSettingUserSuccessAction))]
         public async Task SettingSuccess(IDispatcher dispatcher)
         {
+            if (UserSettingState.Value.Mode == UserSettingMode.Add |
+                UserSettingState.Value.Mode == UserSettingMode.Update)
+            {
+                _navigationManager.NavigateTo("userList");
+            }
             dispatcher.Dispatch(new UserSettingLoadUsersAction());
-            _navigationManager.NavigateTo("userList");
         }
 
         [EffectMethod]
@@ -216,7 +229,9 @@ namespace vsWork.Features.UserSetting.Store
                 {
                     Initialized = false,
                     Loading = false,
-                    Users = Array.Empty<User>()
+                    Users = Array.Empty<User>(),
+                    Mode = UserSettingMode.None
+                    
                 }));
                 dispatcher.Dispatch(new UserSettingClearStateSuccessAction());
             }
