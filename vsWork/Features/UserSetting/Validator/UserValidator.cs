@@ -6,6 +6,7 @@ using FluentValidation;
 using Fluxor;
 using vsWork.Data;
 using vsWork.Features.UserSetting.Store;
+using vsWork.Features.Shared.Store;
 
 namespace vsWork.Features.UserSetting.Validator
 {
@@ -15,19 +16,19 @@ namespace vsWork.Features.UserSetting.Validator
         /// ユーザリポジトリ
         /// </summary>
         private readonly IRepository<User, string> _userRepository;
-        private readonly IState<UserSettingState> _userSettingState;
+        private readonly IState<SettingState<User>> _userSettingState;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="userRepository">ユーザリポジトリ</param>
         /// <param name="UserSettingState">ユーザー設定状態</param>
-        public UserValidator(IRepository<User, string> userRepository, IState<UserSettingState> userSettingState)
+        public UserValidator(IRepository<User, string> userRepository, IState<SettingState<User>> userSettingState)
         {
             _userRepository = userRepository;
             _userSettingState = userSettingState;
 
-            if (_userSettingState.Value.Mode == UserSettingMode.Add)
+            if (_userSettingState.Value.Mode == SettingMode.Add)
             {
                 RuleFor(x => x.UserId).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("ユーザIDを入力してください。")
@@ -45,7 +46,7 @@ namespace vsWork.Features.UserSetting.Validator
                 .NotEmpty().WithMessage("パスワードを入力してください。")
                 .Length(3, 100).WithMessage("パスワードは3文字以上100文字以下にしてください。");
             }
-            else if (userSettingState.Value.Mode == UserSettingMode.Update)
+            else if (userSettingState.Value.Mode ==SettingMode.Update)
             {
                 RuleFor(x => x.UserName).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("ユーザ名称を入力してください。")

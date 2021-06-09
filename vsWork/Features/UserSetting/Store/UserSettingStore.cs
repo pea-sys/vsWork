@@ -6,99 +6,86 @@ using vsWork.Data;
 using Fluxor;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using vsWork.Features.Shared.Store;
 
 namespace vsWork.Features.UserSetting.Store
 {
-    public record UserSettingState
-    {
-        public bool Initialized { get; init; }
-        public bool Loading { get; init; }
-        public User[] Users { get; init; }
-        public User SelectedUser { get; set; }
-        public UserSettingMode Mode { get; set; }
-    }
-    public enum UserSettingMode
-    {
-        None,
-        Add,
-        Update,
-        Delete
-    }
+
     
     public class UserSettingStore
     {
-        public class UserSettingFeature : Feature<UserSettingState>
+        public class UserSettingFeature : Feature<SettingState<User>>
         {
             public override string GetName() => "UserSetting";
 
-            protected override UserSettingState GetInitialState()
+            protected override SettingState<User> GetInitialState()
             {
-                return new UserSettingState
+                return new SettingState<User>
                 {
                     Initialized = false,
                     Loading = false,
-                    Users = Array.Empty<User>(),
-                    SelectedUser = null,
-                    Mode = UserSettingMode.None
+                    ListData = Array.Empty<User>(),
+                    SelectedData = null,
+                    Mode = SettingMode.None
                 };
             }
         }
         public static class UserSettingReducers
         {
             [ReducerMethod]
-            public static UserSettingState OnSetUsers(UserSettingState state, UserSettingSetUsersAction action)
+            public static SettingState<User> OnSetUsers(SettingState<User> state, SetListDataAction action)
             {
                 return state with
                 {
-                    Users = action.Users,
+                    ListData = (User[])action.ListData,
                     Loading = false,
                     Initialized = true,
-                    SelectedUser = null
+                    SelectedData = null
                 };
             }
 
-            [ReducerMethod(typeof(UserSettingLoadUsersAction))]
-            public static UserSettingState OnLoadUsers(UserSettingState state)
+            [ReducerMethod(typeof(LoadListDataAction))]
+            public static SettingState<IEntity> OnLoadLoadList(SettingState<IEntity> state)
             {
                 return state with
                 {
                     Loading = true,
-                    Mode = UserSettingMode.None
+                    Mode = SettingMode.None
                 };
             }
 
             [ReducerMethod]
-            public static UserSettingState OnUserSettingSetState(UserSettingState state, UserSettingSetStateAction action)
+            public static SettingState<IEntity> OnUserSettingSetState(SettingState<IEntity> state, SetStateAction action)
             {
-                return action.UserSettingState;
+                return action.State;
             }
             [ReducerMethod]
-            public static UserSettingState OnSettingUserBegin(UserSettingState state , UserSettingSettingUserBeginAction action)
+            public static SettingState<User> OnSettingBegin(SettingState<User> state , SettingBeginAction action)
             {
                 return state with
                 {
-                    SelectedUser = action.User,
+                    SelectedData = (User)action.SelectedData,
                     Mode = action.Mode
                 };
             }
             [ReducerMethod]
-            public static UserSettingState OnSettingUser(UserSettingState state , UserSettingSettingUserAction action)
+            public static SettingState<IEntity> OnSettingUser(SettingState<IEntity> state , SettingAction action)
             {
                 return state with
                 {
-                    SelectedUser = action.User
+                    SelectedData = action.SelectedData
                 };
             }
             [ReducerMethod]
-            public static UserSettingState OnSettingUserSuccess(UserSettingState state, UserSettingSettingUserSuccessAction action)
+            public static SettingState<IEntity> OnSettingUserSuccess(SettingState<IEntity> state, SettingSuccessAction action)
             {
                 return state with
                 {
-                    SelectedUser = null,
+                    SelectedData = null,
                 };
             }
             [ReducerMethod]
-            public static UserSettingState OnSettingUserFailure(UserSettingState state, UserSettingSettingUserFailureAction action)
+            public static SettingState<IEntity> OnSettingUserFailure(SettingState<IEntity> state, SettingFailureAction action)
             {
                 return state with
                 {
@@ -111,157 +98,158 @@ namespace vsWork.Features.UserSetting.Store
     public class UserSettingEffects
     {
 
-        private readonly IState<UserSettingState> UserSettingState;
+        private readonly IState<SettingState<User>> SettingState;
         private readonly IRepository<User,string> _userRepositoryService;
         private readonly ILocalStorageService _localStorageService;
         private readonly NavigationManager _navigationManager;
-        private const string UserSettingStatePersistenceName = "UserSettingState";
+        private const string StatePersistenceName = "UserSettingState";
 
         public UserSettingEffects
-        (IState<UserSettingState> userSettingState,
+        (IState<SettingState<User>> settingState,
         IRepository<User,string> userRepositoryService,
         ILocalStorageService localStorageService,
         NavigationManager navigationManager)
         {
-            UserSettingState = userSettingState;
+            SettingState = settingState;
             _userRepositoryService = userRepositoryService;
             _localStorageService = localStorageService;
             _navigationManager = navigationManager;
         }
 
-        [EffectMethod(typeof(UserSettingLoadUsersAction))]
-        public async Task LoadUsers(IDispatcher dispatcher)
+        [EffectMethod(typeof(LoadListDataAction))]
+        public async Task LoadListData(IDispatcher dispatcher)
         {
             User[] users = _userRepositoryService.FindAll().ToArray();
-            dispatcher.Dispatch(new UserSettingSetUsersAction(users));
-            dispatcher.Dispatch(new UserSettingLoadUsersSuccessAction());            
+            dispatcher.Dispatch(new SetListDataAction(users));
+            dispatcher.Dispatch(new LoadListDataSuccessAction());            
         }
-        [EffectMethod(typeof(UserSettingSettingUserBeginAction))]
-        public async Task SettingUserBegin(IDispatcher dispatcher)
+        [EffectMethod(typeof(SettingBeginAction))]
+        public async Task SettingBegin(IDispatcher dispatcher)
         {
-            if (UserSettingState.Value.Mode == UserSettingMode.Add |
-                UserSettingState.Value.Mode == UserSettingMode.Update)
+            if (SettingState.Value.Mode == SettingMode.Add |
+                SettingState.Value.Mode == SettingMode.Update)
             {
                 _navigationManager.NavigateTo("userSetting");
             }
             else
             {
-                dispatcher.Dispatch(new UserSettingSettingUserAction(UserSettingState.Value.SelectedUser));
+                dispatcher.Dispatch(new SettingAction(SettingState.Value.SelectedData));
             }
             
         }
-        [EffectMethod(typeof(UserSettingSettingUserAction))]
-        public async Task SettingUser(IDispatcher dispatcher)
+        [EffectMethod(typeof(SettingAction))]
+        public async Task Setting(IDispatcher dispatcher)
         {
             try
             {
-                if (UserSettingState.Value.Mode == UserSettingMode.Add)
+                if (SettingState.Value.Mode == SettingMode.Add)
                 {
-                    _userRepositoryService.Add(UserSettingState.Value.SelectedUser);
-                    dispatcher.Dispatch(new UserSettingSettingUserSuccessAction());
+                    _userRepositoryService.Add(SettingState.Value.SelectedData);
+                    dispatcher.Dispatch(new SettingSuccessAction());
                 }
-                else if (UserSettingState.Value.Mode == UserSettingMode.Update)
+                else if (SettingState.Value.Mode == SettingMode.Update)
                 {
-                    _userRepositoryService.Update(UserSettingState.Value.SelectedUser);
-                    dispatcher.Dispatch(new UserSettingSettingUserSuccessAction());
+                    _userRepositoryService.Update(SettingState.Value.SelectedData);
+                    dispatcher.Dispatch(new SettingSuccessAction());
                 }
-                else if (UserSettingState.Value.Mode == UserSettingMode.Delete)
+                else if (SettingState.Value.Mode == SettingMode.Delete)
                 {
-                    _userRepositoryService.Remove(UserSettingState.Value.SelectedUser.UserId);
-                    dispatcher.Dispatch(new UserSettingSettingUserSuccessAction());
+                    _userRepositoryService.Remove(SettingState.Value.SelectedData.UserId);
+                    dispatcher.Dispatch(new SettingSuccessAction());
                 }
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new UserSettingSettingUserFailureAction(ex.Message));
+                dispatcher.Dispatch(new SettingFailureAction(ex.Message));
             }
         }
-        [EffectMethod(typeof(UserSettingSettingUserSuccessAction))]
+        [EffectMethod(typeof(SettingSuccessAction))]
         public async Task SettingSuccess(IDispatcher dispatcher)
         {
-            if (UserSettingState.Value.Mode == UserSettingMode.Add |
-                UserSettingState.Value.Mode == UserSettingMode.Update)
+            if (SettingState.Value.Mode == SettingMode.Add |
+                SettingState.Value.Mode == SettingMode.Update)
             {
                 _navigationManager.NavigateTo("userList");
             }
-            dispatcher.Dispatch(new UserSettingLoadUsersAction());
+            dispatcher.Dispatch(new LoadListDataAction());
         }
 
         [EffectMethod]
-        public async Task PersistState(UserSettingStateAction action, IDispatcher dispatcher)
+        public async Task PersistState(StateAction action, IDispatcher dispatcher)
         {
             try
             {
-                await _localStorageService.SetItemAsync(UserSettingStatePersistenceName, action.UserSettingState);
-                dispatcher.Dispatch(new UserSettingPersistStateSuccessAction());
+                await _localStorageService.SetItemAsync(StatePersistenceName, action.State);
+                dispatcher.Dispatch(new PersistStateSuccessAction());
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new UserSettingPersistStateFailureAction(ex.Message));
+                dispatcher.Dispatch(new PersistStateFailureAction(ex.Message));
             }
         }
 
-        [EffectMethod(typeof(UserSettingLoadStateAction))]
+        [EffectMethod(typeof(LoadStateAction))]
         public async Task LoadState(IDispatcher dispatcher)
         {
             try
             {
-                var userSettingState = await _localStorageService.GetItemAsync<UserSettingState>(UserSettingStatePersistenceName);
+                var userSettingState = await _localStorageService.GetItemAsync<SettingState<IEntity>>(StatePersistenceName);
                 if (userSettingState is not null)
                 {
-                    dispatcher.Dispatch(new UserSettingSetStateAction(userSettingState));
-                    dispatcher.Dispatch(new UserSettingLoadStateSuccessAction());
+                    dispatcher.Dispatch(new SetStateAction(userSettingState));
+                    dispatcher.Dispatch(new LoadStateSuccessAction());
                 }
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new UserSettingLoadStateFailureAction(ex.Message));
+                dispatcher.Dispatch(new LoadStateFailureAction(ex.Message));
             }
         }
 
-        [EffectMethod(typeof(UserSettingClearStateAction))]
+        [EffectMethod(typeof(ClearStateAction))]
         public async Task ClearState(IDispatcher dispatcher)
         {
             try
             {
-                await _localStorageService.RemoveItemAsync(UserSettingStatePersistenceName);
-                dispatcher.Dispatch(new UserSettingSetStateAction(new UserSettingState
+                await _localStorageService.RemoveItemAsync(StatePersistenceName);
+                dispatcher.Dispatch(new SetStateAction(new SettingState<IEntity>
                 {
                     Initialized = false,
                     Loading = false,
-                    Users = Array.Empty<User>(),
-                    Mode = UserSettingMode.None
-                    
-                }));
-                dispatcher.Dispatch(new UserSettingClearStateSuccessAction());
+                    ListData = Array.Empty<IEntity>(),
+                    SelectedData = null,
+                    Mode = SettingMode.None
+
+                })); ;
+                dispatcher.Dispatch(new ClearStateSuccessAction());
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new UserSettingClearStateFailureAction(ex.Message));
+                dispatcher.Dispatch(new ClearStateFailureAction(ex.Message));
             }
         }
     }
 
     #region Actions
-    public record UserSettingLoadUsersAction();
-    public record UserSettingLoadUsersSuccessAction();
-    public record UserSettingSetUsersAction(User[] Users);
-    public record UserSettingSetStateAction(UserSettingState UserSettingState);
-    public record UserSettingLoadStateAction();
-    public record UserSettingLoadStateSuccessAction();
-    public record UserSettingLoadStateFailureAction(string ErrorMessage);
-    public record UserSettingStateAction(UserSettingState UserSettingState);
+    public record LoadListDataAction();
+    public record LoadListDataSuccessAction();
+    public record SetListDataAction(IEntity[] ListData);
+    public record SetStateAction(SettingState<IEntity> State);
+    public record LoadStateAction();
+    public record LoadStateSuccessAction();
+    public record LoadStateFailureAction(string ErrorMessage);
+    public record StateAction(SettingState<IEntity> State);
 
-    public record UserSettingPersistStateAction(UserSettingState UserSettingState);
-    public record UserSettingPersistStateSuccessAction();
-    public record UserSettingPersistStateFailureAction(string ErrorMessage);
-    public record UserSettingClearStateAction();
-    public record UserSettingClearStateSuccessAction();
-    public record UserSettingClearStateFailureAction(string ErrorMessage);
+    public record PersistStateAction(SettingState<IEntity> State);
+    public record PersistStateSuccessAction();
+    public record PersistStateFailureAction(string ErrorMessage);
+    public record ClearStateAction();
+    public record ClearStateSuccessAction();
+    public record ClearStateFailureAction(string ErrorMessage);
 
-    public record UserSettingSettingUserBeginAction(User User, UserSettingMode Mode);
-    public record UserSettingSettingUserAction(User User);
-    public record UserSettingSettingUserSuccessAction();
-    public record UserSettingSettingUserFailureAction(string ErrorMessage);
+    public record SettingBeginAction(IEntity SelectedData, SettingMode Mode);
+    public record SettingAction(IEntity SelectedData);
+    public record SettingSuccessAction();
+    public record SettingFailureAction(string ErrorMessage);
     #endregion
 }

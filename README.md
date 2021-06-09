@@ -16,8 +16,11 @@ Blazorの前提知識となりそうなASP.NETも経験がないため、
 * Dapper
 * NpgSQL
 * FluentValidation
+* Blazored.Modal
+* Blazored.Toast
 * Blazorize  
 * Blazorise.DataGrid  
+* Fluxor
 ※ Postgresのコネクションはユーザーシークレットで管理
 
 ### データベース

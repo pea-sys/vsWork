@@ -76,14 +76,7 @@ namespace vsWork.Services
                 this.circuitId = string.Empty;
             }
         }
-        /// <summary>
-        /// サインアップ
-        /// </summary>
-        /// <param name="user">登録情報</param>
-        public void SignUp(SignUpUser user)
-        {
-            
-        }
+
         /// <summary>
         /// サインイン
         /// </summary>

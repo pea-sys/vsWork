@@ -10,21 +10,21 @@
     protected override void OnInitialized()
     {
 
-        SubscribeToAction<UserSettingLoadUsersSuccessAction>(ShowUserSettingLoadUsersSuccessToast);
-        SubscribeToAction<UserSettingSettingUserSuccessAction>(ShowUserSettingSettingUserSuccessToast);
-        SubscribeToAction<UserSettingSettingUserFailureAction>(ShowUserSettingSettingUserFailureToast);
+        SubscribeToAction<LoadListDataSuccessAction>(ShowUserSettingLoadUsersSuccessToast);
+        SubscribeToAction<SettingSuccessAction>(ShowUserSettingSettingUserSuccessToast);
+        SubscribeToAction<SettingFailureAction>(ShowUserSettingSettingUserFailureToast);
         base.OnInitialized();
     }
 
-    private void ShowUserSettingLoadUsersSuccessToast(UserSettingLoadUsersSuccessAction action)
+    private void ShowUserSettingLoadUsersSuccessToast(LoadListDataSuccessAction action)
     {
         toastService.ShowSuccess("LoadUsers Success!");
     }
-    private void ShowUserSettingSettingUserSuccessToast(UserSettingSettingUserSuccessAction action)
+    private void ShowUserSettingSettingUserSuccessToast(SettingSuccessAction action)
     {
         toastService.ShowSuccess("SettingUser Success!");
     }
-    private void ShowUserSettingSettingUserFailureToast(UserSettingSettingUserFailureAction action)
+    private void ShowUserSettingSettingUserFailureToast(SettingFailureAction action)
     {
         toastService.ShowError("SettingUser Failure!");
     }

@@ -2,6 +2,7 @@
 @inherits vsWork.Shared.BasePage
 @using Fluxor
 @using vsWork.Features.UserSetting.Store
+@using vsWork.Features.Shared.Store
 @using vsWork.Shared
 
 <Container Fluid="true">
@@ -11,7 +12,7 @@
         <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
         <div class="form-group">
             <label for="id">UserID(3文字以上100文字以下)</label>
-            <input type="text" name="id" @bind-value="settingUser.UserId" disabled=@(UserSettingState.Value.Mode==UserSettingMode.Update) maxlength="100" class="form-control" />
+            <input type="text" name="id" @bind-value="settingUser.UserId" disabled=@(UserSettingState.Value.Mode==SettingMode.Update) maxlength="100" class="form-control" />
         </div>
         <div class="form-group">
             <label for="id">UserName(3文字以上100文字以下)</label>
@@ -28,17 +29,17 @@
 
 @code {
     [Inject]
-    private IState<UserSettingState> UserSettingState { get; set; }
+    private IState<SettingState<User>> UserSettingState { get; set; }
 
     private User settingUser = new User();
     protected override void OnInitialized()
     {
-        settingUser = Utility.DeepCopy(UserSettingState.Value.SelectedUser);
+        settingUser = Utility.DeepCopy(UserSettingState.Value.SelectedData);
         base.OnInitialized();
     }
 
     private async Task OnClickRegist()
     {
-        Dispatcher.Dispatch(new UserSettingSettingUserAction(settingUser));
+        Dispatcher.Dispatch(new SettingAction(settingUser));
     }
 }
