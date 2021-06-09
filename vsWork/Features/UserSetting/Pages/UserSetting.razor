@@ -6,21 +6,21 @@
 @using vsWork.Shared
 
 <Container Fluid="true">
-    <EditForm Model="@settingUser" OnValidSubmit="OnClickRegist">
+    <EditForm Model="@settingData" OnValidSubmit="OnClickRegist">
         <FluentValidationValidator @ref="fluentValidationValidator " />
         <DataAnnotationsValidator />
         <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
         <div class="form-group">
             <label for="id">UserID(3文字以上100文字以下)</label>
-            <input type="text" name="id" @bind-value="settingUser.UserId" disabled=@(UserSettingState.Value.Mode==SettingMode.Update) maxlength="100" class="form-control" />
+            <input type="text" name="id" @bind-value="settingData.UserId" disabled=@(SettingState.Value.Mode==SettingMode.Update) maxlength="100" class="form-control" />
         </div>
         <div class="form-group">
             <label for="id">UserName(3文字以上100文字以下)</label>
-            <input type="text" name="id" @bind-value="settingUser.UserName" maxlength="100" class="form-control" />
+            <input type="text" name="id" @bind-value="settingData.UserName" maxlength="100" class="form-control" />
         </div>
         <div class="form-group">
             <label for="pass">Password(3文字以上100文字以下)</label>
-            <input type="password" name="pass" @bind-value="settingUser.Password" maxlength="100" class="form-control" />
+            <input type="password" name="pass" @bind-value="settingData.Password" maxlength="100" class="form-control" />
         </div>
         <button class="btn btn-primary" type="submit">登録</button>
 
@@ -29,17 +29,17 @@
 
 @code {
     [Inject]
-    private IState<SettingState<User>> UserSettingState { get; set; }
+    private IState<SettingState<User>> SettingState { get; set; }
 
-    private User settingUser = new User();
+    private User settingData = new User();
     protected override void OnInitialized()
     {
-        settingUser = Utility.DeepCopy(UserSettingState.Value.SelectedData);
+        settingData = SettingState.Value.SelectedData;
         base.OnInitialized();
     }
 
     private async Task OnClickRegist()
     {
-        Dispatcher.Dispatch(new SettingAction(settingUser));
+        Dispatcher.Dispatch(new SettingAction(settingData));
     }
 }

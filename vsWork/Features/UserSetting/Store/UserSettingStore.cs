@@ -37,7 +37,7 @@ namespace vsWork.Features.UserSetting.Store
             {
                 return state with
                 {
-                    ListData = (User[])action.ListData,
+                    ListData = (User[])(action.ListData),
                     Loading = false,
                     Initialized = true,
                     SelectedData = null
@@ -55,7 +55,7 @@ namespace vsWork.Features.UserSetting.Store
             }
 
             [ReducerMethod]
-            public static SettingState<IEntity> OnUserSettingSetState(SettingState<IEntity> state, SetStateAction action)
+            public static SettingState<User> OnUserSettingSetState(SettingState<User> state, SetStateAction action)
             {
                 return action.State;
             }
@@ -64,7 +64,7 @@ namespace vsWork.Features.UserSetting.Store
             {
                 return state with
                 {
-                    SelectedData = (User)action.SelectedData,
+                    SelectedData = action.SelectedData,
                     Mode = action.Mode
                 };
             }
@@ -131,7 +131,7 @@ namespace vsWork.Features.UserSetting.Store
             {
                 _navigationManager.NavigateTo("userSetting");
             }
-            else
+            else if (SettingState.Value.Mode == SettingMode.Delete)
             {
                 dispatcher.Dispatch(new SettingAction(SettingState.Value.SelectedData));
             }
@@ -193,7 +193,7 @@ namespace vsWork.Features.UserSetting.Store
         {
             try
             {
-                var userSettingState = await _localStorageService.GetItemAsync<SettingState<IEntity>>(StatePersistenceName);
+                var userSettingState = await _localStorageService.GetItemAsync<SettingState<User>>(StatePersistenceName);
                 if (userSettingState is not null)
                 {
                     dispatcher.Dispatch(new SetStateAction(userSettingState));
@@ -212,11 +212,11 @@ namespace vsWork.Features.UserSetting.Store
             try
             {
                 await _localStorageService.RemoveItemAsync(StatePersistenceName);
-                dispatcher.Dispatch(new SetStateAction(new SettingState<IEntity>
+                dispatcher.Dispatch(new SetStateAction(new SettingState<User>
                 {
                     Initialized = false,
                     Loading = false,
-                    ListData = Array.Empty<IEntity>(),
+                    ListData = Array.Empty<User>(),
                     SelectedData = null,
                     Mode = SettingMode.None
 
@@ -233,22 +233,22 @@ namespace vsWork.Features.UserSetting.Store
     #region Actions
     public record LoadListDataAction();
     public record LoadListDataSuccessAction();
-    public record SetListDataAction(IEntity[] ListData);
-    public record SetStateAction(SettingState<IEntity> State);
+    public record SetListDataAction(User[] ListData);
+    public record SetStateAction(SettingState<User> State);
     public record LoadStateAction();
     public record LoadStateSuccessAction();
     public record LoadStateFailureAction(string ErrorMessage);
-    public record StateAction(SettingState<IEntity> State);
+    public record StateAction(SettingState<User> State);
 
-    public record PersistStateAction(SettingState<IEntity> State);
+    public record PersistStateAction(SettingState<User> State);
     public record PersistStateSuccessAction();
     public record PersistStateFailureAction(string ErrorMessage);
     public record ClearStateAction();
     public record ClearStateSuccessAction();
     public record ClearStateFailureAction(string ErrorMessage);
 
-    public record SettingBeginAction(IEntity SelectedData, SettingMode Mode);
-    public record SettingAction(IEntity SelectedData);
+    public record SettingBeginAction(User SelectedData, SettingMode Mode);
+    public record SettingAction(User SelectedData);
     public record SettingSuccessAction();
     public record SettingFailureAction(string ErrorMessage);
     #endregion

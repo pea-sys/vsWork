@@ -1,7 +1,6 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using Blazored.Toast.Services
 @using vsWork.Features.UserSetting.Store
-@using vsWork.Store.SettingUserUseCase
 
 
 @inject IToastService toastService
@@ -10,22 +9,22 @@
     protected override void OnInitialized()
     {
 
-        SubscribeToAction<LoadListDataSuccessAction>(ShowUserSettingLoadUsersSuccessToast);
-        SubscribeToAction<SettingSuccessAction>(ShowUserSettingSettingUserSuccessToast);
-        SubscribeToAction<SettingFailureAction>(ShowUserSettingSettingUserFailureToast);
+        SubscribeToAction<LoadListDataSuccessAction>(ShowLoadListDataSuccessToast);
+        SubscribeToAction<SettingSuccessAction>(ShowSettingSuccessToast);
+        SubscribeToAction<SettingFailureAction>(ShowSettingFailureToast);
         base.OnInitialized();
     }
 
-    private void ShowUserSettingLoadUsersSuccessToast(LoadListDataSuccessAction action)
+    private void ShowLoadListDataSuccessToast(LoadListDataSuccessAction action)
     {
-        toastService.ShowSuccess("LoadUsers Success!");
+        toastService.ShowSuccess("LoadListData Success!");
     }
-    private void ShowUserSettingSettingUserSuccessToast(SettingSuccessAction action)
+    private void ShowSettingSuccessToast(SettingSuccessAction action)
     {
-        toastService.ShowSuccess("SettingUser Success!");
+        toastService.ShowSuccess("Setting Success!");
     }
-    private void ShowUserSettingSettingUserFailureToast(SettingFailureAction action)
+    private void ShowSettingFailureToast(SettingFailureAction action)
     {
-        toastService.ShowError("SettingUser Failure!");
+        toastService.ShowError("Setting Failure!");
     }
 }
