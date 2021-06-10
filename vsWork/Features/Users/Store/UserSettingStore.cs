@@ -33,7 +33,7 @@ namespace vsWork.Features.UserSetting.Store
         public static class UserSettingReducers
         {
             [ReducerMethod]
-            public static SettingState<User> OnSetUsers(SettingState<User> state, SetListDataAction action)
+            public static SettingState<User> OnSetUsers(SettingState<User> state, SetUsersAction action)
             {
                 return state with
                 {
@@ -44,7 +44,7 @@ namespace vsWork.Features.UserSetting.Store
                 };
             }
 
-            [ReducerMethod(typeof(LoadListDataAction))]
+            [ReducerMethod(typeof(LoadUsersAction))]
             public static SettingState<IEntity> OnLoadLoadList(SettingState<IEntity> state)
             {
                 return state with
@@ -55,12 +55,12 @@ namespace vsWork.Features.UserSetting.Store
             }
 
             [ReducerMethod]
-            public static SettingState<User> OnUserSettingSetState(SettingState<User> state, SetStateAction action)
+            public static SettingState<User> OnUserSettingSetState(SettingState<User> state, SetUserStateAction action)
             {
                 return action.State;
             }
             [ReducerMethod]
-            public static SettingState<User> OnSettingBegin(SettingState<User> state , SettingBeginAction action)
+            public static SettingState<User> OnSettingBegin(SettingState<User> state , UserSettingBeginAction action)
             {
                 return state with
                 {
@@ -69,7 +69,7 @@ namespace vsWork.Features.UserSetting.Store
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingUser(SettingState<IEntity> state , SettingAction action)
+            public static SettingState<IEntity> OnSettingUser(SettingState<IEntity> state , UserSettingAction action)
             {
                 return state with
                 {
@@ -77,7 +77,7 @@ namespace vsWork.Features.UserSetting.Store
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingUserSuccess(SettingState<IEntity> state, SettingSuccessAction action)
+            public static SettingState<IEntity> OnSettingUserSuccess(SettingState<IEntity> state, UserSettingSuccessAction action)
             {
                 return state with
                 {
@@ -85,7 +85,7 @@ namespace vsWork.Features.UserSetting.Store
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingUserFailure(SettingState<IEntity> state, SettingFailureAction action)
+            public static SettingState<IEntity> OnSettingUserFailure(SettingState<IEntity> state, UserSettingFailureAction action)
             {
                 return state with
                 {
@@ -116,14 +116,14 @@ namespace vsWork.Features.UserSetting.Store
             _navigationManager = navigationManager;
         }
 
-        [EffectMethod(typeof(LoadListDataAction))]
+        [EffectMethod(typeof(LoadUsersAction))]
         public async Task LoadListData(IDispatcher dispatcher)
         {
             User[] users = _userRepositoryService.FindAll().ToArray();
-            dispatcher.Dispatch(new SetListDataAction(users));
-            dispatcher.Dispatch(new LoadListDataSuccessAction());            
+            dispatcher.Dispatch(new SetUsersAction(users));
+            dispatcher.Dispatch(new LoadUsersSuccessAction());            
         }
-        [EffectMethod(typeof(SettingBeginAction))]
+        [EffectMethod(typeof(UserSettingBeginAction))]
         public async Task SettingBegin(IDispatcher dispatcher)
         {
             if (SettingState.Value.Mode == SettingMode.Add |
@@ -133,11 +133,11 @@ namespace vsWork.Features.UserSetting.Store
             }
             else if (SettingState.Value.Mode == SettingMode.Delete)
             {
-                dispatcher.Dispatch(new SettingAction(SettingState.Value.SelectedData));
+                dispatcher.Dispatch(new UserSettingAction(SettingState.Value.SelectedData));
             }
             
         }
-        [EffectMethod(typeof(SettingAction))]
+        [EffectMethod(typeof(UserSettingAction))]
         public async Task Setting(IDispatcher dispatcher)
         {
             try
@@ -145,25 +145,25 @@ namespace vsWork.Features.UserSetting.Store
                 if (SettingState.Value.Mode == SettingMode.Add)
                 {
                     _userRepositoryService.Add(SettingState.Value.SelectedData);
-                    dispatcher.Dispatch(new SettingSuccessAction());
+                    dispatcher.Dispatch(new UserSettingSuccessAction());
                 }
                 else if (SettingState.Value.Mode == SettingMode.Update)
                 {
                     _userRepositoryService.Update(SettingState.Value.SelectedData);
-                    dispatcher.Dispatch(new SettingSuccessAction());
+                    dispatcher.Dispatch(new UserSettingSuccessAction());
                 }
                 else if (SettingState.Value.Mode == SettingMode.Delete)
                 {
                     _userRepositoryService.Remove(SettingState.Value.SelectedData.UserId);
-                    dispatcher.Dispatch(new SettingSuccessAction());
+                    dispatcher.Dispatch(new UserSettingSuccessAction());
                 }
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new SettingFailureAction(ex.Message));
+                dispatcher.Dispatch(new UserSettingFailureAction(ex.Message));
             }
         }
-        [EffectMethod(typeof(SettingSuccessAction))]
+        [EffectMethod(typeof(UserSettingSuccessAction))]
         public async Task SettingSuccess(IDispatcher dispatcher)
         {
             if (SettingState.Value.Mode == SettingMode.Add |
@@ -171,24 +171,11 @@ namespace vsWork.Features.UserSetting.Store
             {
                 _navigationManager.NavigateTo("userList");
             }
-            dispatcher.Dispatch(new LoadListDataAction());
+            dispatcher.Dispatch(new LoadUsersAction());
         }
 
-        [EffectMethod]
-        public async Task PersistState(StateAction action, IDispatcher dispatcher)
-        {
-            try
-            {
-                await _localStorageService.SetItemAsync(StatePersistenceName, action.State);
-                dispatcher.Dispatch(new PersistStateSuccessAction());
-            }
-            catch (Exception ex)
-            {
-                dispatcher.Dispatch(new PersistStateFailureAction(ex.Message));
-            }
-        }
 
-        [EffectMethod(typeof(LoadStateAction))]
+        [EffectMethod(typeof(SettingUserLoadStateAction))]
         public async Task LoadState(IDispatcher dispatcher)
         {
             try
@@ -196,23 +183,23 @@ namespace vsWork.Features.UserSetting.Store
                 var userSettingState = await _localStorageService.GetItemAsync<SettingState<User>>(StatePersistenceName);
                 if (userSettingState is not null)
                 {
-                    dispatcher.Dispatch(new SetStateAction(userSettingState));
-                    dispatcher.Dispatch(new LoadStateSuccessAction());
+                    dispatcher.Dispatch(new SetUserStateAction(userSettingState));
+                    dispatcher.Dispatch(new LoadUserStateSuccessAction());
                 }
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new LoadStateFailureAction(ex.Message));
+                dispatcher.Dispatch(new LoadUserStateFailureAction(ex.Message));
             }
         }
 
-        [EffectMethod(typeof(ClearStateAction))]
+        [EffectMethod(typeof(ClearUserStateAction))]
         public async Task ClearState(IDispatcher dispatcher)
         {
             try
             {
                 await _localStorageService.RemoveItemAsync(StatePersistenceName);
-                dispatcher.Dispatch(new SetStateAction(new SettingState<User>
+                dispatcher.Dispatch(new SetUserStateAction(new SettingState<User>
                 {
                     Initialized = false,
                     Loading = false,
@@ -221,35 +208,33 @@ namespace vsWork.Features.UserSetting.Store
                     Mode = SettingMode.None
 
                 })); ;
-                dispatcher.Dispatch(new ClearStateSuccessAction());
+                dispatcher.Dispatch(new ClearUserStateSuccessAction());
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new ClearStateFailureAction(ex.Message));
+                dispatcher.Dispatch(new ClearUserStateFailureAction(ex.Message));
             }
         }
     }
 
     #region Actions
-    public record LoadListDataAction();
-    public record LoadListDataSuccessAction();
-    public record SetListDataAction(User[] ListData);
-    public record SetStateAction(SettingState<User> State);
-    public record LoadStateAction();
-    public record LoadStateSuccessAction();
-    public record LoadStateFailureAction(string ErrorMessage);
-    public record StateAction(SettingState<User> State);
+    public record LoadUsersAction();
+    public record LoadUsersSuccessAction();
+    public record SetUsersAction(User[] ListData);
 
-    public record PersistStateAction(SettingState<User> State);
-    public record PersistStateSuccessAction();
-    public record PersistStateFailureAction(string ErrorMessage);
-    public record ClearStateAction();
-    public record ClearStateSuccessAction();
-    public record ClearStateFailureAction(string ErrorMessage);
+    public record SettingUserLoadStateAction();
 
-    public record SettingBeginAction(User SelectedData, SettingMode Mode);
-    public record SettingAction(User SelectedData);
-    public record SettingSuccessAction();
-    public record SettingFailureAction(string ErrorMessage);
+    public record SetUserStateAction(SettingState<User> State);
+    public record LoadUserStateSuccessAction();
+    public record LoadUserStateFailureAction(string ErrorMessage);
+
+    public record ClearUserStateAction();
+    public record ClearUserStateSuccessAction();
+    public record ClearUserStateFailureAction(string ErrorMessage);
+
+    public record UserSettingBeginAction(User SelectedData, SettingMode Mode);
+    public record UserSettingAction(User SelectedData);
+    public record UserSettingSuccessAction();
+    public record UserSettingFailureAction(string ErrorMessage);
     #endregion
 }

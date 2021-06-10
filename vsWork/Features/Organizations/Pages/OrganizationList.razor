@@ -1,0 +1,67 @@
+﻿@page "/organizationList"
+@inherits vsWork.Shared.BasePage
+@using Fluxor
+@using vsWork.Features.Organizations.Store
+@using vsWork.Features.Shared.Store
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <DataGrid TItem="Organization"
+              Data=@(_listData)
+              @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
+        <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationId)" Caption="組織ID" Sortable="false" />
+        <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationName)" Caption="組織名称" Editable="true" />
+    </DataGrid>
+    <Button Color="Color.Primary" @onclick="@(OnClickAddButton)">新規登録</Button>
+    <Button Color="Color.Secondary" Disabled="@(_selectedData == null)" @onclick="@(OnClickUpdateButton)">更新</Button>
+    <Button Color="Color.Danger" Disabled="@(_selectedData == null)" @onclick="@(OnClickDeleteButton)">削除</Button>
+}
+
+@code {
+    [Inject]
+    private IState<SettingState<Organization>> SettingState { get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    private const int maxRow = 10;
+    private int pageCount = 1; // TODO:pagination
+
+    private Organization[] _listData => SettingState.Value.ListData;
+    private Organization _selectedData;
+    private bool _loading => SettingState.Value.Loading;
+
+    protected override void OnInitialized()
+    {
+        if (SettingState.Value.Initialized == false)
+        {
+            Dispatcher.Dispatch(new LoadOrganizationsAction());
+        }
+        base.OnInitialized();
+    }
+
+    private async Task OnClickAddButton()
+    {
+        Dispatcher.Dispatch(new OrganizationSettingBeginAction(new Organization(), SettingMode.Add));
+    }
+    private async Task OnClickUpdateButton()
+    {
+        Dispatcher.Dispatch(new OrganizationSettingBeginAction(_selectedData, SettingMode.Update));
+    }
+    private async Task OnClickDeleteButton()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(DisplayMessage.Message), _selectedData.OrganizationName + "を削除しますか？");
+        var options = new ModalOptions { HideCloseButton = true };
+        var messageForm = Modal.Show<DisplayMessage>("確認", parameters, options);
+        var result = await messageForm.Result;
+        if (!result.Cancelled)
+        {
+            Dispatcher.Dispatch(new OrganizationSettingBeginAction(_selectedData, SettingMode.Delete));
+        }
+    }
+}

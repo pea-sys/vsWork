@@ -13,8 +13,8 @@
 else
 {
     <DataGrid TItem="User"
-              Data=@(_listData)
-              @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
+         Data=@(_listData)
+         @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
         <DataGridColumn TItem="User" Field="@nameof(User.UserId)" Caption="ユーザーID" Sortable="false" />
         <DataGridColumn TItem="User" Field="@nameof(User.UserName)" Caption="ユーザー名称" Editable="true" />
     </DataGrid>
@@ -40,18 +40,18 @@ else
     {
         if (SettingState.Value.Initialized == false)
         {
-            Dispatcher.Dispatch(new LoadListDataAction());
+            Dispatcher.Dispatch(new LoadUsersAction());
         }
         base.OnInitialized();
     }
 
     private async Task OnClickAddButton()
     {
-        Dispatcher.Dispatch(new SettingBeginAction(new User(), SettingMode.Add));
+        Dispatcher.Dispatch(new UserSettingBeginAction(new User(), SettingMode.Add));
     }
     private async Task OnClickUpdateButton()
     {
-        Dispatcher.Dispatch(new SettingBeginAction(_selectedData, SettingMode.Update));
+        Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Update));
     }
     private async Task OnClickDeleteButton()
     {
@@ -62,7 +62,7 @@ else
         var result = await messageForm.Result;
         if (!result.Cancelled)
         {
-            Dispatcher.Dispatch(new SettingBeginAction(_selectedData, SettingMode.Delete));
+            Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Delete));
         }
     }
 }

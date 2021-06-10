@@ -1,7 +1,7 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using Blazored.Toast.Services
 @using vsWork.Features.UserSetting.Store
-
+@using vsWork.Features.Organizations.Store
 
 @inject IToastService toastService
 
@@ -9,22 +9,37 @@
     protected override void OnInitialized()
     {
 
-        SubscribeToAction<LoadListDataSuccessAction>(ShowLoadListDataSuccessToast);
-        SubscribeToAction<SettingSuccessAction>(ShowSettingSuccessToast);
-        SubscribeToAction<SettingFailureAction>(ShowSettingFailureToast);
+        SubscribeToAction<LoadUsersSuccessAction>(ShowLoadUsersSuccessToast);
+        SubscribeToAction<UserSettingSuccessAction>(ShowUserSettingSuccessToast);
+        SubscribeToAction<UserSettingFailureAction>(ShowUserSettingFailureToast);
+        SubscribeToAction<LoadOrganizationsSuccessAction>(ShowLoadOrganizationsSuccessToast);
+        SubscribeToAction<OrganizationSettingSuccessAction>(ShowOrganizationSettingSuccessToast);
+        SubscribeToAction<OrganizationSettingFailureAction>(ShowOrganizationSettingFailureToast);
         base.OnInitialized();
     }
 
-    private void ShowLoadListDataSuccessToast(LoadListDataSuccessAction action)
+    private void ShowLoadUsersSuccessToast(LoadUsersSuccessAction action)
     {
         toastService.ShowSuccess("LoadListData Success!");
     }
-    private void ShowSettingSuccessToast(SettingSuccessAction action)
+    private void ShowUserSettingSuccessToast(UserSettingSuccessAction action)
     {
         toastService.ShowSuccess("Setting Success!");
     }
-    private void ShowSettingFailureToast(SettingFailureAction action)
+    private void ShowUserSettingFailureToast(UserSettingFailureAction action)
     {
         toastService.ShowError("Setting Failure!");
     }
+    private void ShowLoadOrganizationsSuccessToast(LoadOrganizationsSuccessAction action)
+    {
+        toastService.ShowSuccess("LoadListData Success!");
+    }
+    private void ShowOrganizationSettingSuccessToast(OrganizationSettingSuccessAction action)
+    {
+        toastService.ShowSuccess("Setting Success!");
+    }
+    private void ShowOrganizationSettingFailureToast(OrganizationSettingFailureAction action)
+{
+    toastService.ShowError("Setting Failure!");
+}
 }

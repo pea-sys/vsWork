@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using vsWork.Data;
 using vsWork.Utils;
-namespace vsWork.Validators
+namespace vsWork.Features.Organizations.Validator
 {
     public class OrganizationValidator : AbstractValidator<Organization>
     {
@@ -25,7 +25,7 @@ namespace vsWork.Validators
                 .NotEmpty().WithMessage("組織IDを入力してください。")
                  .DependentRules(() =>
                  {
-                     RuleFor(x => new {x.OrganizationId, x.DataOperation }).Must(x => IsExistId(x.OrganizationId, x.DataOperation)).WithMessage("登録済みのIDです");
+                     RuleFor(x => new { x.OrganizationId, x.DataOperation }).Must(x => IsExistId(x.OrganizationId, x.DataOperation)).WithMessage("登録済みのIDです");
                  });
             RuleFor(x => x.OrganizationName).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("組織名称を入力してください。");

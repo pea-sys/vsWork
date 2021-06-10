@@ -19,10 +19,4 @@
     <PackageReference Include="Npgsql" Version="5.0.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Organization\Pages\" />
-    <Folder Include="Features\Organization\Store\" />
-    <Folder Include="Features\Organization\Validator\" />
-  </ItemGroup>
-
 </Project>
