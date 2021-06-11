@@ -7,6 +7,6 @@ namespace vsWork.Data
 {
     public class BaseEntity :IEntity
     {
-        public EnumDataOperation DataOperation{ get; set; }
+
     }
 }

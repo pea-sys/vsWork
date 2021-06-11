@@ -1,6 +1,6 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using Blazored.Toast.Services
-@using vsWork.Features.UserSetting.Store
+@using vsWork.Features.Users.Store
 @using vsWork.Features.Organizations.Store
 
 @inject IToastService toastService
@@ -12,15 +12,17 @@
         SubscribeToAction<LoadUsersSuccessAction>(ShowLoadUsersSuccessToast);
         SubscribeToAction<UserSettingSuccessAction>(ShowUserSettingSuccessToast);
         SubscribeToAction<UserSettingFailureAction>(ShowUserSettingFailureToast);
+
         SubscribeToAction<LoadOrganizationsSuccessAction>(ShowLoadOrganizationsSuccessToast);
         SubscribeToAction<OrganizationSettingSuccessAction>(ShowOrganizationSettingSuccessToast);
         SubscribeToAction<OrganizationSettingFailureAction>(ShowOrganizationSettingFailureToast);
+
         base.OnInitialized();
     }
 
     private void ShowLoadUsersSuccessToast(LoadUsersSuccessAction action)
     {
-        toastService.ShowSuccess("LoadListData Success!");
+        toastService.ShowSuccess("LoadUsers Success!");
     }
     private void ShowUserSettingSuccessToast(UserSettingSuccessAction action)
     {
@@ -32,7 +34,7 @@
     }
     private void ShowLoadOrganizationsSuccessToast(LoadOrganizationsSuccessAction action)
     {
-        toastService.ShowSuccess("LoadListData Success!");
+        toastService.ShowSuccess("LoadOrganizations Success!");
     }
     private void ShowOrganizationSettingSuccessToast(OrganizationSettingSuccessAction action)
     {

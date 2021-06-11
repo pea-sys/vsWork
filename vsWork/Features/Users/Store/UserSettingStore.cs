@@ -8,10 +8,8 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using vsWork.Features.Shared.Store;
 
-namespace vsWork.Features.UserSetting.Store
+namespace vsWork.Features.Users.Store
 {
-
-    
     public class UserSettingStore
     {
         public class UserSettingFeature : Feature<SettingState<User>>
@@ -60,7 +58,7 @@ namespace vsWork.Features.UserSetting.Store
                 return action.State;
             }
             [ReducerMethod]
-            public static SettingState<User> OnSettingBegin(SettingState<User> state , UserSettingBeginAction action)
+            public static SettingState<User> OnSettingBegin(SettingState<User> state, UserSettingBeginAction action)
             {
                 return state with
                 {
@@ -69,7 +67,7 @@ namespace vsWork.Features.UserSetting.Store
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingUser(SettingState<IEntity> state , UserSettingAction action)
+            public static SettingState<IEntity> OnSettingUser(SettingState<IEntity> state, UserSettingAction action)
             {
                 return state with
                 {
@@ -99,14 +97,14 @@ namespace vsWork.Features.UserSetting.Store
     {
 
         private readonly IState<SettingState<User>> SettingState;
-        private readonly IRepository<User,string> _userRepositoryService;
+        private readonly IRepository<User, string> _userRepositoryService;
         private readonly ILocalStorageService _localStorageService;
         private readonly NavigationManager _navigationManager;
         private const string StatePersistenceName = "UserSettingState";
 
         public UserSettingEffects
         (IState<SettingState<User>> settingState,
-        IRepository<User,string> userRepositoryService,
+        IRepository<User, string> userRepositoryService,
         ILocalStorageService localStorageService,
         NavigationManager navigationManager)
         {
@@ -121,7 +119,7 @@ namespace vsWork.Features.UserSetting.Store
         {
             User[] users = _userRepositoryService.FindAll().ToArray();
             dispatcher.Dispatch(new SetUsersAction(users));
-            dispatcher.Dispatch(new LoadUsersSuccessAction());            
+            dispatcher.Dispatch(new LoadUsersSuccessAction());
         }
         [EffectMethod(typeof(UserSettingBeginAction))]
         public async Task SettingBegin(IDispatcher dispatcher)
@@ -135,7 +133,7 @@ namespace vsWork.Features.UserSetting.Store
             {
                 dispatcher.Dispatch(new UserSettingAction(SettingState.Value.SelectedData));
             }
-            
+
         }
         [EffectMethod(typeof(UserSettingAction))]
         public async Task Setting(IDispatcher dispatcher)

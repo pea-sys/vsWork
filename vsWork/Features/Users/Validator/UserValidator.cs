@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Fluxor;
 using vsWork.Data;
-using vsWork.Features.UserSetting.Store;
 using vsWork.Features.Shared.Store;
 
 namespace vsWork.Features.UserSetting.Validator
@@ -16,6 +15,9 @@ namespace vsWork.Features.UserSetting.Validator
         /// ユーザリポジトリ
         /// </summary>
         private readonly IRepository<User, string> _userRepository;
+        /// <summary>
+        /// ユーザ状態管理
+        /// </summary>
         private readonly IState<SettingState<User>> _userSettingState;
 
         /// <summary>
