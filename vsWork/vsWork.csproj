@@ -14,6 +14,7 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.7" />
     <PackageReference Include="Blazorise.DataGrid" Version="0.9.3.7" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.7" />
+    <PackageReference Include="BlazorPagination" Version="0.2.16" />
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="4.1.0" />
     <PackageReference Include="Npgsql" Version="5.0.5" />

@@ -24,9 +24,17 @@ namespace vsWork.Data
             this.connectionString = connectionString;
 #if DEBUG
             CreateTable();
-            Add(new Organization { OrganizationId = "ABCDEFG", OrganizationName = "株式会社XYZ" });
-            Add(new Organization { OrganizationId = "HIJKLMN", OrganizationName = "株式会社ABC" });
-            Add(new Organization { OrganizationId = "あいうえお", OrganizationName = "あいうえお" });
+            if (FindById("ABCDEFG") == null)
+            {
+                Add(new Organization { OrganizationId = "ABCDEFG", OrganizationName = "株式会社XYZ" });
+                Add(new Organization { OrganizationId = "HIJKLMN", OrganizationName = "株式会社ABC" });
+                Add(new Organization { OrganizationId = "あいうえお", OrganizationName = "あいうえお" });
+
+                for (int i = 0; i < 30; i++)
+                {
+                    Add(new Organization { OrganizationId = i.ToString(), OrganizationName = i.ToString() });
+                }
+            }
 #endif
         }
         /// <summary>

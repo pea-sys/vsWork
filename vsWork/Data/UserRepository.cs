@@ -30,8 +30,16 @@ namespace vsWork.Data
             this.connectionString = connectionString;
 #if DEBUG
             CreateTable();
-            Add(new User { UserId = "helloworld", Password = "helloworld", UserName = "UserName" });
-            Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
+            if (FindById("helloworld") == null)
+            {
+                Add(new User { UserId = "helloworld", Password = "helloworld", UserName = "UserName" });
+                Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
+
+                for (int i = 0; i < 30; i++)
+                {
+                    Add(new User { UserId = i.ToString(), Password = i.ToString(), UserName = i.ToString() });
+                }
+            }
 #endif
         }
         /// <summary>
