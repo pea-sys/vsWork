@@ -75,21 +75,14 @@ else
     private async Task OnClickDeleteButton()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(DisplayMessage.Message), _selectedData.UserName + "を削除しますか？");
+        parameters.Add(nameof(ModalDisplay.Message), _selectedData.UserName + "を削除しますか？");
+        parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.YesOrNo);
         var options = new ModalOptions { HideCloseButton = true };
-        var messageForm = Modal.Show<DisplayMessage>("確認", parameters, options);
+        var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
         var result = await messageForm.Result;
         if (!result.Cancelled)
         {
             Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Delete));
         }
-    }
-    private async Task OnPreviousPageClick()
-    {
-
-    }
-    private async Task OnNextPageClick()
-    {
-
     }
 }

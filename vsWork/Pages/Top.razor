@@ -1,13 +1,6 @@
 ﻿@page "/top"
 @inherits vsWork.Shared.BasePage
 
-    <vsWork.Components.Dialog Title=@dialogContent.Title
-                               ContentLine1=@dialogContent.ContentLine1
-                               ContentLine2=@dialogContent.ContentLine2
-                               @bind-IsShow=@dialogContent.IsShow
-                               OnHide ="@OnHideDialog"
-                               DispType="@vsWork.Components.Dialog.EnumDispType.Confirm"/>
-
 <div class="col-md-12 text-center">
     <div>
         <vsWork.Components.Clock />
@@ -20,8 +13,9 @@
 @code {
     [Inject]
     private UserActionService currentUserService { get; set; }
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
 
-    private vsWork.Components.Dialog.DialogContent dialogContent = new Components.Dialog.DialogContent();
     /// <summary>
     /// 出勤打刻
     /// </summary>
@@ -36,17 +30,21 @@
         {
             currentUserService.PunchIn();
 
-            dialogContent.Title = "確認";
-            dialogContent.ContentLine1 = "出勤打刻しました";
-            dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
-            dialogContent.IsShow = true;
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ModalDisplay.Message), "出勤打刻しました" + Environment.NewLine + currentUserService.PunchInTimeStamp.ToLongTimeString());
+            parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
+            var options = new ModalOptions { HideCloseButton = true };
+            var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
+            var result = await messageForm.Result;
         }
         else
         {
-            dialogContent.Title = "エラー";
-            dialogContent.ContentLine1 =  "出勤打刻済みです";
-            dialogContent.ContentLine2 = currentUserService.PunchInTimeStamp.ToLongTimeString();
-            dialogContent.IsShow = true;
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ModalDisplay.Message), "出勤打刻済みです" + Environment.NewLine + currentUserService.PunchInTimeStamp.ToLongTimeString());
+            parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
+            var options = new ModalOptions { HideCloseButton = true };
+            var messageForm = Modal.Show<ModalDisplay>("エラー", parameters, options);
+            var result = await messageForm.Result;
         }
     }
     /// <summary>
@@ -57,19 +55,22 @@
         if (currentUserService.State == UserState.StateType.PunchIn)
         {
             currentUserService.PunchOut();
-            dialogContent.Title = "確認";
-            dialogContent.ContentLine1 = "退勤打刻しました";
-            dialogContent.IsShow = true;
+
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ModalDisplay.Message), "退勤打刻しました");
+            parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
+            var options = new ModalOptions { HideCloseButton = true };
+            var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
+            var result = await messageForm.Result;
         }
         else
         {
-            dialogContent.Title = "エラー";
-            dialogContent.ContentLine1 = "退勤打刻済みです";
-            dialogContent.IsShow = true;
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ModalDisplay.Message), "退勤打刻済みです");
+            parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
+            var options = new ModalOptions { HideCloseButton = true };
+            var messageForm = Modal.Show<ModalDisplay>("エラー", parameters, options);
+            var result = await messageForm.Result;
         }
-    }
-    private void OnHideDialog()
-    {
-        dialogContent.Initialize();
     }
 }

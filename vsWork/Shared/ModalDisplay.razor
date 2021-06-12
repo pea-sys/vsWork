@@ -1,0 +1,46 @@
+﻿<div>
+    <p>@((MarkupString)Message)</p>
+    @if (DispType == EnumDispType.Confirm)
+    {
+        <button @onclick="Yes" class="btn btn-primary">確認</button>
+    }
+    @if (DispType == EnumDispType.YesOrNo)
+    {
+        <button @onclick="Yes" class="btn btn-primary">はい</button>
+        <button @onclick="No" class="btn btn-secondary">いいえ</button>
+    }
+</div>
+
+@code {
+
+    public enum EnumDispType
+    {
+        Confirm = 0,
+        YesOrNo = 1
+    }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+    [Parameter]
+    public EnumDispType DispType { get; set; }
+    private string _message;
+    [Parameter]
+    public string Message
+    {
+        get
+        {
+            return _message.Replace(Environment.NewLine, "<br />");
+        }
+        set
+        {
+            if (_message != value)
+            {
+                _message = value;
+            }
+        }
+    }
+
+
+    async Task Yes() => await BlazoredModal.CloseAsync();
+    async Task No() => await BlazoredModal.CancelAsync();
+}
