@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Fluxor;
 using vsWork.Data;
-using vsWork.Features.Shared.Store;
+using vsWork.Stores;
 
-namespace vsWork.Features.UserSetting.Validator
+namespace vsWork.Validators
 {
     public class UserValidator : AbstractValidator<User>
     {
@@ -48,7 +48,7 @@ namespace vsWork.Features.UserSetting.Validator
                 .NotEmpty().WithMessage("パスワードを入力してください。")
                 .Length(3, 100).WithMessage("パスワードは3文字以上100文字以下にしてください。");
             }
-            else if (userSettingState.Value.Mode ==SettingMode.Update)
+            else if (userSettingState.Value.Mode == SettingMode.Update)
             {
                 RuleFor(x => x.UserName).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("ユーザ名称を入力してください。")
@@ -60,7 +60,7 @@ namespace vsWork.Features.UserSetting.Validator
             }
             else
             {
-                RuleFor(x => new { Id=x.UserId, x.Password }).Must(x => MatchPassword(x.Id, x.Password)).WithMessage("ユーザID,またはパスワードが間違っています。");
+                RuleFor(x => new { Id = x.UserId, x.Password }).Must(x => MatchPassword(x.Id, x.Password)).WithMessage("ユーザID,またはパスワードが間違っています。");
             }
         }
         /// <summary>

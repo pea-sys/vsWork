@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Fluxor;
 using vsWork.Data;
-using vsWork.Features.Shared.Store;
+using vsWork.Stores;
 using vsWork.Utils;
-namespace vsWork.Features.Organizations.Validator
+namespace vsWork.Validators
 {
     public class OrganizationValidator : AbstractValidator<Organization>
     {

@@ -1,10 +1,10 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
-
+@using vsWork.Stores
 @code {
     [Inject]
     public NavigationManager Navigation { get; init; }
     [Inject]
-    public UserActionService userActionService { get; set; }
+    private IState<CurrentUserState> CurrentState { get; set; }
     [Inject]
     public IDispatcher Dispatcher{ get; set; }
 
@@ -12,7 +12,7 @@
 
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrEmpty(userActionService.UserInfo.UserId))
+        if (string.IsNullOrEmpty(CurrentState.Value.User.UserId))
         {
             var returnUrl = Navigation!.ToBaseRelativePath(Navigation.Uri);
             if (!string.IsNullOrWhiteSpace(returnUrl))

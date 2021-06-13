@@ -6,9 +6,8 @@ using vsWork.Data;
 using Fluxor;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using vsWork.Features.Shared.Store;
 
-namespace vsWork.Features.Users.Store
+namespace vsWork.Stores
 {
     public class UserSettingStore
     {

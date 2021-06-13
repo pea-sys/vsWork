@@ -23,6 +23,7 @@ using Fluxor;
 using Blazored.Toast;
 using Blazored.LocalStorage;
 using Blazored.Modal;
+using vsWork.Stores;
 
 namespace vsWork
 {
@@ -62,14 +63,10 @@ namespace vsWork
 
             // SignalRクライアントの一意の回線ID状況を監視(Scopedにすることでクライアント毎に一意の回線IDを取得可能)
             // [参考]https://www.fixes.pub/program/464677.html
-            services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<UserActionService>()));
-            // 各クライアントのアクションを提供するサービス
-            services.AddScoped<UserActionService>((sp) => new UserActionService(
-            sp.GetRequiredService<IRepository<User, string>>(),
-            sp.GetRequiredService<IRepository<Session, string>>(),
-            sp.GetRequiredService<IRepository<UserState, string>>(),
-            sp.GetRequiredService<IRepository<Attendance,string>>(),
-            sp.GetRequiredService<IRepository<Organization, string>>()));
+            services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IDispatcher>()));
+
+
+
 
             services.AddFluxor(options => options.ScanAssemblies(typeof(Startup).Assembly));
             services.AddBlazoredToast();
@@ -78,7 +75,6 @@ namespace vsWork
             {
                 config.JsonSerializerOptions.WriteIndented = true;
             });
-
             services.AddBlazoredModal();
         }
 

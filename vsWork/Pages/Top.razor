@@ -1,9 +1,9 @@
 ﻿@page "/top"
 @inherits vsWork.Shared.BasePage
-
+@using vsWork.Stores
 <div class="col-md-12 text-center">
     <div>
-        <vsWork.Components.Clock />
+        <vsWork.Shared.Clock />
     </div>
 
     <button class="btn btn-primary" @onclick="PunchIn">出勤</button>
@@ -12,7 +12,7 @@
 
 @code {
     [Inject]
-    private UserActionService currentUserService { get; set; }
+    private IState<CurrentUserState> CurrentUserState{ get; set; }
     [CascadingParameter]
     public IModalService Modal { get; set; }
 
@@ -21,17 +21,17 @@
     /// </summary>
     private async Task PunchIn()
     {
-        if (string.IsNullOrEmpty(currentUserService.UserInfo.UserId))
+        if (string.IsNullOrEmpty(CurrentUserState.Value.User.UserId))
         {
             return;
         }
 
-        if (currentUserService.State != UserState.StateType.PunchIn)
+        if (CurrentUserState.Value.UserState.State != UserState.StateType.PunchIn)
         {
-            currentUserService.PunchIn();
+            Dispatcher.Dispatch(new PunchInAction());
 
             var parameters = new ModalParameters();
-            parameters.Add(nameof(ModalDisplay.Message), "出勤打刻しました" + Environment.NewLine + currentUserService.PunchInTimeStamp.ToLongTimeString());
+            parameters.Add(nameof(ModalDisplay.Message), "出勤打刻しました" + Environment.NewLine + CurrentUserState.Value.UserState.TimeStamp.ToLongTimeString());
             parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
             var options = new ModalOptions { HideCloseButton = true };
             var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
@@ -40,7 +40,7 @@
         else
         {
             var parameters = new ModalParameters();
-            parameters.Add(nameof(ModalDisplay.Message), "出勤打刻済みです" + Environment.NewLine + currentUserService.PunchInTimeStamp.ToLongTimeString());
+            parameters.Add(nameof(ModalDisplay.Message), "出勤打刻済みです" + Environment.NewLine + CurrentUserState.Value.UserState.TimeStamp.ToLongTimeString());
             parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
             var options = new ModalOptions { HideCloseButton = true };
             var messageForm = Modal.Show<ModalDisplay>("エラー", parameters, options);
@@ -52,9 +52,9 @@
     /// </summary>
     private async Task PunchOut()
     {
-        if (currentUserService.State == UserState.StateType.PunchIn)
+        if (CurrentUserState.Value.UserState.State == UserState.StateType.PunchIn)
         {
-            currentUserService.PunchOut();
+            Dispatcher.Dispatch(new PunchOutAction());
 
             var parameters = new ModalParameters();
             parameters.Add(nameof(ModalDisplay.Message), "退勤打刻しました");

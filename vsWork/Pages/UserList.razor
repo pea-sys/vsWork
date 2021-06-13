@@ -1,8 +1,8 @@
-﻿@page "/organizationList"
+﻿@page "/userList"
 @inherits vsWork.Shared.BasePage
 @using Fluxor
-@using vsWork.Features.Organizations.Store
-@using vsWork.Features.Shared.Store
+@using vsWork.Stores
+@using vsWork.Shared
 @using BlazorPagination
 
 @if (_loading)
@@ -11,13 +11,12 @@
 }
 else
 {
-    <DataGrid TItem="Organization"
+    <DataGrid TItem="User"
               Data=@(_listData.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
               @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
-        <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationId)" Caption="組織ID" Sortable="false" />
-        <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationName)" Caption="組織名称" Editable="true" />
+        <DataGridColumn TItem="User" Field="@nameof(User.UserId)" Caption="ユーザーID" Sortable="false" />
+        <DataGridColumn TItem="User" Field="@nameof(User.UserName)" Caption="ユーザー名称" Editable="true" />
     </DataGrid>
-
 
     <BlazorPager CurrentPage="@currentPage"
                  PageCount="@pageCount"
@@ -28,19 +27,17 @@ else
                  FirstText="&laquo;"
                  LastText="&raquo;"
                  NextText="&rsaquo;"
-                 PreviousText="&lsaquo;" />
+                 PreviousText="&lsaquo;"  />
 
     <Button Color="Color.Primary" @onclick="@(OnClickAddButton)">新規登録</Button>
     <Button Color="Color.Secondary" Disabled="@(_selectedData == null)" @onclick="@(OnClickUpdateButton)">更新</Button>
     <Button Color="Color.Danger" Disabled="@(_selectedData == null)" @onclick="@(OnClickDeleteButton)">削除</Button>
 }
-
 @code {
     // TODO:ページネーションで末尾のページネーションコンポーネントの位置がずれる
     // TODO:ページコンポーネントとボタンを横並びにしたい
-
     [Inject]
-    private IState<SettingState<Organization>> SettingState { get; set; }
+    private IState<SettingState<User>> SettingState { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
@@ -49,15 +46,15 @@ else
     private int pageCount;
     private int currentPage = 1;
 
-    private Organization[] _listData => SettingState.Value.ListData;
-    private Organization _selectedData;
+    private User[] _listData => SettingState.Value.ListData;
+    private User _selectedData;
     private bool _loading => SettingState.Value.Loading;
 
     protected override void OnInitialized()
     {
         if (SettingState.Value.Initialized == false)
         {
-            Dispatcher.Dispatch(new LoadOrganizationsAction());
+            Dispatcher.Dispatch(new LoadUsersAction());
         }
         pageCount = (int)Math.Ceiling((_listData.Length / maxRow) + 0.5);
         base.OnInitialized();
@@ -69,23 +66,23 @@ else
     }
     private async Task OnClickAddButton()
     {
-        Dispatcher.Dispatch(new OrganizationSettingBeginAction(new Organization(), SettingMode.Add));
+        Dispatcher.Dispatch(new UserSettingBeginAction(new User(), SettingMode.Add));
     }
     private async Task OnClickUpdateButton()
     {
-        Dispatcher.Dispatch(new OrganizationSettingBeginAction(_selectedData, SettingMode.Update));
+        Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Update));
     }
     private async Task OnClickDeleteButton()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ModalDisplay.Message), _selectedData.OrganizationName + "を削除しますか？");
+        parameters.Add(nameof(ModalDisplay.Message), _selectedData.UserName + "を削除しますか？");
         parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.YesOrNo);
         var options = new ModalOptions { HideCloseButton = true };
         var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
         var result = await messageForm.Result;
         if (!result.Cancelled)
         {
-            Dispatcher.Dispatch(new OrganizationSettingBeginAction(_selectedData, SettingMode.Delete));
+            Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Delete));
         }
     }
 }

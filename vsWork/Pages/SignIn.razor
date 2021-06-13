@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inherits vsWork.Shared.BasePage
-
+@using vsWork.Stores
+@using Fluxor
 <EditForm Model="@authUser" OnValidSubmit="OnValidSubmit">
     <FluentValidationValidator @ref="fluentValidationValidator " />
     <DataAnnotationsValidator />
@@ -13,15 +14,16 @@
         <label for="pass">Password</label>
         <input type="password" name="pass" @bind-value="authUser.Password" maxlength="100" class="form-control" />
     </div>
-    <div class="form-group">
-        <input type="checkbox" name="isChache" @bind-value="isCache">
-        <label for="isChache">ログイン状態を維持</label>
-    </div>
+    @*<div class="form-group">
+            <input type="checkbox" name="isChache" @bind-value="isCache">
+            <label for="isChache">ログイン状態を維持</label>
+        </div>*@
     <button class="btn btn-primary" type="submit">ログイン</button>
     <div>[テストユーザー]id:helloworld password:helloworld</div>
 </EditForm>
 
 @code{
+
 
     private User authUser = new User();
     private bool isCache = false;
@@ -31,7 +33,6 @@
     /// </summary>
     private async Task OnValidSubmit()
     {
-        userActionService.SignIn(authUser.UserId);
-        Navigation.NavigateTo("top");
+        Dispatcher.Dispatch(new SignInAction(authUser));
     }
 }

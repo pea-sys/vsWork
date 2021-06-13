@@ -1,11 +1,11 @@
 ﻿@inherits LayoutComponentBase
-
-@inject UserActionService userActionService
-@inject IDispatcher Dispatcher
 @using Blazored.Toast
+@using vsWork.Stores
+@inject IState<CurrentUserState> CurrentUserState
+
 <div class="page">
     @* 認証していない場合はサイドバーを表示しない *@
-    @if (!string.IsNullOrEmpty(userActionService.UserInfo.UserId))
+    @if (!string.IsNullOrEmpty(CurrentUserState.Value.User.UserId))
     {
         <div class="sidebar">
             <NavMenu />

@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.Circuits;
 @implements IDisposable
-@inject UserActionService CurrentUserService
+@using vsWork.Stores
+
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">勤怠システム</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -21,7 +22,7 @@
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <a class="navbar-brand">@(currentUserService.UserInfo.UserName) 状態:@(EnumTextAttribute.GetText(currentUserService.State))</a>
+            <a class="navbar-brand">@(CurrentState.Value.User.UserName) 状態:@(EnumTextAttribute.GetText(CurrentState.Value.UserState.State))</a>
             <button class="nav-link" @onclick="LogOut">
                 ログアウト
             </button>
@@ -37,7 +38,9 @@
     [Inject]
     protected NavigationManager navigationManager { get; set; }
     [Inject]
-    protected UserActionService currentUserService { get; set; }
+    private IState<CurrentUserState> CurrentState { get; set; }
+    [Inject]
+    public IDispatcher Dispatcher { get; set; }
 
     private bool collapseNavMenu = true;
 
@@ -46,12 +49,12 @@
     protected override void OnInitialized()
     {
         // 初回時にイベントハンドラに、イベントの紐づけ
-        currentUserService.StateChanged += OnUserStateChanged;
+        CurrentState.Value.StateChanged += OnUserStateChanged;
     }
 
     private void LogOut()
     {
-        currentUserService.SignOut();
+        Dispatcher.Dispatch(new SignOutAction());
         navigationManager.NavigateTo("");
 
     }
@@ -68,6 +71,6 @@
     void IDisposable.Dispose()
     {
         // 閉じられるとき、イベントのリリース
-        currentUserService.StateChanged -= OnUserStateChanged;
+        CurrentState.Value.StateChanged -= OnUserStateChanged;
     }
 }

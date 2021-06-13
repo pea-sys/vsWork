@@ -1,13 +1,18 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using Blazored.Toast.Services
-@using vsWork.Features.Users.Store
-@using vsWork.Features.Organizations.Store
+@using vsWork.Stores
 
 @inject IToastService toastService
 
 @code {
     protected override void OnInitialized()
     {
+        SubscribeToAction<ConnectAction>(ShowConnectAction);
+        SubscribeToAction<DisConnectAction>(ShowDisConnectAction);
+        SubscribeToAction<SignInAction>(ShowSignInAction);
+        SubscribeToAction<SignOutAction>(ShowSignOutAction);
+        SubscribeToAction<PunchInAction>(ShowPunchInAction);
+        SubscribeToAction<PunchOutAction>(ShowPunchOutAction);
 
         SubscribeToAction<LoadUsersSuccessAction>(ShowLoadUsersSuccessToast);
         SubscribeToAction<UserSettingSuccessAction>(ShowUserSettingSuccessToast);
@@ -19,7 +24,30 @@
 
         base.OnInitialized();
     }
-
+    private void ShowConnectAction(ConnectAction action)
+    {
+        toastService.ShowInfo("Connect!");
+    }
+    private void ShowDisConnectAction(DisConnectAction action)
+    {
+        toastService.ShowError("DisConnect!");
+    }
+    private void ShowSignInAction(SignInAction action)
+    {
+        toastService.ShowInfo("SignIn!");
+    }
+    private void ShowSignOutAction(SignOutAction action)
+    {
+        toastService.ShowInfo("SignOut!");
+    }
+    private void ShowPunchInAction(PunchInAction action)
+    {
+        toastService.ShowInfo("PunchIn!");
+    }
+    private void ShowPunchOutAction(PunchOutAction action)
+    {
+        toastService.ShowInfo("PunchOut!");
+    }
     private void ShowLoadUsersSuccessToast(LoadUsersSuccessAction action)
     {
         toastService.ShowSuccess("LoadUsers Success!");
@@ -41,7 +69,7 @@
         toastService.ShowSuccess("Setting Success!");
     }
     private void ShowOrganizationSettingFailureToast(OrganizationSettingFailureAction action)
-{
-    toastService.ShowError("Setting Failure!");
-}
+    {
+        toastService.ShowError("Setting Failure!");
+    }
 }
