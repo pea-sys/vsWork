@@ -5,7 +5,7 @@
 @using Blazored.Toast
 <div class="page">
     @* 認証していない場合はサイドバーを表示しない *@
-    @if (!string.IsNullOrEmpty(userActionService.UserId))
+    @if (!string.IsNullOrEmpty(userActionService.UserInfo.UserId))
     {
         <div class="sidebar">
             <NavMenu />

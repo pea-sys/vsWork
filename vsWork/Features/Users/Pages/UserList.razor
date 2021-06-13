@@ -36,13 +36,14 @@ else
 }
 @code {
     // TODO:ページネーションで末尾のページネーションコンポーネントの位置がずれる
+    // TODO:ページコンポーネントとボタンを横並びにしたい
     [Inject]
     private IState<SettingState<User>> SettingState { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
 
-    private const int maxRow = 8;
+    private const int maxRow = 7;
     private int pageCount;
     private int currentPage = 1;
 

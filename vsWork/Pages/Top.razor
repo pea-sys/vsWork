@@ -21,7 +21,7 @@
     /// </summary>
     private async Task PunchIn()
     {
-        if (string.IsNullOrEmpty(currentUserService.UserId))
+        if (string.IsNullOrEmpty(currentUserService.UserInfo.UserId))
         {
             return;
         }

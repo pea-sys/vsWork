@@ -12,7 +12,7 @@
 
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrEmpty(userActionService.UserId))
+        if (string.IsNullOrEmpty(userActionService.UserInfo.UserId))
         {
             var returnUrl = Navigation!.ToBaseRelativePath(Navigation.Uri);
             if (!string.IsNullOrWhiteSpace(returnUrl))

@@ -1,4 +1,6 @@
-﻿namespace vsWork.Data
+﻿using vsWork.Utils;
+
+namespace vsWork.Data
 {
     /// <summary>
     /// ユーザーモデル
@@ -9,5 +11,18 @@
         public string Password { get; set; }
         public string UserName { get; set; }
         public string OrganizationId { get; set; }
+        public RankType Rank { get; set; }
+
+        public enum RankType
+        {
+            [EnumText("なし")]
+            None = 0,
+            [EnumText("システム管理者")]
+            SystemAdmin = 1,
+            [EnumText("組織管理者")]
+            OrganizationAdmin = 2,
+            [EnumText("一般")]
+            General = 3
+        }
     }
 }

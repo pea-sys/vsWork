@@ -16,6 +16,10 @@ namespace vsWork.Services
         /// </summary>
         private string circuitId;
         /// <summary>
+        /// ユーザー情報
+        /// </summary>
+        private User _userInfo;
+        /// <summary>
         /// ユーザリポジトリサービス
         /// </summary>
         private readonly UserRepository userRepository;
@@ -54,6 +58,7 @@ namespace vsWork.Services
             this.userStateRepository = (UserStateRepository)userStateRepository;
             this.attendanceRepository = (AttendanceRepository)attendanceRepository;
             this.organizationRepository = (OrganizationRepository)organizationRepository;
+            this._userInfo = new User();
         }
         /// <summary>
         /// セッション開始
@@ -70,7 +75,7 @@ namespace vsWork.Services
         public void DisConnect(string circuitId)
         {
             // 認証済みセッションを破棄する
-            if (!string.IsNullOrEmpty(UserId))
+            if (!string.IsNullOrEmpty(UserInfo.UserId))
             {
                 sessionRepository.Remove(circuitId);
                 this.circuitId = string.Empty;
@@ -88,8 +93,8 @@ namespace vsWork.Services
             sessionRepository.Add(new Session() { SessionId = circuitId, UserId = user.UserId });
             UserState userState = userStateRepository.FindById(user.UserId);
 
-            UserId = user.UserId;
-            UserName = user.UserName;
+            this._userInfo.UserId = user.UserId;
+            this._userInfo.UserName = user.UserName;
 
             if (userState is null)
             {
@@ -108,8 +113,7 @@ namespace vsWork.Services
         public void SignOut()
         {
             sessionRepository.Remove(circuitId);
-            UserId = "";
-            UserName = "";
+            _userInfo = new User();
             State = UserState.StateType.None;
         }
         /// <summary>
@@ -117,8 +121,8 @@ namespace vsWork.Services
         /// </summary>
         public void PunchIn()
         {
-            attendanceRepository.Add(new Attendance() { UserId = UserId });
-            UserState us = userStateRepository.FindById(UserId);
+            attendanceRepository.Add(new Attendance() { UserId = UserInfo.UserId });
+            UserState us = userStateRepository.FindById(UserInfo.UserId);
             PunchInTimeStamp = us.TimeStamp;
             State = us.State;
         }
@@ -127,8 +131,8 @@ namespace vsWork.Services
         /// </summary>
         public void PunchOut()
         {
-            attendanceRepository.UpdateAtPunchOutTimestamp(new Attendance() { UserId = UserId });
-            UserState us = userStateRepository.FindById(UserId);
+            attendanceRepository.UpdateAtPunchOutTimestamp(new Attendance() { UserId = UserInfo.UserId });
+            UserState us = userStateRepository.FindById(UserInfo.UserId);
             PunchInTimeStamp = us.TimeStamp;
             State = us.State;
         }
@@ -139,8 +143,10 @@ namespace vsWork.Services
         {
             this.StateChanged?.Invoke(this, EventArgs.Empty);
         }
-        public string UserId { get; private set; }
-        public string UserName { get; private set; }
+        public User UserInfo
+        {
+            get { return _userInfo; }
+        }
         private UserState.StateType _state = UserState.StateType.None;
         public UserState.StateType State
         {

@@ -21,7 +21,7 @@
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <a class="navbar-brand">@(currentUserService.UserName) 状態:@(EnumTextAttribute.GetText(currentUserService.State))</a>
+            <a class="navbar-brand">@(currentUserService.UserInfo.UserName) 状態:@(EnumTextAttribute.GetText(currentUserService.State))</a>
             <button class="nav-link" @onclick="LogOut">
                 ログアウト
             </button>

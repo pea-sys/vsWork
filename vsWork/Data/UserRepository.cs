@@ -32,12 +32,12 @@ namespace vsWork.Data
             CreateTable();
             if (FindById("helloworld") == null)
             {
-                Add(new User { UserId = "helloworld", Password = "helloworld", UserName = "UserName" });
-                Add(new User { UserId = "apple", Password = "apple", UserName = "apple" });
+                Add(new User { UserId = "helloworld", Password = "helloworld", UserName = "UserName", Rank = User.RankType.SystemAdmin });
+                Add(new User { UserId = "apple", Password = "apple", UserName = "apple", Rank = User.RankType.OrganizationAdmin });
 
                 for (int i = 0; i < 30; i++)
                 {
-                    Add(new User { UserId = i.ToString(), Password = i.ToString(), UserName = i.ToString() });
+                    Add(new User { UserId = i.ToString(), Password = i.ToString(), UserName = i.ToString(), Rank = User.RankType.General });
                 }
             }
 #endif
@@ -64,7 +64,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) NOT NULL PRIMARY KEY, password bytea NOT NULL, UserName varchar(100));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) NOT NULL PRIMARY KEY, password bytea NOT NULL, UserName varchar(100), Rank integer NOT NULL default {(int)User.RankType.General});");
                         tran.Commit();
                     }
                     catch
@@ -109,7 +109,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (UserId, password, UserName) VALUES ('{item.UserId}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'),'{item.UserName}');", tran);
+                        db.Execute($"INSERT INTO {tableName} (UserId, password, UserName, Rank) VALUES ('{item.UserId}', encrypt(convert_to('{item.Password}','UTF8'), 'pass', 'aes'),'{item.UserName}','{(int)item.Rank}');", tran);
                         tran.Commit();
                     }
                     catch
@@ -184,7 +184,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes'),'UTF8') as password, UserName FROM {tableName} WHERE UserId = '{id}' LIMIT 1").FirstOrDefault();
+                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes'),'UTF8') as password, UserName, Rank FROM {tableName} WHERE UserId = '{id}' LIMIT 1").FirstOrDefault();
             }
         }
         /// <summary>
