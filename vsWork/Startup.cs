@@ -61,6 +61,8 @@ namespace vsWork
             services.AddScoped<IRepository<UserState, string>, UserStateRepository>();
             services.AddScoped<IRepository<Organization, string>, OrganizationRepository>();
 
+            services.AddScoped<CustomQueryService>();
+
             // SignalRクライアントの一意の回線ID状況を監視(Scopedにすることでクライアント毎に一意の回線IDを取得可能)
             // [参考]https://www.fixes.pub/program/464677.html
             services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IDispatcher>()));
