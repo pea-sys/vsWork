@@ -19,7 +19,6 @@ namespace vsWork.Test
         {
             using var ctx = new TestContext();
             var component = ctx.RenderComponent<Clock>();
-            component.SetParametersAndRender(parameters => parameters.Add(p => p.FontSize, string.Empty));
         }
 
         [Fact(DisplayName = "日時がリアルタイム表示されること")]
@@ -27,7 +26,6 @@ namespace vsWork.Test
         {
             using var ctx = new TestContext();
             var component = ctx.RenderComponent<Clock>();
-            component.SetParametersAndRender(parameters => parameters.Add(p => p.FontSize, fontSize));
 
             var oldFontElmText = DateTime.Parse(component.Find("font").TextContent);
             System.Threading.Thread.Sleep(2000);
@@ -63,6 +61,13 @@ namespace vsWork.Test
             component.SetParametersAndRender(parameters => parameters.Add(p => p.StringColor, stringColor));
             Assert.True(component.Find("font").GetAttribute("color") == $"{stringColor}");
         }
-
+        [Fact(DisplayName ="Disposeが有効であること")]
+        public void DisposedTimer()
+        {
+            using var ctx = new TestContext();
+            var component = ctx.RenderComponent<Clock>();
+            component.Dispose();
+            Assert.True(component.IsDisposed);
+        }
     }
 }

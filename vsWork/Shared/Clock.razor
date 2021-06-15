@@ -1,10 +1,10 @@
-﻿@using System.Timers
+﻿
 @implements IDisposable
 
 <font size=@(FontSize + "px") color=@(StringColor)>@dateTimeString</font>
 
 @code {
-    private Timer clockTimer = new Timer(1000);
+    private SafelyDisposableTimer clockTimer;
     private string dateTimeString = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
     [Parameter]
@@ -12,27 +12,27 @@
     [Parameter]
     public string StringColor { get; set; }
 
+
     /// <summary>
     /// イニシャライズ完了イベント
     /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        clockTimer.Elapsed += new System.Timers.ElapsedEventHandler(ElapsedEvent);
-        clockTimer.Enabled = true;
+        clockTimer = new SafelyDisposableTimer(1000, ElapsedEvent);
+        clockTimer.Start();
     }
     /// <summary>
     /// 解放処理
     /// </summary>
     public void Dispose()
     {
-        clockTimer.Enabled = false;
-        clockTimer.Elapsed -= new ElapsedEventHandler(ElapsedEvent);
+        clockTimer.Dispose();
     }
     /// <summary>
     /// タイマーイベント
     /// </summary>
-    private void ElapsedEvent(Object source, EventArgs e)
+    private void ElapsedEvent()
     {
         dateTimeString = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         InvokeAsync(StateHasChanged);
