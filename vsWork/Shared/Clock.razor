@@ -1,14 +1,16 @@
 ﻿@using System.Timers
 @implements IDisposable
 
-<font size=@fontSize color="#0000ff">@dateTimeString</font>
+<font size=@(FontSize + "px") color=@(StringColor)>@dateTimeString</font>
 
 @code {
     private Timer clockTimer = new Timer(1000);
     private string dateTimeString = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
-    public int FontSize { get; set; } = 20;
-    private string fontSize = "";
+    [Parameter]
+    public string FontSize { get; set; }
+    [Parameter]
+    public string StringColor { get; set; }
 
     /// <summary>
     /// イニシャライズ完了イベント
@@ -16,7 +18,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        fontSize = FontSize.ToString() + "px";
         clockTimer.Elapsed += new System.Timers.ElapsedEventHandler(ElapsedEvent);
         clockTimer.Enabled = true;
     }
