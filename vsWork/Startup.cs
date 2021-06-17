@@ -67,9 +67,6 @@ namespace vsWork
             // [éQçl]https://www.fixes.pub/program/464677.html
             services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IDispatcher>()));
 
-
-
-
             services.AddFluxor(options => options.ScanAssemblies(typeof(Startup).Assembly));
             services.AddBlazoredToast();
 

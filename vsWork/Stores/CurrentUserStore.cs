@@ -8,7 +8,7 @@ using vsWork.Data;
 
 namespace vsWork.Stores
 {
-    public record CurrentUserState
+    public record CurrentUserState:IState
     {
         public string CircuitId { get; set; }
         public User User { get; set; }

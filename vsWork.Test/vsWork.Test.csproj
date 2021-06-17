@@ -22,4 +22,8 @@
     <ProjectReference Include="..\vsWork\vsWork.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\" />
+  </ItemGroup>
+
 </Project>

@@ -12,7 +12,7 @@
 else
 {
     <DataGrid TItem="User"
-              Data=@(_listData.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
+              Data=@(_userListData.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
               @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
         <DataGridColumn TItem="User" Field="@nameof(User.UserId)" Caption="ユーザーID" Sortable="false" />
         <DataGridColumn TItem="User" Field="@nameof(User.UserName)" Caption="ユーザー名称" Editable="true" />
@@ -46,7 +46,7 @@ else
     private int pageCount;
     private int currentPage = 1;
 
-    private User[] _listData => SettingState.Value.ListData;
+    private User[] _userListData => SettingState.Value.ListData;
     private User _selectedData;
     private bool _loading => SettingState.Value.Loading;
 
@@ -56,7 +56,7 @@ else
         {
             Dispatcher.Dispatch(new LoadUsersAction());
         }
-        pageCount = (int)Math.Ceiling((_listData.Length / maxRow) + 0.5);
+        pageCount = (int)Math.Ceiling((_userListData.Length / maxRow) + 0.5);
         base.OnInitialized();
     }
     private void OnPageChanged(int e)

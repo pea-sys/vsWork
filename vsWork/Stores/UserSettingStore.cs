@@ -79,6 +79,7 @@ namespace vsWork.Stores
                 return state with
                 {
                     SelectedData = null,
+                    Mode =  SettingMode.None
                 };
             }
             [ReducerMethod]

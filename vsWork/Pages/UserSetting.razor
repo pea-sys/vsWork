@@ -21,9 +21,23 @@
             <label for="pass">Password(3文字以上100文字以下)</label>
             <input type="password" name="pass" @bind-value="settingData.Password" maxlength="100" class="form-control" />
         </div>
+
+        @if (CurrentState.Value.User.Rank == User.RankType.SystemAdmin)
+        {
+            <div class="form-group">
+                <label for="rating">組織名称</label>
+                <InputSelect class="form-control" @bind-Value="selectedOrganizationName">
+                    @foreach (Organization item in _organizationList)
+                    {
+                        <option>@(item.OrganizationName)</option>
+                    }
+                </InputSelect>
+            </div>
+        }
+        
         <button class="btn btn-primary" type="submit">登録</button>
 
-    </EditForm>
+        </EditForm>
 </Container>
 
 @code {
@@ -31,8 +45,13 @@
     private IState<SettingState<User>> SettingState { get; set; }
 
     private User settingData = new User();
+    private List<Organization> _organizationList = new List<Organization>();
+    private string selectedOrganizationName = string.Empty;
+
     protected override void OnInitialized()
     {
+        _organizationList.Add(new Organization { OrganizationId = "testId", OrganizationName = "testName" });
+
         settingData = SettingState.Value.SelectedData;
         base.OnInitialized();
     }

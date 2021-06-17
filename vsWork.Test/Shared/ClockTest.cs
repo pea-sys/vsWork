@@ -7,19 +7,12 @@ using System.Threading.Tasks;
 using vsWork.Shared;
 using Xunit;
 
-namespace vsWork.Test
+namespace vsWork.Test.Shared
 {
     public class ClockTest
     {
         string fontSize = "10";
         string stringColor = "#0000ff";
-
-        [Fact(DisplayName = "パラメータセットなしで表示可能なこと")]
-        public void NoneParameter()
-        {
-            using var ctx = new TestContext();
-            var component = ctx.RenderComponent<Clock>();
-        }
 
         [Fact(DisplayName = "日時がリアルタイム表示されること")]
         public void RealTimeDisp()

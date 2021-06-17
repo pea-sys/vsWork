@@ -3,7 +3,7 @@
 @using vsWork.Stores
 
 <div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">勤怠システム</a>
+    <a class="navbar-brand" href="#">勤怠システム</a>@*タッチ無効かサインアウト処理にしたい*@
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -32,15 +32,11 @@
 
 @code {
     [Inject]
-    protected IRepository<Session, string> sessionRepository { get; set; }
-    [Inject]
-    protected CircuitHandler circuitHandlerService { get; set; }
-    [Inject]
-    protected NavigationManager navigationManager { get; set; }
+    private NavigationManager navigationManager { get; set; }
     [Inject]
     private IState<CurrentUserState> CurrentState { get; set; }
     [Inject]
-    public IDispatcher Dispatcher { get; set; }
+    private IDispatcher Dispatcher { get; set; }
 
     private bool collapseNavMenu = true;
 

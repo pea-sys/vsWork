@@ -2,11 +2,11 @@
 @using vsWork.Stores
 @code {
     [Inject]
-    public NavigationManager Navigation { get; init; }
+    protected NavigationManager Navigation { get; init; }
     [Inject]
-    private IState<CurrentUserState> CurrentState { get; set; }
+    protected IState<CurrentUserState> CurrentState { get; set; }
     [Inject]
-    public IDispatcher Dispatcher{ get; set; }
+    protected IDispatcher Dispatcher{ get; set; }
 
     public FluentValidationValidator fluentValidationValidator;
 
