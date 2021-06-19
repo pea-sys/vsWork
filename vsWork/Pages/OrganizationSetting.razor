@@ -1,5 +1,6 @@
 ﻿@page "/organizationSetting"
 @inherits vsWork.Shared.BasePage
+@implements IDisposable
 @using Fluxor
 @using vsWork.Stores
 @using vsWork.Shared
@@ -21,17 +22,30 @@
 </EditForm>
 @code {
     [Inject]
-    private IState<SettingState<Organization>> SettingState { get; set; }
+    private IState<OrganizationSettingState> SettingState { get; set; }
 
     private Organization settingData = new Organization();
     protected override void OnInitialized()
     {
-        settingData = SettingState.Value.SelectedData;
+        settingData = SettingState.Value.SelectedOrganization;
+        Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
 
     private async Task OnClickRegist()
     {
         Dispatcher.Dispatch(new OrganizationSettingAction(settingData));
+    }
+    private void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
+        if (returnUrl != "organizationList")
+        {
+            Dispatcher.Dispatch(new OrganizationSettingStateInitializeAction());
+        }
+    }
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
     }
 }

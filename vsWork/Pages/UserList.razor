@@ -1,5 +1,6 @@
 ﻿@page "/userList"
 @inherits vsWork.Shared.BasePage
+@implements IDisposable
 @using Fluxor
 @using vsWork.Stores
 @using vsWork.Shared
@@ -27,7 +28,7 @@ else
                  FirstText="&laquo;"
                  LastText="&raquo;"
                  NextText="&rsaquo;"
-                 PreviousText="&lsaquo;"  />
+                 PreviousText="&lsaquo;" />
 
     <Button Color="Color.Primary" @onclick="@(OnClickAddButton)">新規登録</Button>
     <Button Color="Color.Secondary" Disabled="@(_selectedData == null)" @onclick="@(OnClickUpdateButton)">更新</Button>
@@ -37,7 +38,7 @@ else
     // TODO:ページネーションで末尾のページネーションコンポーネントの位置がずれる
     // TODO:ページコンポーネントとボタンを横並びにしたい
     [Inject]
-    private IState<SettingState<User>> SettingState { get; set; }
+    private IState<UserSettingState> UserSettingState { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
@@ -46,17 +47,18 @@ else
     private int pageCount;
     private int currentPage = 1;
 
-    private User[] _userListData => SettingState.Value.ListData;
+    private User[] _userListData => UserSettingState.Value.UserList;
     private User _selectedData;
-    private bool _loading => SettingState.Value.Loading;
+    private bool _loading => UserSettingState.Value.Loading;
 
     protected override void OnInitialized()
     {
-        if (SettingState.Value.Initialized == false)
+        if (UserSettingState.Value.Initialized == false)
         {
             Dispatcher.Dispatch(new LoadUsersAction());
         }
         pageCount = (int)Math.Ceiling((_userListData.Length / maxRow) + 0.5);
+        Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
     private void OnPageChanged(int e)
@@ -75,14 +77,37 @@ else
     private async Task OnClickDeleteButton()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ModalDisplay.Message), _selectedData.UserName + "を削除しますか？");
-        parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.YesOrNo);
         var options = new ModalOptions { HideCloseButton = true };
-        var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
-        var result = await messageForm.Result;
-        if (!result.Cancelled)
+        if ((CurrentState.Value.User.Rank == User.RankType.SystemAdmin) &
+        (_selectedData.Rank == User.RankType.SystemAdmin) &
+        (_userListData.Where(p => p.Rank == User.RankType.SystemAdmin).Count() < 2))
         {
-            Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Delete));
+            parameters.Add(nameof(ModalDisplay.Message), "システム管理者が残り１名です" + Environment.NewLine + "削除できません");
+            parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
+            var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
         }
+        else
+        {
+            parameters.Add(nameof(ModalDisplay.Message), _selectedData.UserName + "を削除しますか？");
+            parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.YesOrNo);
+            var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);
+            var result = await messageForm.Result;
+            if (!result.Cancelled)
+            {
+                Dispatcher.Dispatch(new UserSettingBeginAction(_selectedData, SettingMode.Delete));
+            }
+        }
+    }
+    private void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
+        if (returnUrl != "userSetting")
+        {
+            Dispatcher.Dispatch(new UserSettingStateInitializeAction());
+        }
+    }
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
     }
 }

@@ -6,6 +6,7 @@ using System.Data;
 using Npgsql;
 using Dapper;
 using vsWork.Utils;
+using System.IO;
 
 namespace vsWork.Data
 {
@@ -28,6 +29,7 @@ namespace vsWork.Data
             this.connectionString = connectionString;
 #if DEBUG
             CreateTable();
+            //CreateTrigger(); トリガー作成関数を実行すると何故かセッション初期化で例外発生。未調査。
 #endif
         }
         /// <summary>
@@ -58,7 +60,18 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
+                }
+            }
+        }
+        private void CreateTrigger()
+        {
+            using (var reader = new StreamReader("../sql/functions/maint_usrstate.sql"))
+            {
+                using (IDbConnection db = Connection)
+                {
+                    db.Execute(reader.ReadToEnd());
                 }
             }
         }
@@ -80,6 +93,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -102,6 +116,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }

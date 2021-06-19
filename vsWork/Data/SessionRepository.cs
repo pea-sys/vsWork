@@ -57,6 +57,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -79,6 +80,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -101,6 +103,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -174,7 +177,14 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<Session>($"SELECT SessionId, UserId FROM {tableName} WHERE SessionId = '{id}' LIMIT 1").FirstOrDefault();
+                try
+                {
+                    return db.Query<Session>($"SELECT SessionId, UserId FROM {tableName} WHERE SessionId = '{id}' LIMIT 1").FirstOrDefault();
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
         /// <summary>

@@ -8,7 +8,7 @@ using Dapper;
 
 namespace vsWork.Data
 {
-    public class OrganizationRepository:IRepository<Organization, string>
+    public class OrganizationRepository:IRepository<Organization, int>
     {
         /// <summary>DB接続文字列</summary>
         private readonly string connectionString;
@@ -24,15 +24,12 @@ namespace vsWork.Data
             this.connectionString = connectionString;
 #if DEBUG
             CreateTable();
-            if (FindById("ABCDEFG") == null)
+            if (FindById(0) == null)
             {
-                Add(new Organization { OrganizationId = "ABCDEFG", OrganizationName = "株式会社XYZ" });
-                Add(new Organization { OrganizationId = "HIJKLMN", OrganizationName = "株式会社ABC" });
-                Add(new Organization { OrganizationId = "あいうえお", OrganizationName = "あいうえお" });
-
-                for (int i = 0; i < 30; i++)
+                Add(new Organization { OrganizationId = 0, OrganizationName = "ベンダー" });
+                for (int i = 1; i < 30; i++)
                 {
-                    Add(new Organization { OrganizationId = i.ToString(), OrganizationName = i.ToString() });
+                    Add(new Organization { OrganizationId = i, OrganizationName = $"ユーザー会社{i}" });
                 }
             }
 #endif
@@ -59,12 +56,13 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId text PRIMARY KEY, OrganizationName varchar(100) NOT NULL, CreateTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer PRIMARY KEY, OrganizationName varchar(100) NOT NULL, CreateTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
                         tran.Commit();
                     }
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -87,6 +85,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -109,6 +108,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
@@ -117,7 +117,7 @@ namespace vsWork.Data
         /// <summary>
         /// レコードを削除します
         /// </summary>
-        public void Remove(string id)
+        public void Remove(int id)
         {
             if (id == null)
             {
@@ -173,7 +173,7 @@ namespace vsWork.Data
         /// 任意のレコードを取得します
         /// </summary>
         /// <param name="id">セッションID</param>
-        public Organization FindById(string id)
+        public Organization FindById(int id)
         {
             if (id == null)
             {

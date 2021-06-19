@@ -18,14 +18,14 @@ namespace vsWork.Validators
         /// <summary>
         /// ユーザ状態管理
         /// </summary>
-        private readonly IState<SettingState<User>> _userSettingState;
+        private readonly IState<UserSettingState> _userSettingState;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="userRepository">ユーザリポジトリ</param>
         /// <param name="UserSettingState">ユーザー設定状態</param>
-        public UserValidator(IRepository<User, string> userRepository, IState<SettingState<User>> userSettingState)
+        public UserValidator(IRepository<User, string> userRepository, IState<UserSettingState> userSettingState)
         {
             _userRepository = userRepository;
             _userSettingState = userSettingState;
@@ -60,19 +60,22 @@ namespace vsWork.Validators
             }
             else
             {
-                RuleFor(x => new { Id = x.UserId, x.Password }).Must(x => MatchPassword(x.Id, x.Password)).WithMessage("ユーザID,またはパスワードが間違っています。");
+                RuleFor(x => x.UserId).Must(x => !IsExistId(x)).WithMessage("ユーザID,またはパスワードが間違っています。")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => new { Id = x.UserId, x.Password }).Must(x => MatchPassword(x.Id, x.Password)).WithMessage("ユーザID,またはパスワードが間違っています。");
+                });
             }
         }
+        
         /// <summary>
         /// ユーザの存在チェック
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>false:正常 true:異常</returns>
+        /// <returns>true:存在</returns>
         private bool IsExistId(string id)
         {
-            User validUser = _userRepository.FindById(id);
-            return (validUser == null);
-
+            return ( null == _userRepository.FindById(id));
         }
         /// <summary>
         /// パスワード一致検証

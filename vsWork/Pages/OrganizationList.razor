@@ -1,5 +1,6 @@
 ﻿@page "/organizationList"
 @inherits vsWork.Shared.BasePage
+@implements IDisposable
 @using Fluxor
 @using vsWork.Stores
 @using BlazorPagination
@@ -39,7 +40,7 @@ else
     // TODO:ページコンポーネントとボタンを横並びにしたい
 
     [Inject]
-    private IState<SettingState<Organization>> SettingState { get; set; }
+    private IState<OrganizationSettingState> SettingState { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
@@ -48,7 +49,7 @@ else
     private int pageCount;
     private int currentPage = 1;
 
-    private Organization[] _listData => SettingState.Value.ListData;
+    private Organization[] _listData => SettingState.Value.OrganizationList;
     private Organization _selectedData;
     private bool _loading => SettingState.Value.Loading;
 
@@ -59,6 +60,7 @@ else
             Dispatcher.Dispatch(new LoadOrganizationsAction());
         }
         pageCount = (int)Math.Ceiling((_listData.Length / maxRow) + 0.5);
+        Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
     private void OnPageChanged(int e)
@@ -86,5 +88,17 @@ else
         {
             Dispatcher.Dispatch(new OrganizationSettingBeginAction(_selectedData, SettingMode.Delete));
         }
+    }
+    private void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
+        if (returnUrl != "organizationSetting")
+        {
+            Dispatcher.Dispatch(new OrganizationSettingStateInitializeAction());
+        }
+    }
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
     }
 }

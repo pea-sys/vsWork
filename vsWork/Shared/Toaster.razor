@@ -17,10 +17,12 @@
         SubscribeToAction<LoadUsersSuccessAction>(ShowLoadUsersSuccessToast);
         SubscribeToAction<UserSettingSuccessAction>(ShowUserSettingSuccessToast);
         SubscribeToAction<UserSettingFailureAction>(ShowUserSettingFailureToast);
+        SubscribeToAction<UserSettingStateInitializeAction>(ShowUserSettingStateInitializeToast);
 
         SubscribeToAction<LoadOrganizationsSuccessAction>(ShowLoadOrganizationsSuccessToast);
         SubscribeToAction<OrganizationSettingSuccessAction>(ShowOrganizationSettingSuccessToast);
         SubscribeToAction<OrganizationSettingFailureAction>(ShowOrganizationSettingFailureToast);
+        SubscribeToAction<OrganizationSettingStateInitializeAction>(ShowOrganizationSettingStateInitializeToast);
 
         base.OnInitialized();
     }
@@ -60,6 +62,10 @@
     {
         toastService.ShowError("Setting Failure!");
     }
+    private void ShowUserSettingStateInitializeToast(UserSettingStateInitializeAction action)
+    {
+        toastService.ShowInfo("State Initialized!");
+    }
     private void ShowLoadOrganizationsSuccessToast(LoadOrganizationsSuccessAction action)
     {
         toastService.ShowSuccess("LoadOrganizations Success!");
@@ -71,5 +77,9 @@
     private void ShowOrganizationSettingFailureToast(OrganizationSettingFailureAction action)
     {
         toastService.ShowError("Setting Failure!");
+    }
+    private void ShowOrganizationSettingStateInitializeToast(OrganizationSettingStateInitializeAction action)
+    {
+        toastService.ShowInfo("State Initialized!");
     }
 }

@@ -52,14 +52,13 @@ namespace vsWork
 
             //サービスのライフタイムについて
             //https://entityframeworkcore.com/knowledge-base/57495333/asp-net-core---repository-dependency-injection-fails-on-singleton-injection
-
             // [参考]https://stackoverflow.com/questions/9218847/how-do-i-handle-database-connections-with-dapper-in-net
             services.AddSingleton<string>((sp) => this.Configuration.GetConnectionString("DefaultConnection"));
             services.AddScoped<IRepository<User, string>, UserRepository>();
             services.AddScoped<IRepository<Session, string>, SessionRepository>();
             services.AddScoped<IRepository<Attendance, string>, AttendanceRepository>();
             services.AddScoped<IRepository<UserState, string>, UserStateRepository>();
-            services.AddScoped<IRepository<Organization, string>, OrganizationRepository>();
+            services.AddScoped<IRepository<Organization, int>, OrganizationRepository>();
 
             services.AddScoped<CustomQueryService>();
 

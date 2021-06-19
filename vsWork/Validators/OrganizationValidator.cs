@@ -14,16 +14,16 @@ namespace vsWork.Validators
         /// <summary>
         /// 組織リポジトリ
         /// </summary>
-        private readonly IRepository<Organization, string> _organizationRepository;
+        private readonly IRepository<Organization, int> _organizationRepository;
         /// <summary>
         /// 組織状態管理
         /// </summary>
-        private readonly IState<SettingState<Organization>> _organizationSettingState;
+        private readonly IState<OrganizationSettingState> _organizationSettingState;
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="organizationRepository">ユーザリポジトリ</param>
-        public OrganizationValidator(IRepository<Organization, string> organizationRepository, IState<SettingState<Organization>> organizationSettingState)
+        public OrganizationValidator(IRepository<Organization, int> organizationRepository, IState<OrganizationSettingState> organizationSettingState)
         {
             _organizationRepository = organizationRepository;
             _organizationSettingState = organizationSettingState;
@@ -54,7 +54,7 @@ namespace vsWork.Validators
         /// </summary>
         /// <param name="id"></param>
         /// <returns>false:正常 true:異常</returns>
-        private bool IsExistId(string id)
+        private bool IsExistId(int id)
         {
             Organization validOrganization = _organizationRepository.FindById(id);
             return (validOrganization == null);

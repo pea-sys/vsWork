@@ -6,6 +6,7 @@ using System.Data;
 using Npgsql;
 using Dapper;
 using vsWork.Utils;
+using System.IO;
 
 namespace vsWork.Data
 {
@@ -58,10 +59,12 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }
         }
+
         /// <summary>
         /// テーブルを削除します
         /// </summary>
@@ -80,6 +83,7 @@ namespace vsWork.Data
                     catch
                     {
                         tran.Rollback();
+                        throw;
                     }
                 }
             }

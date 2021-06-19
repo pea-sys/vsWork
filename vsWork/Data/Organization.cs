@@ -10,7 +10,7 @@ namespace vsWork.Data
     /// </summary>
     public class Organization : BaseEntity
     {
-        public string OrganizationId { get; set; }
+        public int OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         
     }

@@ -74,7 +74,7 @@ namespace vsWork.Stores
         private readonly IRepository<Session, string> _sessionRepository;
         private readonly IRepository<UserState, string> _userStateRepository;
         private readonly IRepository<Attendance, string> _attendanceRepository;
-        private readonly IRepository<Organization, string> _organizationRepository;
+        private readonly IRepository<Organization, int> _organizationRepository;
         private readonly NavigationManager _navigationManager;
         private const string StatePersistenceName = "CurrentUserState";
 
@@ -84,7 +84,7 @@ namespace vsWork.Stores
         IRepository<Session, string> sessionRepositoryService,
         IRepository<UserState, string> userStateRepositoryService,
         IRepository<Attendance, string> attendanceRepositoryService,
-        IRepository<Organization, string> organizationRepositoryService,
+        IRepository<Organization, int> organizationRepositoryService,
         NavigationManager navigationManager)
         {
             currentUserState = state;
@@ -129,6 +129,7 @@ namespace vsWork.Stores
             _sessionRepository.Remove(currentUserState.Value.CircuitId);
             currentUserState.Value.User = new User();
             currentUserState.Value.UserState = new UserState();
+            _navigationManager.NavigateTo("");
         }
         [EffectMethod(typeof(PunchInAction))]
         public async Task PunchIn(IDispatcher dispatcher)

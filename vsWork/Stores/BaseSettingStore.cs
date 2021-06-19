@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace vsWork.Stores
 {
-    public record SettingState<T>
+    public record BaseSettingState
     {
         public bool Initialized { get; init; }
         public bool Loading { get; init; }
-        public T[] ListData { get; init; }
-        public T SelectedData { get; set; }
         public SettingMode Mode { get; set; }
     }
 

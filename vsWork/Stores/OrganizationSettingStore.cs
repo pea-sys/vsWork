@@ -9,20 +9,25 @@ using Microsoft.AspNetCore.Components;
 
 namespace vsWork.Stores
 {
+    public record OrganizationSettingState: BaseSettingState
+    {
+        public Organization[] OrganizationList { get; init; }
+        public Organization SelectedOrganization { get; set; }
+    }
     public class OrganizationSettingStore
     {
-        public class OrganizationSettingFeature : Feature<SettingState<Organization>>
+        public class OrganizationSettingFeature : Feature<OrganizationSettingState>
         {
             public override string GetName() => "OrganizationSetting";
 
-            protected override SettingState<Organization> GetInitialState()
+            protected override OrganizationSettingState GetInitialState()
             {
-                return new SettingState<Organization>
+                return new OrganizationSettingState
                 {
                     Initialized = false,
                     Loading = false,
-                    ListData = Array.Empty<Organization>(),
-                    SelectedData = null,
+                    OrganizationList = Array.Empty<Organization>(),
+                    SelectedOrganization = null,
                     Mode = SettingMode.None
                 };
             }
@@ -30,19 +35,19 @@ namespace vsWork.Stores
         public static class OrganizationSettingReducers
         {
             [ReducerMethod]
-            public static SettingState<Organization> OnSetOrganizations(SettingState<Organization> state, SetOrganizationsAction action)
+            public static OrganizationSettingState OnSetOrganizations(OrganizationSettingState state, SetOrganizationsAction action)
             {
                 return state with
                 {
-                    ListData = (Organization[])(action.ListData),
+                    OrganizationList = (Organization[])(action.ListData),
                     Loading = false,
                     Initialized = true,
-                    SelectedData = null
+                    SelectedOrganization = null
                 };
             }
 
             [ReducerMethod(typeof(LoadOrganizationsAction))]
-            public static SettingState<IEntity> OnLoadLoadList(SettingState<IEntity> state)
+            public static OrganizationSettingState OnLoadLoadList(OrganizationSettingState state)
             {
                 return state with
                 {
@@ -52,58 +57,69 @@ namespace vsWork.Stores
             }
 
             [ReducerMethod]
-            public static SettingState<Organization> OnOrganizationSettingSetState(SettingState<Organization> state, SetOrganizationStateAction action)
+            public static OrganizationSettingState OnOrganizationSettingSetState(OrganizationSettingState state, SetOrganizationStateAction action)
             {
                 return action.State;
             }
             [ReducerMethod]
-            public static SettingState<Organization> OnSettingBegin(SettingState<Organization> state, OrganizationSettingBeginAction action)
+            public static OrganizationSettingState OnSettingBegin(OrganizationSettingState state, OrganizationSettingBeginAction action)
             {
                 return state with
                 {
-                    SelectedData = action.SelectedData,
+                    SelectedOrganization = action.SelectedData,
                     Mode = action.Mode
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingOrganization(SettingState<IEntity> state, OrganizationSettingAction action)
+            public static OrganizationSettingState OnSettingOrganization(OrganizationSettingState state, OrganizationSettingAction action)
             {
                 return state with
                 {
-                    SelectedData = action.SelectedData
+                    SelectedOrganization = action.SelectedData
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingOrganizationSuccess(SettingState<IEntity> state, OrganizationSettingSuccessAction action)
+            public static OrganizationSettingState OnSettingOrganizationSuccess(OrganizationSettingState state, OrganizationSettingSuccessAction action)
             {
                 return state with
                 {
-                    SelectedData = null,
+                    SelectedOrganization = null,
                 };
             }
             [ReducerMethod]
-            public static SettingState<IEntity> OnSettingOrganizationFailure(SettingState<IEntity> state, OrganizationSettingFailureAction action)
+            public static OrganizationSettingState OnSettingOrganizationFailure(OrganizationSettingState state, OrganizationSettingFailureAction action)
             {
                 return state with
                 {
                     // 未定
                 };
             }
-
+            [ReducerMethod]
+            public static OrganizationSettingState OnInitializeState(OrganizationSettingState state, OrganizationSettingStateInitializeAction action)
+            {
+                return new OrganizationSettingState
+                {
+                    Initialized = false,
+                    Loading = false,
+                    OrganizationList = Array.Empty<Organization>(),
+                    SelectedOrganization = null,
+                    Mode = SettingMode.None
+                };
+            }
         }
     }
     public class OrganizationSettingEffects
     {
 
-        private readonly IState<SettingState<Organization>> SettingState;
-        private readonly IRepository<Organization, string> _organizationRepositoryService;
+        private readonly IState<OrganizationSettingState> SettingState;
+        private readonly IRepository<Organization, int> _organizationRepositoryService;
         private readonly ILocalStorageService _localStorageService;
         private readonly NavigationManager _navigationManager;
         private const string StatePersistenceName = "OrganizationSettingState";
 
         public OrganizationSettingEffects
-        (IState<SettingState<Organization>> settingState,
-        IRepository<Organization, string> organizationRepositoryService,
+        (IState<OrganizationSettingState> settingState,
+        IRepository<Organization, int> organizationRepositoryService,
         ILocalStorageService localStorageService,
         NavigationManager navigationManager)
         {
@@ -130,7 +146,7 @@ namespace vsWork.Stores
             }
             else if (SettingState.Value.Mode == SettingMode.Delete)
             {
-                dispatcher.Dispatch(new OrganizationSettingAction(SettingState.Value.SelectedData));
+                dispatcher.Dispatch(new OrganizationSettingAction(SettingState.Value.SelectedOrganization));
             }
 
         }
@@ -141,17 +157,17 @@ namespace vsWork.Stores
             {
                 if (SettingState.Value.Mode == SettingMode.Add)
                 {
-                    _organizationRepositoryService.Add(SettingState.Value.SelectedData);
+                    _organizationRepositoryService.Add(SettingState.Value.SelectedOrganization);
                     dispatcher.Dispatch(new OrganizationSettingSuccessAction());
                 }
                 else if (SettingState.Value.Mode == SettingMode.Update)
                 {
-                    _organizationRepositoryService.Update(SettingState.Value.SelectedData);
+                    _organizationRepositoryService.Update(SettingState.Value.SelectedOrganization);
                     dispatcher.Dispatch(new OrganizationSettingSuccessAction());
                 }
                 else if (SettingState.Value.Mode == SettingMode.Delete)
                 {
-                    _organizationRepositoryService.Remove(SettingState.Value.SelectedData.OrganizationId);
+                    _organizationRepositoryService.Remove(SettingState.Value.SelectedOrganization.OrganizationId);
                     dispatcher.Dispatch(new OrganizationSettingSuccessAction());
                 }
             }
@@ -177,7 +193,7 @@ namespace vsWork.Stores
         {
             try
             {
-                var organizationSettingState = await _localStorageService.GetItemAsync<SettingState<Organization>>(StatePersistenceName);
+                var organizationSettingState = await _localStorageService.GetItemAsync<OrganizationSettingState>(StatePersistenceName);
                 if (organizationSettingState is not null)
                 {
                     dispatcher.Dispatch(new SetOrganizationStateAction(organizationSettingState));
@@ -196,12 +212,12 @@ namespace vsWork.Stores
             try
             {
                 await _localStorageService.RemoveItemAsync(StatePersistenceName);
-                dispatcher.Dispatch(new SetOrganizationStateAction(new SettingState<Organization>
+                dispatcher.Dispatch(new SetOrganizationStateAction(new OrganizationSettingState
                 {
                     Initialized = false,
                     Loading = false,
-                    ListData = Array.Empty<Organization>(),
-                    SelectedData = null,
+                    OrganizationList = Array.Empty<Organization>(),
+                    SelectedOrganization = null,
                     Mode = SettingMode.None
 
                 })); ;
@@ -216,11 +232,10 @@ namespace vsWork.Stores
     #region Actions
     public record LoadOrganizationsAction();
     public record LoadOrganizationsSuccessAction();
-    public record SetOrganizationsAction(Organization[] ListData);
 
     public record SettingOrganizationLoadStateAction();
 
-    public record SetOrganizationStateAction(SettingState<Organization> State);
+    public record SetOrganizationStateAction(OrganizationSettingState State);
     public record LoadOrganizationStateSuccessAction();
     public record LoadOrganizationStateFailureAction(string ErrorMessage);
 
@@ -232,5 +247,6 @@ namespace vsWork.Stores
     public record OrganizationSettingAction(Organization SelectedData);
     public record OrganizationSettingSuccessAction();
     public record OrganizationSettingFailureAction(string ErrorMessage);
+    public record OrganizationSettingStateInitializeAction();
     #endregion
 }

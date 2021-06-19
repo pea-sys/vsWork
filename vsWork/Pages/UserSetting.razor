@@ -1,5 +1,6 @@
 ﻿@page "/userSetting"
 @inherits vsWork.Shared.BasePage
+@implements IDisposable
 @using Fluxor
 @using vsWork.Stores
 @using vsWork.Shared
@@ -11,7 +12,7 @@
         <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
         <div class="form-group">
             <label for="id">UserID(3文字以上100文字以下)</label>
-            <input type="text" name="id" @bind-value="settingData.UserId" disabled=@(SettingState.Value.Mode==SettingMode.Update) maxlength="100" class="form-control" />
+            <input type="text" name="id" @bind-value="settingData.UserId" disabled=@(UserSettingState.Value.Mode==SettingMode.Update) maxlength="100" class="form-control" />
         </div>
         <div class="form-group">
             <label for="id">UserName(3文字以上100文字以下)</label>
@@ -26,38 +27,48 @@
         {
             <div class="form-group">
                 <label for="rating">組織名称</label>
-                <InputSelect class="form-control" @bind-Value="selectedOrganizationName">
+                <InputSelect class="form-control" @bind-Value="selectedOrganization.OrganizationName">
                     @foreach (Organization item in _organizationList)
-                    {
+                        {
                         <option>@(item.OrganizationName)</option>
-                    }
+                        }
                 </InputSelect>
             </div>
         }
-        
+
         <button class="btn btn-primary" type="submit">登録</button>
 
-        </EditForm>
+    </EditForm>
 </Container>
 
 @code {
     [Inject]
-    private IState<SettingState<User>> SettingState { get; set; }
+    private IState<UserSettingState> UserSettingState { get; set; }
 
     private User settingData = new User();
     private List<Organization> _organizationList = new List<Organization>();
-    private string selectedOrganizationName = string.Empty;
+    private Organization selectedOrganization = new Organization();
 
     protected override void OnInitialized()
     {
-        _organizationList.Add(new Organization { OrganizationId = "testId", OrganizationName = "testName" });
-
-        settingData = SettingState.Value.SelectedData;
+        settingData = UserSettingState.Value.SelectedUser;
+        Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
-
+    private void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
+        if (returnUrl!= "userList")
+        {
+            Dispatcher.Dispatch(new UserSettingStateInitializeAction());
+        }
+    }
     private async Task OnClickRegist()
     {
         Dispatcher.Dispatch(new UserSettingAction(settingData));
+    }
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
     }
 }
