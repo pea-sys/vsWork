@@ -117,8 +117,8 @@ namespace vsWork.Stores
     public class UserSettingEffects
     {
         private readonly IState<UserSettingState> SettingState;
-        private readonly IRepository<User, string> _userRepositoryService;
         private readonly IRepository<Organization, int> _organizationRepositoryService;
+        private readonly IRepository<User, string> _userRepositoryService;
         private readonly IState<CurrentUserState> _currentUserState;
         private readonly ILocalStorageService _localStorageService;
         private readonly NavigationManager _navigationManager;
@@ -126,8 +126,8 @@ namespace vsWork.Stores
 
         public UserSettingEffects
         (IState<UserSettingState> settingState,
-        IRepository<User, string> userRepositoryService,
         IRepository<Organization, int> organizationRepositoryService,
+        IRepository<User, string> userRepositoryService,
         IState<CurrentUserState> currentUserState,
         ILocalStorageService localStorageService,
         NavigationManager navigationManager)

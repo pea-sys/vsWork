@@ -78,7 +78,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) NOT NULL PRIMARY KEY, password bytea NOT NULL, UserName varchar(100), Rank integer NOT NULL default {(int)User.RankType.General} , OrganizationId integer NOT NULL);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (UserId varchar(100) NOT NULL PRIMARY KEY, password bytea NOT NULL, UserName varchar(100), Rank integer NOT NULL default {(int)User.RankType.General} , OrganizationId integer NOT NULL REFERENCES organization_tbl ON DELETE CASCADE);");
                         tran.Commit();
                     }
                     catch
@@ -214,6 +214,18 @@ namespace vsWork.Data
             {
                 db.Open();
                 return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, UserName, Rank, OrganizationId FROM {tableName}");
+            }
+        }
+        /// <summary>
+        /// 任意のレコード数を取得します
+        /// </summary>
+        /// <param name="id">ユーザID</param>
+        public int GetUserCountByOrganizationId(int id)
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<int>($"SELECT COUNT(*) FROM {tableName} WHERE OrganizationId = '{id}'").FirstOrDefault();
             }
         }
     }

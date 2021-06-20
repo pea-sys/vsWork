@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS user_tbl (UserId varchar(100) NOT NULL PRIMARY KEY, password bytea NOT NULL, UserName varchar(100), Rank integer NOT NULL default 3 , OrganizationId integer NOT NULL REFERENCES organization_tbl ON DELETE CASCADE);

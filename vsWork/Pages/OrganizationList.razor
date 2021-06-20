@@ -32,7 +32,7 @@ else
 
     <Button Color="Color.Primary" @onclick="@(OnClickAddButton)">新規登録</Button>
     <Button Color="Color.Secondary" Disabled="@(_selectedData == null)" @onclick="@(OnClickUpdateButton)">更新</Button>
-    <Button Color="Color.Danger" Disabled="@(_selectedData == null)" @onclick="@(OnClickDeleteButton)">削除</Button>
+    <Button Color="Color.Danger" Disabled="@((_selectedData == null) || (CurrentState.Value.User.OrganizationId == _selectedData.OrganizationId))" @onclick="@(OnClickDeleteButton)">削除</Button>
 }
 
 @code {
@@ -41,6 +41,8 @@ else
 
     [Inject]
     private IState<OrganizationSettingState> SettingState { get; set; }
+    [Inject]
+    private IRepository<User,string> UserRepositoryService { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
@@ -78,8 +80,9 @@ else
     }
     private async Task OnClickDeleteButton()
     {
+        int userCount = ((UserRepository)UserRepositoryService).GetUserCountByOrganizationId(_selectedData.OrganizationId);
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ModalDisplay.Message), _selectedData.OrganizationName + "を削除しますか？");
+        parameters.Add(nameof(ModalDisplay.Message), "所属員が" + userCount + "名います" + Environment.NewLine  +_selectedData.OrganizationName + "を削除しますか？");
         parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.YesOrNo);
         var options = new ModalOptions { HideCloseButton = true };
         var messageForm = Modal.Show<ModalDisplay>("確認", parameters, options);

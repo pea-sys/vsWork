@@ -13,14 +13,17 @@
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="userList">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> ユーザ登録(管理者権限)
+                <span class="oi oi-list-rich" aria-hidden="true"></span> ユーザー設定)
             </NavLink>
         </li>
+        @if (CurrentState.Value.User.Rank == User.RankType.SystemAdmin)
+        {
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="organizationList">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> 組織登録(管理者権限)
+                <span class="oi oi-list-rich" aria-hidden="true"></span> 組織設定
             </NavLink>
         </li>
+        }
         <li class="nav-item px-3">
             <a class="navbar-brand">@(CurrentState.Value.User.UserName) 状態:@(EnumTextAttribute.GetText(CurrentState.Value.UserState.State))</a>
             <button class="nav-link" @onclick="LogOut">
@@ -44,7 +47,6 @@
 
     protected override void OnInitialized()
     {
-        // 初回時にイベントハンドラに、イベントの紐づけ
         CurrentState.Value.StateChanged += OnUserStateChanged;
     }
 

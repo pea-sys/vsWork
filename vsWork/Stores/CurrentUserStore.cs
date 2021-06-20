@@ -68,23 +68,23 @@ namespace vsWork.Stores
     }
     public class CurrentUserEffects
     {
-
+        private readonly IRepository<Organization, int> _organizationRepository;
         private readonly IState<CurrentUserState> currentUserState;
         private readonly IRepository<User, string> _userRepositoryService;
         private readonly IRepository<Session, string> _sessionRepository;
         private readonly IRepository<UserState, string> _userStateRepository;
         private readonly IRepository<Attendance, string> _attendanceRepository;
-        private readonly IRepository<Organization, int> _organizationRepository;
+
         private readonly NavigationManager _navigationManager;
         private const string StatePersistenceName = "CurrentUserState";
 
         public CurrentUserEffects
         (IState<CurrentUserState> state,
+        IRepository<Organization, int> organizationRepositoryService,
         IRepository<User, string> userRepositoryService,
         IRepository<Session, string> sessionRepositoryService,
         IRepository<UserState, string> userStateRepositoryService,
         IRepository<Attendance, string> attendanceRepositoryService,
-        IRepository<Organization, int> organizationRepositoryService,
         NavigationManager navigationManager)
         {
             currentUserState = state;
