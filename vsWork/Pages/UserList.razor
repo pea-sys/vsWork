@@ -13,7 +13,7 @@
 else
 {
     <DataGrid TItem="User"
-              Data=@(_userListData.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
+              Data=@(UserSettingState.Value.UserList.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
               @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
         <DataGridColumn TItem="User" Field="@nameof(User.UserId)" Caption="ユーザーID" Sortable="false" />
         <DataGridColumn TItem="User" Field="@nameof(User.UserName)" Caption="ユーザー名称" Editable="true" />
@@ -47,7 +47,6 @@ else
     private int pageCount;
     private int currentPage = 1;
 
-    private User[] _userListData => UserSettingState.Value.UserList;
     private User _selectedData;
     private bool _loading => UserSettingState.Value.Loading;
 
@@ -57,7 +56,7 @@ else
         {
             Dispatcher.Dispatch(new LoadUsersAction());
         }
-        pageCount = (int)Math.Ceiling((_userListData.Length / maxRow) + 0.5);
+        pageCount = (int)Math.Ceiling((UserSettingState.Value.UserList.Length / maxRow) + 0.5);
         Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
@@ -80,7 +79,7 @@ else
         var options = new ModalOptions { HideCloseButton = true };
         if ((CurrentState.Value.User.Rank == User.RankType.SystemAdmin) &
         (_selectedData.Rank == User.RankType.SystemAdmin) &
-        (_userListData.Where(p => p.Rank == User.RankType.SystemAdmin).Count() < 2))
+        (UserSettingState.Value.UserList.Where(p => p.Rank == User.RankType.SystemAdmin).Count() < 2))
         {
             parameters.Add(nameof(ModalDisplay.Message), "システム管理者が残り１名です" + Environment.NewLine + "削除できません");
             parameters.Add(nameof(ModalDisplay.DispType), ModalDisplay.EnumDispType.Confirm);
@@ -103,7 +102,7 @@ else
         var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
         if (returnUrl != "userSetting")
         {
-            Dispatcher.Dispatch(new UserSettingStateInitializeAction());
+            Dispatcher.Dispatch(new ClearUserStateAction());
         }
     }
     void IDisposable.Dispose()

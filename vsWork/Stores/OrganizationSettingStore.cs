@@ -94,18 +94,6 @@ namespace vsWork.Stores
                     // 未定
                 };
             }
-            [ReducerMethod]
-            public static OrganizationSettingState OnInitializeState(OrganizationSettingState state, OrganizationSettingStateInitializeAction action)
-            {
-                return new OrganizationSettingState
-                {
-                    Initialized = false,
-                    Loading = false,
-                    OrganizationList = Array.Empty<Organization>(),
-                    SelectedOrganization = null,
-                    Mode = SettingMode.None
-                };
-            }
         }
     }
     public class OrganizationSettingEffects
@@ -247,6 +235,5 @@ namespace vsWork.Stores
     public record OrganizationSettingAction(Organization SelectedData);
     public record OrganizationSettingSuccessAction();
     public record OrganizationSettingFailureAction(string ErrorMessage);
-    public record OrganizationSettingStateInitializeAction();
     #endregion
 }

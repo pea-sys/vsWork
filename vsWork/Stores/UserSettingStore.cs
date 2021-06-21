@@ -99,19 +99,6 @@ namespace vsWork.Stores
                     // 未定
                 };
             }
-            [ReducerMethod]
-            public static UserSettingState OnInitializeState(UserSettingState state, UserSettingStateInitializeAction action)
-            {
-                return new UserSettingState
-                {
-                    Initialized = false,
-                    Loading = false,
-                    UserList = Array.Empty<User>(),
-                    SelectedUser = null,
-                    Mode = SettingMode.None,
-                    OrganizationList = Array.Empty<Organization>()
-                };
-            }
         }
     }
     public class UserSettingEffects
@@ -296,8 +283,6 @@ namespace vsWork.Stores
     public record UserSettingAction(User SelectedData);
     public record UserSettingSuccessAction();
     public record UserSettingFailureAction(string ErrorMessage);
-
-    public record UserSettingStateInitializeAction();
 
 
     #endregion

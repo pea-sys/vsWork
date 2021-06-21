@@ -12,12 +12,11 @@
 else
 {
     <DataGrid TItem="Organization"
-              Data=@(_listData.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
+              Data=@(SettingState.Value.OrganizationList.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
               @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
         <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationId)" Caption="組織ID" Sortable="false" />
         <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationName)" Caption="組織名称" Editable="true" />
     </DataGrid>
-
 
     <BlazorPager CurrentPage="@currentPage"
                  PageCount="@pageCount"
@@ -51,7 +50,6 @@ else
     private int pageCount;
     private int currentPage = 1;
 
-    private Organization[] _listData => SettingState.Value.OrganizationList;
     private Organization _selectedData;
     private bool _loading => SettingState.Value.Loading;
 
@@ -61,7 +59,7 @@ else
         {
             Dispatcher.Dispatch(new LoadOrganizationsAction());
         }
-        pageCount = (int)Math.Ceiling((_listData.Length / maxRow) + 0.5);
+        pageCount = (int)Math.Ceiling((SettingState.Value.OrganizationList.Length / maxRow) + 0.5);
         Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
@@ -97,7 +95,7 @@ else
         var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
         if (returnUrl != "organizationSetting")
         {
-            Dispatcher.Dispatch(new OrganizationSettingStateInitializeAction());
+            Dispatcher.Dispatch(new ClearOrganizationStateAction());
         }
     }
     void IDisposable.Dispose()

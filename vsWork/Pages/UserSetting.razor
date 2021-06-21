@@ -27,10 +27,10 @@
         {
             <div class="form-group">
                 <label for="rating">組織名称</label>
-                <InputSelect class="form-control" @bind-Value="selectedOrganization.OrganizationName">
-                    @foreach (Organization item in _organizationList)
+                <InputSelect class="form-control" @bind-Value="selectedOrganization.OrganizationId">
+                    @foreach (Organization item in UserSettingState.Value.OrganizationList)
                         {
-                        <option>@(item.OrganizationName)</option>
+                        <option value="@item.OrganizationId">@(item.OrganizationName)</option>
                         }
                 </InputSelect>
             </div>
@@ -46,12 +46,12 @@
     private IState<UserSettingState> UserSettingState { get; set; }
 
     private User settingData = new User();
-    private List<Organization> _organizationList = new List<Organization>();
     private Organization selectedOrganization = new Organization();
 
     protected override void OnInitialized()
     {
         settingData = UserSettingState.Value.SelectedUser;
+        selectedOrganization = new Organization { OrganizationId = settingData.OrganizationId, OrganizationName = settingData.OrganizationName };
         Navigation.LocationChanged += LocationChanged;
         base.OnInitialized();
     }
@@ -60,7 +60,7 @@
         var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
         if (returnUrl!= "userList")
         {
-            Dispatcher.Dispatch(new UserSettingStateInitializeAction());
+            Dispatcher.Dispatch(new ClearUserStateAction());
         }
     }
     private async Task OnClickRegist()

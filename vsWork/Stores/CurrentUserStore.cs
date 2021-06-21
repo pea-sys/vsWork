@@ -10,9 +10,11 @@ namespace vsWork.Stores
 {
     public record CurrentUserState:IState
     {
+        private UserState _userState;
+
         public string CircuitId { get; set; }
         public User User { get; set; }
-        private UserState _userState;
+        
         public UserState UserState 
         {
             get { return _userState; }

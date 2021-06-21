@@ -11,7 +11,7 @@
     <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
     <div class="form-group">
         <label for="id">OrganizationID</label>
-        <input type="text" name="id" disabled="@(SettingState.Value.Mode != SettingMode.Add)" @bind-value="settingData.OrganizationId" maxlength="100" class="form-control" />
+        <input type="number" name="id" disabled="@(SettingState.Value.Mode != SettingMode.Add)" @bind-value="settingData.OrganizationId" maxlength="100" class="form-control" />
     </div>
     <div class="form-group">
         <label for="name">OrganizationName</label>
@@ -41,7 +41,7 @@
         var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
         if (returnUrl != "organizationList")
         {
-            Dispatcher.Dispatch(new OrganizationSettingStateInitializeAction());
+            Dispatcher.Dispatch(new ClearOrganizationStateAction());
         }
     }
     void IDisposable.Dispose()

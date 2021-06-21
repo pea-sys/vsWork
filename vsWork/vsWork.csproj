@@ -20,4 +20,6 @@
     <PackageReference Include="Npgsql" Version="5.0.5" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties _1_1_4_1_1_4_1_1_4_1_1_4_1nuget_4packages_4blazorise_40_19_13_17_4contentfiles_4any_4net5_10_4compilerconfig_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>
