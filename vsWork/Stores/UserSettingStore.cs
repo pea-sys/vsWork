@@ -105,7 +105,7 @@ namespace vsWork.Stores
     {
         private readonly IState<UserSettingState> SettingState;
         private readonly IRepository<Organization, int> _organizationRepositoryService;
-        private readonly IRepository<User, string> _userRepositoryService;
+        private readonly UserRepository _userRepositoryService;
         private readonly IState<CurrentUserState> _currentUserState;
         private readonly ILocalStorageService _localStorageService;
         private readonly NavigationManager _navigationManager;
@@ -120,7 +120,7 @@ namespace vsWork.Stores
         NavigationManager navigationManager)
         {
             SettingState = settingState;
-            _userRepositoryService = userRepositoryService;
+            _userRepositoryService = (UserRepository)userRepositoryService;
             _organizationRepositoryService = organizationRepositoryService;
             _currentUserState = currentUserState;
             _localStorageService = localStorageService;
@@ -147,7 +147,7 @@ namespace vsWork.Stores
             }
             else if (_currentUserState.Value.User.Rank == User.RankType.OrganizationAdmin)
             {
-                users = _userRepositoryService.FindAll().ToArray(); // TODO:所属組織で絞る
+                users = _userRepositoryService.GetUsersByOrganizationId(_currentUserState.Value.User.OrganizationId).ToArray();
                 dispatcher.Dispatch(new SetUsersAction(users));
                 dispatcher.Dispatch(new LoadUsersSuccessAction());
             }
@@ -203,20 +203,21 @@ namespace vsWork.Stores
         [EffectMethod(typeof(UserSettingSuccessAction))]
         public async Task SettingSuccess(IDispatcher dispatcher)
         {
-            if (SettingState.Value.Mode == SettingMode.Add |
-                SettingState.Value.Mode == SettingMode.Update)
+            if (SettingState.Value.Mode != SettingMode.None)
             {
                 // 自身を更新した場合サインアウトします
                 if (SettingState.Value.SelectedUser.UserId == _currentUserState.Value.User.UserId)
                 {
                     dispatcher.Dispatch(new SignOutAction());
-                }
-                else
-                {
-                    _navigationManager.NavigateTo("userList");
-                    dispatcher.Dispatch(new LoadUsersAction());
+                    return;
                 }
             }
+            if (SettingState.Value.Mode == SettingMode.Add |
+                SettingState.Value.Mode == SettingMode.Update)
+            {
+                _navigationManager.NavigateTo("userList");
+            }
+            dispatcher.Dispatch(new LoadUsersAction());
         }
 
 

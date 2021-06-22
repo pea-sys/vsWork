@@ -36,7 +36,7 @@ namespace vsWork.Data
                 Add(new User { UserId = "apple", Password = "apple", UserName = "apple", Rank = User.RankType.OrganizationAdmin, OrganizationId = 1 });
 
                 int organizationId = 0;
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 50; i++)
                 {
                     if (i % 2 == 0)
                     {
@@ -213,11 +213,23 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, UserName, Rank, OrganizationId FROM {tableName}");
+                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, UserName, Rank, OrganizationId FROM {tableName} ORDER BY UserName");
             }
         }
         /// <summary>
-        /// 任意のレコード数を取得します
+        /// 指定組織に所属する社員数を取得します
+        /// </summary>
+        /// <param name="id">ユーザID</param>
+        public IEnumerable<User> GetUsersByOrganizationId(int id)
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                return db.Query<User>($"SELECT UserId, convert_from(decrypt(password, 'pass'::bytea, 'aes') ,'UTF8') as password, UserName, Rank, OrganizationId FROM {tableName} WHERE OrganizationId = {id} ORDER BY UserName");
+            }
+        }
+        /// <summary>
+        /// 指定組織に所属する社員数を取得します
         /// </summary>
         /// <param name="id">ユーザID</param>
         public int GetUserCountByOrganizationId(int id)

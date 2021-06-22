@@ -5,7 +5,7 @@
 @using vsWork.Stores
 @using BlazorPagination
 
-@if (_loading)
+@if (SettingState.Value.Loading)
 {
     <p><em>Loading...</em></p>
 }
@@ -13,7 +13,7 @@ else
 {
     <DataGrid TItem="Organization"
               Data=@(SettingState.Value.OrganizationList.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
-              @bind-SelectedRow="@_selectedData" PageSize=@maxRow>
+              @bind-SelectedRow="@_selectedData" PageSize=@maxRow Sortable="false">
         <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationId)" Caption="組織ID" Sortable="false" />
         <DataGridColumn TItem="Organization" Field="@nameof(Organization.OrganizationName)" Caption="組織名称" Editable="true" />
     </DataGrid>
@@ -49,19 +49,20 @@ else
     private const int maxRow = 7;
     private int pageCount;
     private int currentPage = 1;
-
     private Organization _selectedData;
-    private bool _loading => SettingState.Value.Loading;
 
     protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += LocationChanged;
+        base.OnInitialized();
+    }
+    protected override void OnParametersSet()
     {
         if (SettingState.Value.Initialized == false)
         {
             Dispatcher.Dispatch(new LoadOrganizationsAction());
         }
-        pageCount = (int)Math.Ceiling((SettingState.Value.OrganizationList.Length / maxRow) + 0.5);
-        Navigation.LocationChanged += LocationChanged;
-        base.OnInitialized();
+        pageCount = (int)Math.Ceiling(((SettingState.Value.OrganizationList.Length - 1) / maxRow) + 0.5);
     }
     private void OnPageChanged(int e)
     {
@@ -93,7 +94,8 @@ else
     private void LocationChanged(object sender, LocationChangedEventArgs e)
     {
         var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
-        if (returnUrl != "organizationSetting")
+        if (returnUrl != "organizationSetting" &
+            returnUrl != "organizationList")
         {
             Dispatcher.Dispatch(new ClearOrganizationStateAction());
         }

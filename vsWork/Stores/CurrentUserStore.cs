@@ -122,7 +122,7 @@ namespace vsWork.Stores
                 currentUserState.Value.UserState = new UserState();
             }
 
-            _navigationManager.NavigateTo("top");
+            _navigationManager.NavigateTo("summary");
         }
         [EffectMethod(typeof(SignOutAction))]
         public async Task SignOut(IDispatcher dispatcher)
