@@ -1,0 +1,110 @@
+﻿<div class="calendar">
+    <table>
+        <caption>
+            <button class="calendar-day"
+                    @onclick="@(() => NextMonth(-1))">
+                ◀
+            </button>
+
+            @SelectDay.ToString("yyyy年MM月dd日")
+
+            <button class="calendar-day"
+                    @onclick="@(() => NextMonth(1))">
+                ▶
+            </button>
+
+        </caption>
+        <thead>
+            <tr>
+                <th class="calendar-day">日</th>
+                <th class="calendar-day">月</th>
+                <th class="calendar-day">火</th>
+                <th class="calendar-day">水</th>
+                <th class="calendar-day">木</th>
+                <th class="calendar-day">金</th>
+                <th class="calendar-day">土</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var days in Weeks)
+            {
+                <tr>
+                    @foreach (var day in days)
+                    {
+                        <td class="calendar-day">
+                            @if (day != default(DateTime))
+                            {
+
+                                // css用文字列の作成①
+                                var css = "calendar-day "
+                                    + day switch
+                                    {
+                                        _ when (day.Date == Today.Date) => "today",
+                                        { DayOfWeek: DayOfWeek.Saturday } => "saturday",
+                                        { DayOfWeek: DayOfWeek.Sunday } => "sunday",
+                                        _ => ""
+                                    };
+                                <button class="@css"
+                                        @onclick="@(() => DayClick(day))">
+                                    @day.Day
+                                </button>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<DateTime> OnClick { get; set; }
+
+    // 日付がクリックされた時に呼ばれる
+    private void DayClick(DateTime d)
+    {
+        SelectDay = d; // クリックされた日を設定する
+        OnClick.InvokeAsync(d); // イベントを通知する①
+    }
+
+    // 本日の設定
+    public DateTime Today { get; } = DateTime.Now;
+
+    // ひと月分の週毎のDateTime配列を受け取る
+    public IEnumerable<DateTime[]> Weeks;
+
+    // 選択されている日
+    public DateTime SelectDay { get; set; }
+
+    private void NextMonth(int n) => SelectDay = SelectDay.AddMonths(n);
+
+    // ひと月分の週毎のDateTime配列を返す
+    public IEnumerable<DateTime[]> GetWeeks()
+    {
+        // 月初
+        DateTime day = new DateTime(SelectDay.Year, SelectDay.Month, 1);
+        DateTime end = day.AddMonths(1).AddDays(-1); // 月末（翌月1日の前日）
+
+        var week = new DateTime[7];
+
+        while (day.Month == SelectDay.Month) // 該当の月の間
+        {
+            week[(int)day.DayOfWeek] = day; // 1週分の配列に設定する②
+
+            // 土曜日または月末のとき③
+            if (day.DayOfWeek == DayOfWeek.Saturday || day.Day == end.Day)
+            {
+                yield return week;
+                Array.Clear(week, 0, week.Length);
+            }
+            day = day.AddDays(1); // 翌日にする
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectDay = Today;  // 今日を設定する
+        Weeks = GetWeeks(); // 当月の週ごとのDateTime配列を取得する
+    }
+}

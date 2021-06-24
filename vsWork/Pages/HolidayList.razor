@@ -1,0 +1,85 @@
+﻿@page "/holidayList"
+@inherits vsWork.Shared.BasePage
+@implements IDisposable
+@using Fluxor
+@using vsWork.Stores
+@using BlazorPagination
+
+<DataGrid TItem="Holiday"
+          Data=@(HolidaySettingState.Value.HolidayList.Skip((currentPage - 1)*maxRow).Take(maxRow).ToArray())
+          @bind-SelectedRow="@_selectedData" PageSize=@maxRow Sortable="false">
+    <DataGridColumn TItem="Holiday" Field="@nameof(Holiday.Name)" Caption="名称" Sortable="false" />
+    <DataGridColumn TItem="Holiday" Field="@nameof(Holiday.Date)" Caption="日付" Editable="true" />
+</DataGrid>
+
+<BlazorPager CurrentPage="@currentPage"
+             PageCount="@pageCount"
+             OnPageChanged="(async e => { OnPageChanged(e);})"
+             ShowFirstLast="true"
+             ShowPageNumbers="true"
+             VisiblePages="5"
+             FirstText="&laquo;"
+             LastText="&raquo;"
+             NextText="&rsaquo;"
+             PreviousText="&lsaquo;" />
+
+<Calender></Calender>
+
+<Button Color="Color.Primary" @onclick="@(OnClickAddButton)">新規登録</Button>
+<Button Color="Color.Secondary" Disabled="@(_selectedData == null)" @onclick="@(OnClickUpdateButton)">更新</Button>
+<Button Color="Color.Danger" Disabled="@(_selectedData == null)" @onclick="@(OnClickDeleteButton)">削除</Button>
+
+@code {
+        [Inject]
+        private IState<HolidaySettingState> HolidaySettingState { get; set; }
+
+        [CascadingParameter]
+        public IModalService Modal { get; set; }
+
+    private const int maxRow = 7;
+    private int pageCount;
+    private int currentPage = 1;
+    private Holiday _selectedData;
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += LocationChanged;
+        base.OnInitialized();
+    }
+    protected override void OnParametersSet()
+    {
+        if (HolidaySettingState.Value.Initialized == false)
+        {
+            Dispatcher.Dispatch(new LoadHolidaysAction());
+        }
+        pageCount = (int)Math.Ceiling(((HolidaySettingState.Value.HolidayList.Length - 1) / maxRow) + 0.5);
+    }
+    private void OnPageChanged(int e)
+    {
+        currentPage = e;
+        StateHasChanged();
+    }
+    private async Task OnClickAddButton()
+    {
+        Dispatcher.Dispatch(new HolidaySettingBeginAction(new Holiday(), SettingMode.Add));
+    }
+    private async Task OnClickUpdateButton()
+    {
+        Dispatcher.Dispatch(new HolidaySettingBeginAction(_selectedData, SettingMode.Update));
+    }
+    private async Task OnClickDeleteButton()
+    {
+    }
+    private void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
+        if (returnUrl != "holidaySetting" & returnUrl != "holidayList")
+        {
+            Dispatcher.Dispatch(new ClearHolidayStateAction());
+        }
+    }
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
+    }
+}

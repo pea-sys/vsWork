@@ -119,7 +119,7 @@ namespace vsWork.Stores
             currentUserState.Value.UserState = _userStateRepository.FindById(currentUserState.Value.User.UserId);
             if (currentUserState.Value.UserState is null)
             {
-                currentUserState.Value.UserState = new UserState();
+                currentUserState.Value.UserState = new UserState{ UserId = currentUserState.Value.User.UserId };
             }
 
             _navigationManager.NavigateTo("summary");

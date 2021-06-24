@@ -59,7 +59,9 @@ namespace vsWork
             services.AddScoped<IRepository<Session, string>, SessionRepository>();
             services.AddScoped<IRepository<Attendance, string>, AttendanceRepository>();
             services.AddScoped<IRepository<UserState, string>, UserStateRepository>();
-            
+            services.AddScoped<IRepository<Holiday, (int, DateTime)>, HolidayRepository>();
+
+
 
             services.AddScoped<CustomQueryService>();
 

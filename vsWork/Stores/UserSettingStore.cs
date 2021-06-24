@@ -6,8 +6,6 @@ using vsWork.Data;
 using Fluxor;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using static vsWork.Stores.UserSettingStore;
-using vsWork.Services;
 
 namespace vsWork.Stores
 {
@@ -59,7 +57,7 @@ namespace vsWork.Stores
             }
 
             [ReducerMethod(typeof(LoadUsersAction))]
-            public static UserSettingState OnLoadLoadList(UserSettingState state)
+            public static UserSettingState OnLoadList(UserSettingState state)
             {
                 return state with
                 {
@@ -128,7 +126,7 @@ namespace vsWork.Stores
         }
 
         [EffectMethod(typeof(LoadUsersAction))]
-        public async Task LoadListData(IDispatcher dispatcher)
+        public async Task LoadUsersData(IDispatcher dispatcher)
         {
             User[] users;
             Dictionary<int, Organization> organizations = new Dictionary<int, Organization>();

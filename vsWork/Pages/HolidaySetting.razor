@@ -1,0 +1,49 @@
+﻿@page "/holidaySetting"
+@inherits vsWork.Shared.BasePage
+@implements IDisposable
+@using Fluxor
+@using vsWork.Stores
+@using vsWork.Shared
+@using vsWork.Utils
+
+<EditForm Model="@settingData" OnValidSubmit="OnClickRegist">
+    <FluentValidationValidator @ref="fluentValidationValidator " />
+    <DataAnnotationsValidator />
+    <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+    <div class="form-group">
+        <label for="id">Date</label>
+        <input type="" name="id" disabled="@(SettingState.Value.Mode != SettingMode.Add)" @bind-value="settingData.Date" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">設定</button>
+
+</EditForm>
+
+@code {
+    [Inject]
+    private IState<HolidaySettingState> SettingState { get; set; }
+
+    private Holiday settingData = new Holiday();
+    protected override void OnInitialized()
+    {
+        settingData = SettingState.Value.SelectedHoliday;
+        Navigation.LocationChanged += LocationChanged;
+        base.OnInitialized();
+    }
+    private async Task OnClickRegist()
+    {
+        Dispatcher.Dispatch(new HolidaySettingAction(settingData));
+    }
+    private void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        var returnUrl = Navigation!.ToBaseRelativePath(e.Location);
+        if (returnUrl != "holidayList")
+        {
+            Dispatcher.Dispatch(new ClearHolidayStateAction());
+        }
+    }
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
+    }
+}

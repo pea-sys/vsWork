@@ -18,11 +18,20 @@
         </li>
         @if (CurrentState.Value.User.Rank == User.RankType.SystemAdmin)
         {
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="organizationList">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> 組織設定
-            </NavLink>
-        </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="organizationList">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> 組織設定
+                </NavLink>
+            </li>
+        }
+        @if (CurrentState.Value.User.Rank == User.RankType.SystemAdmin |
+           CurrentState.Value.User.Rank == User.RankType.OrganizationAdmin)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="holidayList">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> 休日設定
+                </NavLink>
+            </li>
         }
         <li class="nav-item px-3">
             <a class="navbar-brand">@(CurrentState.Value.User.UserName) 状態:@(EnumTextAttribute.GetText(CurrentState.Value.UserState.State))</a>
