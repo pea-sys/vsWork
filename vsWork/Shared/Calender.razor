@@ -1,14 +1,14 @@
 ﻿<div class="calendar">
     <table>
         <caption>
-            <button class="calendar-day"
+            <button class="calendar-day" id="previous_month"
                     @onclick="@(() => NextMonth(-1))">
                 ◀
             </button>
 
-            @SelectDay.ToString("yyyy年MM月dd日")
+            @SelectedDay.ToString("yyyy年MM月dd日")
 
-            <button class="calendar-day"
+            <button class="calendar-day" id="next_month"
                     @onclick="@(() => NextMonth(1))">
                 ▶
             </button>
@@ -64,7 +64,7 @@
     // 日付がクリックされた時に呼ばれる
     private void DayClick(DateTime d)
     {
-        SelectDay = d; // クリックされた日を設定する
+        SelectedDay = d; // クリックされた日を設定する
         OnClick.InvokeAsync(d); // イベントを通知する①
     }
 
@@ -75,20 +75,20 @@
     public IEnumerable<DateTime[]> Weeks;
 
     // 選択されている日
-    public DateTime SelectDay { get; set; }
+    public DateTime SelectedDay { get; set; }
 
-    private void NextMonth(int n) => SelectDay = SelectDay.AddMonths(n);
+    private void NextMonth(int n) => SelectedDay = SelectedDay.AddMonths(n);
 
     // ひと月分の週毎のDateTime配列を返す
     public IEnumerable<DateTime[]> GetWeeks()
     {
         // 月初
-        DateTime day = new DateTime(SelectDay.Year, SelectDay.Month, 1);
+        DateTime day = new DateTime(SelectedDay.Year, SelectedDay.Month, 1);
         DateTime end = day.AddMonths(1).AddDays(-1); // 月末（翌月1日の前日）
 
         var week = new DateTime[7];
 
-        while (day.Month == SelectDay.Month) // 該当の月の間
+        while (day.Month == SelectedDay.Month) // 該当の月の間
         {
             week[(int)day.DayOfWeek] = day; // 1週分の配列に設定する②
 
@@ -104,7 +104,7 @@
 
     protected override void OnInitialized()
     {
-        SelectDay = Today;  // 今日を設定する
+        SelectedDay = Today;  // 今日を設定する
         Weeks = GetWeeks(); // 当月の週ごとのDateTime配列を取得する
     }
 }
