@@ -11,9 +11,17 @@ namespace vsWork.Data
         public DateTime Date { get; set; }
         public HolidayType HolidayType { get; set; }
         public string Name { get; set; }
+        public string DateString
+        {
+            get
+            {
+                return Date.ToLongDateString();
+            }
+        }
     }
     public enum HolidayType
     {
+        None,
         [EnumText("日付固定")]
         FixedDay,
         [EnumText("曜日固定")]

@@ -61,6 +61,11 @@ namespace vsWork.Stores
                 };
             }
             [ReducerMethod]
+            public static HolidaySettingState OnHolidaySettingSetState(HolidaySettingState state, SetHolidayStateAction action)
+            {
+                return action.State;
+            }
+            [ReducerMethod]
             public static HolidaySettingState OnSettingBegin(HolidaySettingState state, HolidaySettingBeginAction action)
             {
                 return state with
@@ -70,18 +75,26 @@ namespace vsWork.Stores
                 };
             }
             [ReducerMethod]
-            public static HolidaySettingState OnSettingUser(HolidaySettingState state, HolidaySettingAction action)
+            public static HolidaySettingState OnSettingHoliday(HolidaySettingState state, HolidaySettingAction action)
             {
                 return state with
                 {
                     SelectedHoliday = action.SelectedData
                 };
             }
+            [ReducerMethod]
+            public static HolidaySettingState OnSettingHolidaynSuccess(HolidaySettingState state, HolidaySettingSuccessAction action)
+            {
+                return state with
+                {
+                    SelectedHoliday = null,
+                };
+            }
         }
         public class HolidaySettingEffects
         {
             private readonly IState<HolidaySettingState> SettingState;
-            private readonly IRepository<Holiday, (int, DateTime)> _holidayRepositoryService;
+            private readonly HolidayRepository _holidayRepositoryService;
             private readonly IState<CurrentUserState> _currentUserState;
             private readonly ILocalStorageService _localStorageService;
             private readonly NavigationManager _navigationManager;
@@ -95,12 +108,22 @@ namespace vsWork.Stores
             NavigationManager navigationManager)
             {
                 SettingState = settingState;
-                _holidayRepositoryService = holidayRepositoryService;
+                _holidayRepositoryService = (HolidayRepository)holidayRepositoryService;
                 _currentUserState = currentUserState;
                 _localStorageService = localStorageService;
                 _navigationManager = navigationManager;
             }
+            [EffectMethod(typeof(LoadHolidaysAction))]
+            public async Task LoadHolidaysData(IDispatcher dispatcher)
+            {
+                Holiday[] holidays;
+                Dictionary<int, Organization> organizations = new Dictionary<int, Organization>();
 
+                holidays = _holidayRepositoryService.FindAll(_currentUserState.Value.User.OrganizationId).ToArray();
+
+                dispatcher.Dispatch(new SetHolidaysAction(holidays));
+                dispatcher.Dispatch(new LoadHolidaysSuccessAction());
+            }
             [EffectMethod(typeof(ClearHolidayStateAction))]
             public async Task ClearState(IDispatcher dispatcher)
             {
@@ -122,6 +145,61 @@ namespace vsWork.Stores
                     dispatcher.Dispatch(new ClearUserStateFailureAction(ex.Message));
                 }
             }
+            [EffectMethod(typeof(HolidaySettingBeginAction))]
+            public async Task SettingBegin(IDispatcher dispatcher)
+            {
+                if (SettingState.Value.Mode == SettingMode.Add |
+                    SettingState.Value.Mode == SettingMode.Update)
+                {
+                    _navigationManager.NavigateTo("holidaySetting");
+                }
+                else if (SettingState.Value.Mode == SettingMode.Delete)
+                {
+                    dispatcher.Dispatch(new HolidaySettingAction(SettingState.Value.SelectedHoliday));
+                }
+
+            }
+            [EffectMethod(typeof(HolidaySettingAction))]
+            public async Task Setting(IDispatcher dispatcher)
+            {
+                try
+                {
+                    if (SettingState.Value.Mode == SettingMode.Add)
+                    {
+                        _holidayRepositoryService.Add(SettingState.Value.SelectedHoliday);
+                        dispatcher.Dispatch(new HolidaySettingSuccessAction());
+                    }
+                    else if (SettingState.Value.Mode == SettingMode.Update)
+                    {
+                        _holidayRepositoryService.Update(SettingState.Value.SelectedHoliday);
+                        dispatcher.Dispatch(new HolidaySettingSuccessAction());
+                    }
+                    else if (SettingState.Value.Mode == SettingMode.Delete)
+                    {
+                        _holidayRepositoryService.Remove((SettingState.Value.SelectedHoliday.OrganizationId, SettingState.Value.SelectedHoliday.Date));
+                        dispatcher.Dispatch(new HolidaySettingSuccessAction());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    dispatcher.Dispatch(new HolidaySettingFailureAction(ex.Message));
+                }
+            }
+            [EffectMethod(typeof(HolidaySettingSuccessAction))]
+            public async Task SettingSuccess(IDispatcher dispatcher)
+            {
+                if (SettingState.Value.Mode == SettingMode.Add |
+                    SettingState.Value.Mode == SettingMode.Update)
+                {
+                    _navigationManager.NavigateTo("holidayList");
+                }
+                dispatcher.Dispatch(new LoadHolidaysAction());
+            }
+            [EffectMethod(typeof(HolidaySettingReturnAction))]
+            public async Task HolidaySettingReturn(IDispatcher dispatcher)
+            {
+                _navigationManager.NavigateTo("holidayList");
+            }
         }
     }
     public record LoadHolidaysAction();
@@ -140,4 +218,6 @@ namespace vsWork.Stores
     public record HolidaySettingAction(Holiday SelectedData);
     public record HolidaySettingSuccessAction();
     public record HolidaySettingFailureAction(string ErrorMessage);
+
+    public record HolidaySettingReturnAction();
 }

@@ -36,7 +36,8 @@
             </div>
         }
 
-        <button class="btn btn-primary" type="submit">登録</button>
+    <button class="btn btn-primary" type="submit">設定</button>
+        <button class="btn btn-secondary" type="button" @onclick="OnClickReturn">戻る</button>
 
     </EditForm>
 </Container>
@@ -66,6 +67,10 @@
     private async Task OnClickRegist()
     {
         Dispatcher.Dispatch(new UserSettingAction(settingData));
+    }
+    private async Task OnClickReturn()
+    {
+        Dispatcher.Dispatch(new UserSettingReturnAction());
     }
     void IDisposable.Dispose()
     {

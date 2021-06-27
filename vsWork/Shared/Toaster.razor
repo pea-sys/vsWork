@@ -22,6 +22,10 @@
         SubscribeToAction<OrganizationSettingSuccessAction>(ShowOrganizationSettingSuccessToast);
         SubscribeToAction<OrganizationSettingFailureAction>(ShowOrganizationSettingFailureToast);
 
+        SubscribeToAction<LoadHolidaysSuccessAction>(ShowLoadHolidaySuccessToast);
+        SubscribeToAction<HolidaySettingSuccessAction>(ShowHolidaySettingSuccessToast);
+        SubscribeToAction<HolidaySettingFailureAction>(ShowHolidaySettingFailureToast);
+
         base.OnInitialized();
     }
     private void ShowConnectAction(ConnectAction action)
@@ -70,6 +74,19 @@
         toastService.ShowSuccess("Setting Success!");
     }
     private void ShowOrganizationSettingFailureToast(OrganizationSettingFailureAction action)
+    {
+        toastService.ShowError("Setting Failure!");
+    }
+
+    private void ShowLoadHolidaySuccessToast(LoadHolidaysSuccessAction action)
+    {
+        toastService.ShowSuccess("LoadHolidays Success!");
+    }
+    private void ShowHolidaySettingSuccessToast(HolidaySettingSuccessAction action)
+    {
+        toastService.ShowSuccess("Setting Success!");
+    }
+    private void ShowHolidaySettingFailureToast(HolidaySettingFailureAction action)
     {
         toastService.ShowError("Setting Failure!");
     }

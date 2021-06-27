@@ -218,7 +218,6 @@ namespace vsWork.Stores
             dispatcher.Dispatch(new LoadUsersAction());
         }
 
-
         [EffectMethod(typeof(SettingUserLoadStateAction))]
         public async Task LoadState(IDispatcher dispatcher)
         {
@@ -259,6 +258,11 @@ namespace vsWork.Stores
                 dispatcher.Dispatch(new ClearUserStateFailureAction(ex.Message));
             }
         }
+        [EffectMethod(typeof(UserSettingReturnAction))]
+        public async Task UserSettingReturn(IDispatcher dispatcher)
+        {
+            _navigationManager.NavigateTo("userList");
+        }
     }
 
     #region Actions
@@ -283,6 +287,6 @@ namespace vsWork.Stores
     public record UserSettingSuccessAction();
     public record UserSettingFailureAction(string ErrorMessage);
 
-
+    public record UserSettingReturnAction();
     #endregion
 }

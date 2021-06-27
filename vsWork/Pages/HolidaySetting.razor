@@ -12,10 +12,23 @@
     <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
     <div class="form-group">
         <label for="id">Date</label>
-        <input type="" name="id" disabled="@(SettingState.Value.Mode != SettingMode.Add)" @bind-value="settingData.Date" class="form-control" />
+        <input type="date" name="id" disabled="@(SettingState.Value.Mode != SettingMode.Add)" @bind-value="settingData.Date" class="form-control" />
     </div>
-
+    <div class="form-group">
+        <label for="id">HolidayName</label>
+        <input type="text" name="id" @bind-value="settingData.Name" maxlength="100" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="rating">種別</label>
+        <InputSelect class="form-control" @bind-Value="settingData.HolidayType">
+            @foreach (HolidayType item in Enum.GetValues(typeof(HolidayType)))
+            {
+                <option value="@item">@(EnumTextAttribute.GetText(item))</option>
+            }
+        </InputSelect>
+    </div>
     <button class="btn btn-primary" type="submit">設定</button>
+    <button class="btn btn-secondary" type="button" @onclick="OnClickReturn">戻る</button>
 
 </EditForm>
 
@@ -23,7 +36,7 @@
     [Inject]
     private IState<HolidaySettingState> SettingState { get; set; }
 
-    private Holiday settingData = new Holiday();
+    private Holiday settingData = new Holiday { Date = DateTime.Now };
     protected override void OnInitialized()
     {
         settingData = SettingState.Value.SelectedHoliday;
@@ -41,6 +54,10 @@
         {
             Dispatcher.Dispatch(new ClearHolidayStateAction());
         }
+    }
+    private async Task OnClickReturn()
+    {
+        Dispatcher.Dispatch(new HolidaySettingReturnAction());
     }
     void IDisposable.Dispose()
     {

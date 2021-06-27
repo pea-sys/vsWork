@@ -24,6 +24,19 @@ namespace vsWork.Data
             this.connectionString = connectionString;
 #if DEBUG
             CreateTable();
+
+            DateTime now = DateTime.Now;
+            for (int i = 0; i < 200; i++)
+            {
+                now = now.AddDays(1);
+                if (now.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    if (FindById((0, now)) == null)
+                    {
+                        Add(new Holiday { OrganizationId = 0, Date=now, Name = $"名前{i}" });
+                    }
+                }
+            }
 #endif
         }
 
@@ -47,7 +60,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer  NOT NULL REFERENCES  organization_tbl ON DELETE CASCADE, Date TIMESTAMP NOT NULL, HolidayType integer, Name text NOT NULL, PRIMARY KEY ( OrganizationId, Date));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer  NOT NULL REFERENCES  organization_tbl ON DELETE CASCADE, Date date NOT NULL, HolidayType integer, Name text NOT NULL, PRIMARY KEY ( OrganizationId, Date));");
                         tran.Commit();
                     }
                     catch
@@ -108,9 +121,23 @@ namespace vsWork.Data
         }
         public IEnumerable<Holiday> FindAll()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
-
+        public IEnumerable<Holiday> FindAll(int organizationId)
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                try
+                {
+                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name FROM {tableName} WHERE OrganizationId = '{organizationId}' ORDER BY Date;");
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
         public Holiday FindById((int organizationId, DateTime Datetime) keys)
         {
             using (IDbConnection db = Connection)
@@ -118,7 +145,7 @@ namespace vsWork.Data
                 db.Open();
                 try
                 {
-                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name FROM {tableName} WHERE OrganizationId = '{keys.organizationId} & Date = '{keys.Datetime.ToShortDateString()}' ' LIMIT 1").FirstOrDefault();
+                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name FROM {tableName} WHERE OrganizationId = {keys.organizationId} and Date = '{keys.Datetime.Date.ToShortDateString()}' LIMIT 1;").FirstOrDefault();
                 }
                 catch
                 {
@@ -157,7 +184,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET HolidayType = '{(int)item.HolidayType}' ,Name = '{item.Name}' WHERE OrganizationId = '{item.OrganizationId}' &  Date = '{item.Date}'", tran);
+                        var count = db.Execute($"UPDATE {tableName} SET HolidayType = {(int)item.HolidayType} , Name = '{item.Name}' WHERE OrganizationId = '{item.OrganizationId}' and Date = '{item.Date.ToShortDateString()}';", tran);
                         tran.Commit();
                         return count > 0;
                     }

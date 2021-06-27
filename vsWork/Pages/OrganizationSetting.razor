@@ -18,6 +18,7 @@
         <input type="text" name="name" @bind-value="settingData.OrganizationName" maxlength="100" class="form-control" />
     </div>
     <button class="btn btn-primary" type="submit">設定</button>
+    <button class="btn btn-secondary" type="button" @onclick="OnClickReturn">戻る</button>
 
 </EditForm>
 @code {
@@ -43,6 +44,10 @@
         {
             Dispatcher.Dispatch(new ClearOrganizationStateAction());
         }
+    }
+    private async Task OnClickReturn()
+    {
+        Dispatcher.Dispatch(new OrganizationSettingReturnAction());
     }
     void IDisposable.Dispose()
     {

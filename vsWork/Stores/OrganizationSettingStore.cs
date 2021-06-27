@@ -86,14 +86,6 @@ namespace vsWork.Stores
                     SelectedOrganization = null,
                 };
             }
-            [ReducerMethod]
-            public static OrganizationSettingState OnSettingOrganizationFailure(OrganizationSettingState state, OrganizationSettingFailureAction action)
-            {
-                return state with
-                {
-                    // 未定
-                };
-            }
         }
     }
     public class OrganizationSettingEffects
@@ -136,7 +128,6 @@ namespace vsWork.Stores
             {
                 dispatcher.Dispatch(new OrganizationSettingAction(SettingState.Value.SelectedOrganization));
             }
-
         }
         [EffectMethod(typeof(OrganizationSettingAction))]
         public async Task Setting(IDispatcher dispatcher)
@@ -216,6 +207,11 @@ namespace vsWork.Stores
                 dispatcher.Dispatch(new ClearOrganizationStateFailureAction(ex.Message));
             }
         }
+        [EffectMethod(typeof(OrganizationSettingReturnAction))]
+        public async Task OrganizationSettingReturn(IDispatcher dispatcher)
+        {
+            _navigationManager.NavigateTo("organizationList");
+        }
     }
     #region Actions
     public record LoadOrganizationsAction();
@@ -235,5 +231,7 @@ namespace vsWork.Stores
     public record OrganizationSettingAction(Organization SelectedData);
     public record OrganizationSettingSuccessAction();
     public record OrganizationSettingFailureAction(string ErrorMessage);
+
+    public record OrganizationSettingReturnAction();
     #endregion
 }
