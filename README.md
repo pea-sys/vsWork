@@ -22,7 +22,8 @@ Blazorの前提知識となりそうなASP.NETも経験がないため、
 * Blazorize  
 * Blazorise.DataGrid  
 * Fluxor
-* BlazorPagination
+* BlazorPagination  
+* Newtonsoft.json  
 ※ Postgresのコネクションはユーザーシークレットで管理
 
 ### データベース

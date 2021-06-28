@@ -15,7 +15,7 @@ namespace vsWork.Validators
         /// <summary>
         /// 休日リポジトリ
         /// </summary>
-        private readonly IRepository<Holiday, (int,DateTime)> _holidayRepository;
+        private readonly HolidayRepository _holidayRepository;
         /// <summary>
         /// 休日状態管理
         /// </summary>
@@ -25,7 +25,7 @@ namespace vsWork.Validators
         /// </summary>
         public HolidayValidator(IRepository<Holiday, (int, DateTime)> holidayRepository, IState<HolidaySettingState> holidaySettingState)
         {
-            _holidayRepository = holidayRepository;
+            _holidayRepository = (HolidayRepository)holidayRepository;
             _holidaySettingState = holidaySettingState;
 
             if (_holidaySettingState.Value.Mode == SettingMode.Add)
@@ -50,8 +50,25 @@ namespace vsWork.Validators
         /// <returns>false:正常 true:異常</returns>
         private bool IsExistId(int organizationId, DateTime dt)
         {
-            Holiday validHoliday = _holidayRepository.FindById((organizationId,dt));
-            return (validHoliday == null);
+            List<Holiday> validHoliday = (List<Holiday>)_holidayRepository.FindAll(organizationId);
+            // 同日チェック
+            if (validHoliday.Where(p => p.Date == dt.Date).Count() > 0)
+            {
+                return true;
+            }
+            //日付固定チェック
+            var validDaySolid = validHoliday.Where(p => p.HolidayType == HolidayType.FixedDay);
+            foreach (var hDay in validDaySolid)
+            {
+                if ((dt.Month == hDay.Date.Month) && (dt.Day == hDay.Date.Day))
+                {
+                    return true;
+                }
+            }
+            // 曜日固定チェック
+            // validDaySolid = (List<Holiday>)validHoliday.Where(p => p.HolidayType == HolidayType.FixedWeekofDay);
+            
+            return false;
         }
     }
 }

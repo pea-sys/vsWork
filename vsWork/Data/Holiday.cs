@@ -11,6 +11,7 @@ namespace vsWork.Data
         public DateTime Date { get; set; }
         public HolidayType HolidayType { get; set; }
         public string Name { get; set; }
+        public TargetType Target { get; set; } = TargetType.Organization;
         public string DateString
         {
             get
@@ -18,6 +19,7 @@ namespace vsWork.Data
                 return Date.ToLongDateString();
             }
         }
+
     }
     public enum HolidayType
     {
@@ -28,5 +30,13 @@ namespace vsWork.Data
         FixedWeekofDay,
         [EnumText("移動祝日")]
         Moveable,
+    }
+    public enum TargetType
+    {
+        None,
+        [EnumText("国")]
+        Japan,
+        [EnumText("組織")]
+        Organization
     }
 }

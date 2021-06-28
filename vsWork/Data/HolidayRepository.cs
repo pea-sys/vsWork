@@ -33,7 +33,7 @@ namespace vsWork.Data
                 {
                     if (FindById((0, now)) == null)
                     {
-                        Add(new Holiday { OrganizationId = 0, Date=now, Name = $"名前{i}" });
+                        Add(new Holiday { OrganizationId = 0, Date=now, Name = $"名前{i}", Target = TargetType.Organization });
                     }
                 }
             }
@@ -60,7 +60,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer  NOT NULL REFERENCES  organization_tbl ON DELETE CASCADE, Date date NOT NULL, HolidayType integer, Name text NOT NULL, PRIMARY KEY ( OrganizationId, Date));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer  NOT NULL REFERENCES  organization_tbl ON DELETE CASCADE, Date date NOT NULL, HolidayType integer, Name text NOT NULL, Target integer, PRIMARY KEY ( OrganizationId, Date));");
                         tran.Commit();
                     }
                     catch
@@ -108,7 +108,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (OrganizationId, Date, HolidayType, Name) VALUES ('{item.OrganizationId}','{item.Date.ToShortDateString()}', '{(int)item.HolidayType}', '{item.Name}');", tran);
+                        db.Execute($"INSERT INTO {tableName} (OrganizationId, Date, HolidayType, Name, Target) VALUES ('{item.OrganizationId}','{item.Date.ToShortDateString()}', '{(int)item.HolidayType}', '{item.Name}', '{(int)item.Target}');", tran);
                         tran.Commit();
                     }
                     catch
@@ -130,7 +130,7 @@ namespace vsWork.Data
                 db.Open();
                 try
                 {
-                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name FROM {tableName} WHERE OrganizationId = '{organizationId}' ORDER BY Date;");
+                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name, Target FROM {tableName} WHERE OrganizationId = '{organizationId}' ORDER BY Date;");
                 }
                 catch
                 {

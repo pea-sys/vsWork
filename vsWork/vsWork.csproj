@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>a1d97fdd-58bf-4e9a-a236-bdf1d8e1b163</UserSecretsId>
+    <Description>Blazorで作る勤怠システム</Description>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +19,7 @@
     <PackageReference Include="BlazorPagination" Version="0.2.16" />
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="4.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="5.0.7" />
   </ItemGroup>
 
