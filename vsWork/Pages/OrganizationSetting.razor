@@ -17,6 +17,7 @@
         <label for="name">OrganizationName</label>
         <input type="text" name="name" @bind-value="settingData.OrganizationName" maxlength="100" class="form-control" />
     </div>
+    <Check TValue="bool" @bind-Checked="@(settingData.HolidayEnable)">暦通りの就業体系</Check>
     <button class="btn btn-primary" type="submit">設定</button>
     <button class="btn btn-secondary" type="button" @onclick="OnClickReturn">戻る</button>
 
@@ -49,6 +50,7 @@
     {
         Dispatcher.Dispatch(new OrganizationSettingReturnAction());
     }
+
     void IDisposable.Dispose()
     {
         Navigation.LocationChanged -= LocationChanged;

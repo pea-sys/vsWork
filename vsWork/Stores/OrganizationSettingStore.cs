@@ -94,16 +94,19 @@ namespace vsWork.Stores
         private readonly IState<OrganizationSettingState> SettingState;
         private readonly IRepository<Organization, int> _organizationRepositoryService;
         private readonly ILocalStorageService _localStorageService;
+        private readonly IState<CurrentUserState> CurrentState;
         private readonly NavigationManager _navigationManager;
         private const string StatePersistenceName = "OrganizationSettingState";
 
         public OrganizationSettingEffects
         (IState<OrganizationSettingState> settingState,
+        IState<CurrentUserState> currentState,
         IRepository<Organization, int> organizationRepositoryService,
         ILocalStorageService localStorageService,
         NavigationManager navigationManager)
         {
             SettingState = settingState;
+            CurrentState = currentState;
             _organizationRepositoryService = organizationRepositoryService;
             _localStorageService = localStorageService;
             _navigationManager = navigationManager;
@@ -137,6 +140,7 @@ namespace vsWork.Stores
                 if (SettingState.Value.Mode == SettingMode.Add)
                 {
                     _organizationRepositoryService.Add(SettingState.Value.SelectedOrganization);
+
                     dispatcher.Dispatch(new OrganizationSettingSuccessAction());
                 }
                 else if (SettingState.Value.Mode == SettingMode.Update)
@@ -158,6 +162,8 @@ namespace vsWork.Stores
         [EffectMethod(typeof(OrganizationSettingSuccessAction))]
         public async Task SettingSuccess(IDispatcher dispatcher)
         {
+            CurrentState.Value.Organization = _organizationRepositoryService.FindById(CurrentState.Value.User.OrganizationId);
+
             if (SettingState.Value.Mode == SettingMode.Add |
                 SettingState.Value.Mode == SettingMode.Update)
             {

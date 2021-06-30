@@ -42,8 +42,6 @@ namespace vsWork.Validators
             }
             else if (organizationSettingState.Value.Mode == SettingMode.Update)
             {
-                RuleFor(x => x.OrganizationId).Cascade(CascadeMode.Stop)
-                    .NotEmpty().WithMessage("組織IDを入力してください。");
 
                 RuleFor(x => x.OrganizationName).Cascade(CascadeMode.Stop)
                     .NotEmpty().WithMessage("組織名称を入力してください。");

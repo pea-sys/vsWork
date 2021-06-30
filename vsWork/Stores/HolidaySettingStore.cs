@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using vsWork.Data;
+using vsWork.Services;
 
 namespace vsWork.Stores
 {
@@ -98,17 +99,21 @@ namespace vsWork.Stores
             private readonly IState<CurrentUserState> _currentUserState;
             private readonly ILocalStorageService _localStorageService;
             private readonly NavigationManager _navigationManager;
+            private readonly HolidayService _holidayService;
             private const string StatePersistenceName = "HolidaySettingState";
+            
 
             public HolidaySettingEffects
             (IState<HolidaySettingState> settingState,
             IRepository<Holiday, (int, DateTime)> holidayRepositoryService,
+            IHolidayService holidayService,
             IState<CurrentUserState> currentUserState,
             ILocalStorageService localStorageService,
             NavigationManager navigationManager)
             {
                 SettingState = settingState;
                 _holidayRepositoryService = (HolidayRepository)holidayRepositoryService;
+                _holidayService = (HolidayService)holidayService;
                 _currentUserState = currentUserState;
                 _localStorageService = localStorageService;
                 _navigationManager = navigationManager;
@@ -118,8 +123,8 @@ namespace vsWork.Stores
             {
                 Holiday[] holidays;
                 Dictionary<int, Organization> organizations = new Dictionary<int, Organization>();
-
-                holidays = _holidayRepositoryService.FindAll(_currentUserState.Value.User.OrganizationId).ToArray();
+                
+                holidays = _holidayRepositoryService.FindAllByOrganization(_currentUserState.Value.Organization).ToArray();
 
                 dispatcher.Dispatch(new SetHolidaysAction(holidays));
                 dispatcher.Dispatch(new LoadHolidaysSuccessAction());

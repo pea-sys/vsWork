@@ -69,7 +69,7 @@ namespace vsWork
             // [éQçl]https://www.fixes.pub/program/464677.html
             services.AddScoped<CircuitHandler, CircuitHandlerService>((sp) => new CircuitHandlerService(sp.GetRequiredService<IDispatcher>()));
 
-            services.AddHttpClient<IHolidayService, JapanHolidayService>(client =>
+            services.AddHttpClient<IHolidayService, HolidayService>(client =>
             {
                 client.BaseAddress = new Uri("https://localhost:44379/");
             });

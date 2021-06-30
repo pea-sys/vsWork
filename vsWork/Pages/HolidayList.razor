@@ -30,8 +30,7 @@
 @code {
     [Inject]
     private IState<HolidaySettingState> HolidaySettingState { get; set; }
-    [Inject]
-    private IHolidayService HolidayService{ get; set; }
+
 
     [CascadingParameter]
     public IModalService Modal { get; set; }

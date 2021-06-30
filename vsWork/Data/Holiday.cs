@@ -11,7 +11,7 @@ namespace vsWork.Data
         public DateTime Date { get; set; }
         public HolidayType HolidayType { get; set; }
         public string Name { get; set; }
-        public TargetType Target { get; set; } = TargetType.Organization;
+        public ApplyTargetType Target { get; set; } = ApplyTargetType.Organization;
         public string DateString
         {
             get
@@ -31,7 +31,7 @@ namespace vsWork.Data
         [EnumText("移動祝日")]
         Moveable,
     }
-    public enum TargetType
+    public enum ApplyTargetType
     {
         None,
         [EnumText("国")]

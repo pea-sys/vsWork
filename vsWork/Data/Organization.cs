@@ -12,6 +12,7 @@ namespace vsWork.Data
     {
         public int OrganizationId { get; set; }
         public string OrganizationName { get; set; }
+        public bool HolidayEnable { get; set; }
         
     }
 }

@@ -16,6 +16,7 @@ namespace vsWork.Validators
         /// 休日リポジトリ
         /// </summary>
         private readonly HolidayRepository _holidayRepository;
+        private readonly OrganizationRepository _organizationRepository;
         /// <summary>
         /// 休日状態管理
         /// </summary>
@@ -23,9 +24,10 @@ namespace vsWork.Validators
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public HolidayValidator(IRepository<Holiday, (int, DateTime)> holidayRepository, IState<HolidaySettingState> holidaySettingState)
+        public HolidayValidator(IRepository<Holiday, (int, DateTime)> holidayRepository, IRepository<Organization, int> organizationRepository, IState<HolidaySettingState> holidaySettingState)
         {
             _holidayRepository = (HolidayRepository)holidayRepository;
+            _organizationRepository = (OrganizationRepository)organizationRepository;
             _holidaySettingState = holidaySettingState;
 
             if (_holidaySettingState.Value.Mode == SettingMode.Add)
@@ -50,7 +52,8 @@ namespace vsWork.Validators
         /// <returns>false:正常 true:異常</returns>
         private bool IsExistId(int organizationId, DateTime dt)
         {
-            List<Holiday> validHoliday = (List<Holiday>)_holidayRepository.FindAll(organizationId);
+            Organization organization = _organizationRepository.FindById(organizationId);
+            List<Holiday> validHoliday = (List<Holiday>)_holidayRepository.FindAllByOrganization(organization);
             // 同日チェック
             if (validHoliday.Where(p => p.Date == dt.Date).Count() > 0)
             {

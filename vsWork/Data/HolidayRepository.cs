@@ -33,7 +33,7 @@ namespace vsWork.Data
                 {
                     if (FindById((0, now)) == null)
                     {
-                        Add(new Holiday { OrganizationId = 0, Date=now, Name = $"名前{i}", Target = TargetType.Organization });
+                        Add(new Holiday { OrganizationId = 0, Date=now, Name = $"名前{i}", Target = ApplyTargetType.Organization });
                     }
                 }
             }
@@ -60,7 +60,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer  NOT NULL REFERENCES  organization_tbl ON DELETE CASCADE, Date date NOT NULL, HolidayType integer, Name text NOT NULL, Target integer, PRIMARY KEY ( OrganizationId, Date));");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer  NOT NULL REFERENCES  organization_tbl ON DELETE CASCADE, Date date NOT NULL, HolidayType integer, Name text NOT NULL, Target integer, PRIMARY KEY ( OrganizationId, Date, Target));");
                         tran.Commit();
                     }
                     catch
@@ -123,14 +123,37 @@ namespace vsWork.Data
         {
             throw new NotSupportedException();
         }
-        public IEnumerable<Holiday> FindAll(int organizationId)
+        public IEnumerable<Holiday> FindAllByOrganization(Organization organization)
         {
             using (IDbConnection db = Connection)
             {
                 db.Open();
                 try
                 {
-                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name, Target FROM {tableName} WHERE OrganizationId = '{organizationId}' ORDER BY Date;");
+                    if (!organization.HolidayEnable)
+                    {
+                        return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name, Target FROM {tableName} WHERE OrganizationId = '{organization.OrganizationId}' and Target = 2 ORDER BY Date;");
+                    }
+                    else
+                    {
+                        return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name, Target FROM {tableName} WHERE OrganizationId = '{organization.OrganizationId}' or Target = 1 ORDER BY Date;");
+                    }
+
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+        public IEnumerable<Holiday> FindAllByTarget(ApplyTargetType targetType)
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                try
+                {
+                    return db.Query<Holiday>($"SELECT OrganizationId, Date, HolidayType, Name, Target FROM {tableName} WHERE Target = {(int)targetType} ORDER BY Date;");
                 }
                 catch
                 {
@@ -174,7 +197,26 @@ namespace vsWork.Data
                 }
             }
         }
-
+        public void RemoveByTargetAndYear(ApplyTargetType targetType, int year)
+        {
+            using (IDbConnection db = Connection)
+            {
+                db.Open();
+                using (var tran = db.BeginTransaction())
+                {
+                    try
+                    {
+                        db.Execute($"DELETE FROM {tableName} WHERE Target = {(int)targetType} and date::date >= '{year}-01-01' and date::date <= '{year}-12-31'" , tran);
+                        tran.Commit();
+                    }
+                    catch
+                    {
+                        tran.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
         public bool Update(Holiday item)
         {
             using (IDbConnection db = Connection)

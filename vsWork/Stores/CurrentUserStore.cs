@@ -14,6 +14,7 @@ namespace vsWork.Stores
 
         public string CircuitId { get; set; }
         public User User { get; set; }
+        public Organization Organization { get; set; }
         
         public UserState UserState 
         {
@@ -45,6 +46,7 @@ namespace vsWork.Stores
             {
                 CircuitId = string.Empty,
                 User = new User(),
+                Organization = new Organization(),
                 UserState = new UserState()
             };
         }
@@ -115,13 +117,14 @@ namespace vsWork.Stores
         {
             // Validatorで認証済み
             currentUserState.Value.User = _userRepositoryService.FindById(currentUserState.Value.User.UserId);
+            currentUserState.Value.Organization = _organizationRepository.FindById(currentUserState.Value.User.OrganizationId);
             _sessionRepository.Add(new Session() { SessionId = currentUserState.Value.CircuitId, UserId = currentUserState.Value.User.UserId });
             currentUserState.Value.UserState = _userStateRepository.FindById(currentUserState.Value.User.UserId);
             if (currentUserState.Value.UserState is null)
             {
                 currentUserState.Value.UserState = new UserState{ UserId = currentUserState.Value.User.UserId };
             }
-
+            
             _navigationManager.NavigateTo("summary");
         }
         [EffectMethod(typeof(SignOutAction))]

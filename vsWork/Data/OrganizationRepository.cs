@@ -29,7 +29,7 @@ namespace vsWork.Data
                 Add(new Organization { OrganizationId = 0, OrganizationName = "ベンダー" });
                 for (int i = 1; i < 30; i++)
                 {
-                    Add(new Organization { OrganizationId = i, OrganizationName = $"ユーザー会社{i}" });
+                    Add(new Organization { OrganizationId = i, OrganizationName = $"ユーザー会社{i}", HolidayEnable = true });
                 }
             }
 #endif
@@ -56,7 +56,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer PRIMARY KEY, OrganizationName varchar(100) NOT NULL, CreateTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
+                        db.Execute($"CREATE TABLE IF NOT EXISTS {tableName} (OrganizationId integer PRIMARY KEY, OrganizationName varchar(100) NOT NULL,  HolidayEnable boolean, CreateTimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
                         tran.Commit();
                     }
                     catch
@@ -102,7 +102,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        db.Execute($"INSERT INTO {tableName} (OrganizationId, OrganizationName) VALUES ('{item.OrganizationId}', '{item.OrganizationName}');", tran);
+                        db.Execute($"INSERT INTO {tableName} (OrganizationId, OrganizationName, HolidayEnable) VALUES ('{item.OrganizationId}', '{item.OrganizationName}', '{item.HolidayEnable}');", tran);
                         tran.Commit();
                     }
                     catch
@@ -157,7 +157,7 @@ namespace vsWork.Data
                 {
                     try
                     {
-                        var count = db.Execute($"UPDATE {tableName} SET OrganizationName = '{item.OrganizationName}' WHERE OrganizationId = '{item.OrganizationId}'", tran);
+                        var count = db.Execute($"UPDATE {tableName} SET OrganizationName = '{item.OrganizationName}', HolidayEnable = '{item.HolidayEnable}' WHERE OrganizationId = '{item.OrganizationId}'", tran);
                         tran.Commit();
                         return count > 0;
                     }
@@ -182,7 +182,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<Organization>($"SELECT OrganizationId, OrganizationName FROM {tableName} WHERE OrganizationId = '{id}' LIMIT 1").FirstOrDefault();
+                return db.Query<Organization>($"SELECT OrganizationId, OrganizationName, HolidayEnable FROM {tableName} WHERE OrganizationId = '{id}' LIMIT 1").FirstOrDefault();
             }
         }
         /// <summary>
@@ -194,7 +194,7 @@ namespace vsWork.Data
             using (IDbConnection db = Connection)
             {
                 db.Open();
-                return db.Query<Organization>($"SELECT OrganizationId,  OrganizationName  FROM {tableName}");
+                return db.Query<Organization>($"SELECT OrganizationId,  OrganizationName, HolidayEnable FROM {tableName} ORDER BY OrganizationId;");
             }
         }
     }

@@ -8,6 +8,6 @@ namespace vsWork.Services
 {
     public interface IHolidayService
     {
-        Dictionary<string,string> GetHolidays(int year);
+        void SetHolidays();
     }
 }
