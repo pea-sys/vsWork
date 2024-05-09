@@ -20,7 +20,7 @@
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="4.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="Npgsql" Version="5.0.7" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties _1_1_4_1_1_4_1_1_4_1_1_4_1nuget_4packages_4blazorise_40_19_13_17_4contentfiles_4any_4net5_10_4compilerconfig_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
